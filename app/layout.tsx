@@ -1,11 +1,12 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -13,8 +14,8 @@ const fontMono = Geist_Mono({
 })
 
 export default function RootLayout({
-  children,
-}: Readonly<{
+                                     children,
+                                   }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
@@ -23,9 +24,15 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
     >
-      <body>
-        <ThemeProvider><TooltipProvider>{children}</TooltipProvider></ThemeProvider>
-      </body>
+    <body>
+    <ThemeProvider>
+      <TooltipProvider>
+        <NuqsAdapter>
+          {children}
+        </NuqsAdapter>
+      </TooltipProvider>
+    </ThemeProvider>
+    </body>
     </html>
   )
 }
