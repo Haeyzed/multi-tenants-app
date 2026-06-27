@@ -20,9 +20,9 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { useComposedRefs } from "@/lib/compose-refs";
 import { cn } from "@/lib/utils";
-import { useAsRef } from "@/components/hooks/use-as-ref";
-import { useIsomorphicLayoutEffect } from "@/components/hooks/use-isomorphic-layout-effect";
-import { useLazyRef } from "@/components/hooks/use-lazy-ref";
+import { useAsRef } from "@/hooks/use-as-ref";
+import { useIsomorphicLayoutEffect } from "@/hooks/use-isomorphic-layout-effect";
+import { useLazyRef } from "@/hooks/use-lazy-ref";
 import { Button } from "@/components/ui/button";
 
 const ROOT_NAME = "Tour";
