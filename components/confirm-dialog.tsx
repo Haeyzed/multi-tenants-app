@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { Loader2 } from "lucide-react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   ResponsiveDialog,
@@ -14,63 +14,75 @@ import {
   ResponsiveDialogTrigger,
 } from "@/components/ui/responsive-dialog";
 
-export interface ConfirmDialogProps extends React.ComponentProps<typeof ResponsiveDialog> {
-  trigger?: React.ReactElement; // Changed to ReactElement since `render` needs a valid element to clone props/refs into
-  title: React.ReactNode;
-  description?: React.ReactNode;
-  cancelText?: React.ReactNode;
-  confirmText?: React.ReactNode;
-  onConfirm: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  isLoading?: boolean;
+interface ConfirmDialogProps {
+  trigger: React.ReactElement;
+  title?: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
   confirmVariant?: React.ComponentProps<typeof Button>["variant"];
+  onConfirm: () => void | Promise<void>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function ConfirmDialog({
                                 trigger,
-                                title,
-                                description,
-                                cancelText = "Cancel",
+                                title = "Are you sure?",
+                                description = "This action cannot be undone.",
                                 confirmText = "Confirm",
+                                cancelText = "Cancel",
+                                confirmVariant = "destructive",
                                 onConfirm,
-                                isLoading = false,
-                                confirmVariant = "default",
-                                children,
-                                ...props
+                                open: controlledOpen,
+                                onOpenChange,
                               }: ConfirmDialogProps) {
-  return (
-    <ResponsiveDialog {...props}>
-      {/* Trigger using the render prop */}
-      {trigger && (
-        <ResponsiveDialogTrigger render={trigger} />
-      )}
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [internalOpen, setInternalOpen] = React.useState(false);
 
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = (value: boolean) => {
+    if (!isControlled) setInternalOpen(value);
+    onOpenChange?.(value);
+  };
+
+  const handleConfirm = async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      await Promise.resolve(onConfirm());
+      setOpen(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <ResponsiveDialog open={open} onOpenChange={setOpen}>
+      <ResponsiveDialogTrigger render={trigger}/>
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
-          {description && (
-            <ResponsiveDialogDescription>
-              {description}
-            </ResponsiveDialogDescription>
-          )}
+          <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-
-        {/* Render any additional content if passed */}
-        {children}
-
+        {error && (
+          <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+            {error}
+          </div>
+        )}
         <ResponsiveDialogFooter>
-
-          {/* Close button using the render prop */}
-          <ResponsiveDialogClose
-            render={
-              <Button variant="outline" disabled={isLoading}>
-                {cancelText}
-              </Button>
-            }
-          />
-
+          <ResponsiveDialogClose render={
+            <Button variant="outline" disabled={isLoading}>
+              {cancelText}
+            </Button>
+          }/>
           <Button
             variant={confirmVariant}
-            onClick={onConfirm}
+            onClick={handleConfirm}
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}

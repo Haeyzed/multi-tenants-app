@@ -1,64 +1,102 @@
-const api = {
-  async get<T>(path: string): Promise<T> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CENTRAL_API_URL}${path}`, {
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.data;
-  },
+class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public errors?: Record<string, string[]>
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
 
-  async post<T>(path: string, body: unknown): Promise<T> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CENTRAL_API_URL}${path}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    return data.data;
-  },
+class ApiClient {
+  private baseURL: string;
+  private token: string | null = null;
 
-  async put<T>(path: string, body: unknown): Promise<T> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CENTRAL_API_URL}${path}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  constructor() {
+    this.baseURL = process.env.NEXT_PUBLIC_CENTRAL_API_URL || "";
+    if (typeof window !== "undefined") {
+      this.token = localStorage.getItem("token");
     }
-    const data = await response.json();
-    return data.data;
-  },
+  }
 
-  async delete<T>(path: string): Promise<T> {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_CENTRAL_API_URL}${path}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  public setToken(token: string | null) {
+    this.token = token;
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
     }
-    const data = await response.json();
-    return data.data;
-  },
-};
+  }
 
-export const apiClient = api;
+  public getToken(): string | null {
+    return this.token;
+  }
+
+  private async request<T>(
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    path: string,
+    body?: unknown,
+    params?: Record<string, any>
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    };
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`;
+    }
+
+    let url = `${this.baseURL}${path}`;
+    if (params) {
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v !== undefined && v !== null)
+      );
+      const query = new URLSearchParams(filteredParams).toString();
+      if (query) url += `?${query}`;
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    const responseData = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      throw new ApiError(
+        responseData?.message || `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      );
+    }
+
+    // Return the FULL response body (including success, message, data, meta)
+    return responseData as T;
+  }
+
+  public get<T>(path: string, params?: Record<string, any>): Promise<T> {
+    return this.request<T>("GET", path, undefined, params);
+  }
+
+  public post<T>(path: string, body: unknown): Promise<T> {
+    return this.request<T>("POST", path, body);
+  }
+
+  public put<T>(path: string, body: unknown): Promise<T> {
+    return this.request<T>("PUT", path, body);
+  }
+
+  public patch<T>(path: string, body: unknown): Promise<T> {
+    return this.request<T>("PATCH", path, body);
+  }
+
+  public delete<T>(path: string): Promise<T> {
+    return this.request<T>("DELETE", path);
+  }
+}
+
+export const apiClient = new ApiClient();
+export { ApiError };

@@ -1,43 +1,80 @@
-"use client";
+"use client"
 
-import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs";
-import * as React from "react";
-import { DataTable } from "@/components/data-table/data-table";
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
-import { useDataTable } from "@/hooks/use-data-table";
+import {
+  parseAsArrayOf,
+  parseAsInteger,
+  parseAsString,
+  useQueryState,
+} from "nuqs"
+import * as React from "react"
+import { DataTable } from "@/components/data-table/data-table"
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useDataTable } from "@/hooks/use-data-table"
 import { columns } from "./columns"
-import { useGetPlans } from "@/lib/hooks/use-plan-query";
-import { PlanDialog } from "./plan-dialog";
-import { Button } from "@/components/ui/button";
+import { useGetPlans } from "@/hooks/central/use-plan-query"
+import { PlanDialog } from "./plan-dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Guard } from "@/components/central/components/auth/guard"
 
-export function DataTableDemo() {
-  const { data, isLoading } = useGetPlans();
-  const [name] = useQueryState("name", parseAsString.withDefault(""));
-  const [status] = useQueryState(
-    "status",
-    parseAsArrayOf(parseAsString).withDefault([]),
-  );
+export function PlanDataTable() {
+  const [search, setSearch] = useQueryState(
+    "search",
+    parseAsString.withDefault("")
+  )
+  const [isActive, setIsActive] = useQueryState(
+    "is_active",
+    parseAsArrayOf(parseAsString).withDefault([])
+  )
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1))
+  const [perPage, setPerPage] = useQueryState(
+    "per_page",
+    parseAsInteger.withDefault(15)
+  )
+
+  const { data, isLoading } = useGetPlans({
+    search: search || undefined,
+    is_active:
+      isActive.length > 0 ? (isActive as ("active" | "inactive")[]) : undefined,
+    per_page: perPage,
+    page,
+  })
 
   const { table } = useDataTable({
-    data: data || [],
+    data: data?.data || [],
     columns,
-    pageCount: 1,
+    pageCount: data?.meta?.last_page || 1,
     initialState: {
-      sorting: [{ id: "name", desc: true }],
-      columnPinning: { left: ["select", "name"] , right: ["actions"] },
+      sorting: [{ id: "sort_order", desc: false }],
+      columnPinning: { left: ["select", "name"], right: ["actions"] },
     },
-    getRowId: (row) => row.id,
-  });
+    getRowId: (row) => String(row.id),
+  })
 
   return (
-    <div className="data-table-container">
+    <div className="space-y-4">
       <DataTable table={table}>
         <DataTableToolbar table={table}>
-          <PlanDialog>
-            <Button>Create Plan</Button>
-          </PlanDialog>
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder="Search plans..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-[250px]"
+            />
+            <Guard permissions="plans.create">
+              <PlanDialog>
+                <Button>Create Plan</Button>
+              </PlanDialog>
+            </Guard>
+          </div>
         </DataTableToolbar>
       </DataTable>
+      {isLoading && (
+        <div className="py-8 text-center text-muted-foreground">
+          Loading plans...
+        </div>
+      )}
     </div>
-  );
+  )
 }

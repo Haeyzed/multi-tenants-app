@@ -1,36 +1,31 @@
-"use client"
+"use client";
 
-import type { Column, ColumnDef } from "@tanstack/react-table"
-import {
-  CheckCircle,
-  CheckCircle2,
-  MoreHorizontal,
-  Text,
-  XCircle,
-} from "lucide-react"
-import * as React from "react"
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Tenant } from "@/types/central/tenant"
-import { TenantDialog } from "./tenant-dialog"
+import type { ColumnDef } from "@tanstack/react-table";
+import { MoreHorizontal } from "lucide-react";
+import * as React from "react";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Tenant, TenantStatus } from "@/types/central/tenant";
+import { TenantDialog } from "./tenant-dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useDeleteTenant } from "@/hooks/central/use-tenant-query";
+import { Guard } from "@/components/central/components/auth/guard";
+import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status";
+
+const statusVariantMap: Record<TenantStatus, React.ComponentProps<typeof Status>["variant"]> = {
+  active: "success",
+  pending: "warning",
+  suspended: "error",
+};
 
 export const columns: ColumnDef<Tenant>[] = [
   {
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -42,77 +37,78 @@ export const columns: ColumnDef<Tenant>[] = [
         aria-label="Select row"
       />
     ),
-    size: 32,
     enableSorting: false,
     enableHiding: false,
   },
   {
-    id: "name",
     accessorKey: "name",
-    header: ({ column }: { column: Column<Tenant, unknown> }) => (
-      <DataTableColumnHeader column={column} label="Name" />
-    ),
-    cell: ({ cell }) => <div>{cell.getValue<Tenant["name"]>()}</div>,
-    meta: {
-      label: "Name",
-      placeholder: "Search names...",
-      variant: "text",
-      icon: Text,
-    },
-    enableColumnFilter: true,
+    header: ({ column }) => <DataTableColumnHeader column={column} label="Name" />,
   },
   {
-    id: "status",
+    accessorKey: "email",
+    header: ({ column }) => <DataTableColumnHeader column={column} label="Email" />,
+  },
+  {
     accessorKey: "status",
-    header: ({ column }: { column: Column<Tenant, unknown> }) => (
-      <DataTableColumnHeader column={column} label="Status" />
-    ),
-    cell: ({ cell }) => {
-      const status = cell.getValue<Tenant["status"]>()
-      const Icon = status === "active" ? CheckCircle2 : XCircle
-
+    header: ({ column }) => <DataTableColumnHeader column={column} label="Status" />,
+    cell: ({ row }) => {
+      const status = row.original.status;
       return (
-        <Badge variant="outline" className="capitalize">
-          <Icon className="mr-2 h-4 w-4" />
-          {status}
-        </Badge>
-      )
+        <Status variant={statusVariantMap[status]}>
+          <StatusIndicator />
+          <StatusLabel>{status}</StatusLabel>
+        </Status>
+      );
     },
-    meta: {
-      label: "Status",
-      variant: "multiSelect",
-      options: [
-        { label: "Active", value: "active", icon: CheckCircle },
-        { label: "Inactive", value: "inactive", icon: XCircle },
-      ],
-    },
-    enableColumnFilter: true,
+  },
+  {
+    accessorKey: "created_at",
+    header: ({ column }) => <DataTableColumnHeader column={column} label="Created At" />,
+    cell: ({ row }) => new Date(row.original.created_at).toLocaleDateString(),
   },
   {
     id: "actions",
     cell: function Cell({ row }) {
-      const tenant = row.original
+      const tenant = row.original;
+      const deleteTenant = useDeleteTenant();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
+              <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             }
           ></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <TenantDialog tenant={tenant}>
-              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                Edit
-              </DropdownMenuItem>
-            </TenantDialog>
-            <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
+            <Guard permissions="tenants.update">
+              <TenantDialog tenant={tenant}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  Edit
+                </DropdownMenuItem>
+              </TenantDialog>
+            </Guard>
+            <Guard permissions="tenants.delete">
+              <ConfirmDialog
+                trigger={
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                }
+                title="Delete Tenant?"
+                description="This action cannot be undone. This will permanently delete the tenant."
+                onConfirm={() => deleteTenant.mutate(tenant.id)}
+                confirmText="Delete"
+                confirmVariant="outline"
+              />
+            </Guard>
           </DropdownMenuContent>
         </DropdownMenu>
       )
     },
-    size: 32,
   },
-]
+];

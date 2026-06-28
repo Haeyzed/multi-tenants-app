@@ -7,20 +7,21 @@ import {
 } from "@/lib/services/central/plan-service";
 import { Plan } from "@/types/central/plan";
 
-export const useGetPlans = () => {
+export const useGetPlans = (params?: {
+  search?: string;
+  is_active?: ("active" | "inactive")[];
+  per_page?: number;
+}) => {
   return useQuery({
-    queryKey: ["plans"],
-    queryFn: async () => {
-      const response = await getPlans();
-      return response.data;
-    },
+    queryKey: ["plans", params],
+    queryFn: () => getPlans(params),
   });
 };
 
 export const useCreatePlan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (plan: Omit<Plan, "id">) => createPlan(plan),
+    mutationFn: (plan: any) => createPlan(plan),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plans"] });
     },
@@ -30,7 +31,7 @@ export const useCreatePlan = () => {
 export const useUpdatePlan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, plan }: { id: string; plan: Partial<Omit<Plan, "id">> }) =>
+    mutationFn: ({ id, plan }: { id: number; plan: any }) =>
       updatePlan(id, plan),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plans"] });
@@ -41,7 +42,7 @@ export const useUpdatePlan = () => {
 export const useDeletePlan = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deletePlan(id),
+    mutationFn: (id: number) => deletePlan(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plans"] });
     },

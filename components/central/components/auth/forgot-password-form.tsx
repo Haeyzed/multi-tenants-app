@@ -1,48 +1,60 @@
-"use client"
+"use client";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from "next/link"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useForgotPassword } from "@/hooks/central/use-auth-query";
+import { forgotPasswordSchema } from "@/schemas/central/auth-schema";
+import Link from "next/link";
 
-export function ForgotPasswordForm({
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"form">) {
+export function ForgotPasswordForm() {
+  const forgotPasswordMutation = useForgotPassword();
+  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: "" },
+  });
+
+  const onSubmit = (values: z.infer<typeof forgotPasswordSchema>) => {
+    forgotPasswordMutation.mutate(values.email);
+  };
+
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
-      <div className="Skinner-center flex flex-col gap-2 text-center">
-        <h1 className="text-2xl font-bold">Forgot your password?</h1>
-        <p className="text-sm text-balance text-muted-foreground">
-          Enter your email address below and we&#39;ll send you a link to reset your
-          password.
-        </p>
-      </div>
-      <div className="grid gap-6">
-        <div className="grid gap-2">
-          <Label htmlFor="email">Email address</Label>
-          <Input
-            id="email"
-            type="email"
-            placeholder="m@example.com"
-            required
-            autoComplete="email"
-          />
-        </div>
-        <Button type="submit" className="w-full">
-          Send Reset Link
-        </Button>
-      </div>
-      <div className="text-center text-sm">
-        Remember your password?{" "}
-        <Link
-          href="/central/login"
-          className="underline underline-offset-4 hover:text-primary"
-        >
-          Login
-        </Link>
-      </div>
-    </form>
-  )
+    <div className="flex items-center justify-center min-h-screen">
+      <Card className="mx-auto max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">Forgot Password</CardTitle>
+          <CardDescription>
+            Enter your email and we&apos;ll send you a link to reset your password.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {forgotPasswordMutation.isSuccess ? (
+            <p>A password reset link has been sent to your email.</p>
+          ) : (
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <Field>
+                <FieldLabel>Email</FieldLabel>
+                <FieldContent>
+                  <Input placeholder="m@example.com" {...form.register("email")} />
+                  <FieldError errors={form.formState.errors.email ? [form.formState.errors.email] : []} />
+                </FieldContent>
+              </Field>
+              <Button type="submit" className="w-full" disabled={forgotPasswordMutation.isPending}>
+                {forgotPasswordMutation.isPending ? "Sending..." : "Send Reset Link"}
+              </Button>
+              <div className="mt-4 text-center text-sm">
+                <Link href="/central/login" legacyBehavior>
+                  <a className="underline">Back to login</a>
+                </Link>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

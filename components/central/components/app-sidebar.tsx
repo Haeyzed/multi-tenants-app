@@ -1,32 +1,23 @@
-"use client"
+"use client";
 
-import * as React from "react"
-
-import { NavMain } from "@/components/central/components/nav-main"
-import { NavUser } from "@/components/central/components/nav-user"
-import { TeamSwitcher } from "@/components/central/components/team-switcher"
+import * as React from "react";
+import { NavMain } from "@/components/central/components/nav-main";
+import { NavUser } from "@/components/central/components/nav-user";
+import { TeamSwitcher } from "@/components/central/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
-import { GalleryVerticalEndIcon, AudioLinesIcon, TerminalIcon, LayoutDashboard, Users, CreditCard } from "lucide-react"
+} from "@/components/ui/sidebar";
+import { GalleryVerticalEndIcon, LayoutDashboard, Users, CreditCard } from "lucide-react";
 
 const data = {
-  user: {
-    name: "Admin",
-    email: "admin@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   teams: [
     {
       name: "Central",
-      logo: (
-        <GalleryVerticalEndIcon
-        />
-      ),
+      logo: <GalleryVerticalEndIcon />,
       plan: "Enterprise",
     },
   ],
@@ -34,29 +25,20 @@ const data = {
     {
       title: "Dashboard",
       url: "/central/dashboard",
-      icon: (
-        <LayoutDashboard
-        />
-      ),
+      icon: <LayoutDashboard />,
     },
     {
       title: "Tenants",
       url: "/central/tenants",
-      icon: (
-        <Users
-        />
-      ),
+      icon: <Users />,
     },
     {
       title: "Plans",
       url: "/central/plans",
-      icon: (
-        <CreditCard
-        />
-      ),
+      icon: <CreditCard />,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -68,9 +50,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
