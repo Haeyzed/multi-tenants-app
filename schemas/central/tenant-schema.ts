@@ -6,7 +6,7 @@ export const tenantSchema = z.object({
   email: z.string().email("Invalid email").max(255).nullable().optional(),
   phone: z.string().max(30).nullable().optional(),
   plan: z.string().max(100).nullable().optional(),
-  trial_ends_at: z.string().datetime().nullable().optional(),
+  // trial_ends_at: z.string().datetime().nullable().optional(),
   subdomain: z.string().max(63).nullable().optional(),
   owner: z.object({
     name: z.string().min(1, "Owner name is required").max(255),
