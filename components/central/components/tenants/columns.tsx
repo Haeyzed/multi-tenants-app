@@ -4,7 +4,6 @@ import type { Column, ColumnDef } from "@tanstack/react-table"
 import {
   CheckCircle,
   CheckCircle2,
-  DollarSign,
   MoreHorizontal,
   Text,
   XCircle,
@@ -20,10 +19,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Plan } from "@/types/central/plan"
-import { PlanDialog } from "./plan-dialog"
+import { Tenant } from "@/types/central/tenant"
+import { TenantDialog } from "./tenant-dialog"
 
-export const columns: ColumnDef<Plan>[] = [
+export const columns: ColumnDef<Tenant>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -50,10 +49,10 @@ export const columns: ColumnDef<Plan>[] = [
   {
     id: "name",
     accessorKey: "name",
-    header: ({ column }: { column: Column<Plan, unknown> }) => (
+    header: ({ column }: { column: Column<Tenant, unknown> }) => (
       <DataTableColumnHeader column={column} label="Name" />
     ),
-    cell: ({ cell }) => <div>{cell.getValue<Plan["name"]>()}</div>,
+    cell: ({ cell }) => <div>{cell.getValue<Tenant["name"]>()}</div>,
     meta: {
       label: "Name",
       placeholder: "Search names...",
@@ -65,11 +64,11 @@ export const columns: ColumnDef<Plan>[] = [
   {
     id: "status",
     accessorKey: "status",
-    header: ({ column }: { column: Column<Plan, unknown> }) => (
+    header: ({ column }: { column: Column<Tenant, unknown> }) => (
       <DataTableColumnHeader column={column} label="Status" />
     ),
     cell: ({ cell }) => {
-      const status = cell.getValue<Plan["status"]>()
+      const status = cell.getValue<Tenant["status"]>()
       const Icon = status === "active" ? CheckCircle2 : XCircle
 
       return (
@@ -90,26 +89,9 @@ export const columns: ColumnDef<Plan>[] = [
     enableColumnFilter: true,
   },
   {
-    id: "price",
-    accessorKey: "price",
-    header: ({ column }: { column: Column<Plan, unknown> }) => (
-      <DataTableColumnHeader column={column} label="Price" />
-    ),
-    cell: ({ cell }) => {
-      const price = cell.getValue<Plan["price"]>()
-
-      return (
-        <div className="flex items-center gap-1">
-          <DollarSign className="size-4" />
-          {price.toLocaleString()}
-        </div>
-      )
-    },
-  },
-  {
     id: "actions",
     cell: function Cell({ row }) {
-      const plan = row.original
+      const tenant = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -121,11 +103,11 @@ export const columns: ColumnDef<Plan>[] = [
             }
           ></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <PlanDialog plan={plan}>
+            <TenantDialog tenant={tenant}>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 Edit
               </DropdownMenuItem>
-            </PlanDialog>
+            </TenantDialog>
             <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

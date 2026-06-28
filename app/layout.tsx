@@ -4,6 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import TanstackProvider from "@/lib/providers/tanstack-provider"
 import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -26,11 +27,13 @@ export default function RootLayout({
     >
     <body>
     <ThemeProvider>
-      <TooltipProvider>
-        <NuqsAdapter>
-          {children}
-        </NuqsAdapter>
-      </TooltipProvider>
+      <TanstackProvider>
+        <TooltipProvider>
+          <NuqsAdapter>
+            {children}
+          </NuqsAdapter>
+        </TooltipProvider>
+      </TanstackProvider>
     </ThemeProvider>
     </body>
     </html>

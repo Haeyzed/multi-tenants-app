@@ -6,12 +6,12 @@ import { DataTable } from "@/components/data-table/data-table";
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
 import { columns } from "./columns"
-import { useGetPlans } from "@/lib/hooks/use-plan-query";
-import { PlanDialog } from "./plan-dialog";
+import { useGetTenants } from "@/lib/hooks/use-tenant-query";
+import { TenantDialog } from "./tenant-dialog";
 import { Button } from "@/components/ui/button";
 
 export function DataTableDemo() {
-  const { data, isLoading } = useGetPlans();
+  const { data, isLoading } = useGetTenants();
   const [name] = useQueryState("name", parseAsString.withDefault(""));
   const [status] = useQueryState(
     "status",
@@ -33,9 +33,9 @@ export function DataTableDemo() {
     <div className="data-table-container">
       <DataTable table={table}>
         <DataTableToolbar table={table}>
-          <PlanDialog>
-            <Button>Create Plan</Button>
-          </PlanDialog>
+          <TenantDialog>
+            <Button>Create Tenant</Button>
+          </TenantDialog>
         </DataTableToolbar>
       </DataTable>
     </div>
