@@ -1,28 +1,21 @@
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { PlanDataTable } from "@/components/central/components/plans/data-table";
+"use client"
+
+import { PlansProvider } from "@/components/central/components/plans/plans-provider"
+import { PlansPrimaryButtons } from "@/components/central/components/plans/plans-primary-buttons"
+import { PlansTable } from "@/components/central/components/plans/plans-table"
+import { PlansDialogs } from "@/components/central/components/plans/plans-dialogs"
 
 export default function PlansPage() {
   return (
-    <>
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem className="hidden md:block">
-            <BreadcrumbLink href="/central">Central</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator className="hidden md:block" />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Plans</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-      <PlanDataTable />
-    </>
-  );
+    <PlansProvider>
+      <div className="flex flex-1 flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold tracking-tight">Plans</h1>
+          <PlansPrimaryButtons />
+        </div>
+        <PlansTable />
+        <PlansDialogs />
+      </div>
+    </PlansProvider>
+  )
 }

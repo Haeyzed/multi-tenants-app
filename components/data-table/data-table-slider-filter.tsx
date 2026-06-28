@@ -142,7 +142,7 @@ export function DataTableSliderFilter<TData>({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger render={
         <Button variant="outline" className="border-dashed font-normal">
           {columnFilterValue ? (
             <div
@@ -170,7 +170,7 @@ export function DataTableSliderFilter<TData>({
             </>
           ) : null}
         </Button>
-      </PopoverTrigger>
+      }/>
       <PopoverContent align="start" className="flex w-auto flex-col gap-4">
         <div className="flex flex-col gap-3">
           <p className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">

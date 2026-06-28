@@ -5,7 +5,6 @@ import {
   getPlans,
   updatePlan,
 } from "@/lib/services/central/plan-service";
-import { Plan } from "@/types/central/plan";
 
 export const useGetPlans = (params?: {
   search?: string;
