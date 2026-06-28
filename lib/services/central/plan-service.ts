@@ -1,27 +1,27 @@
-import { Plan } from "@/types/central/plan";
-import { apiClient } from "./api-client";
-import { PaginatedResponse } from "@/types/central/pagination";
-import { PlanFormValues } from "@/schemas/central/plan-schema";
+import { Plan } from "@/types/central/plan"
+import { apiClient } from "./api-client"
+import { PaginatedResponse } from "@/types/central/pagination"
+import { PlanFormValues } from "@/schemas/central/plan-schema"
 
 interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
+  success: boolean
+  message: string
+  data: T
   meta?: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-  };
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
 }
 
 export const getPlans = async (params?: {
-  search?: string;
-  is_active?: ("active" | "inactive")[];
-  per_page?: number;
-  page?: number;
+  search?: string
+  is_active?: ("active" | "inactive")[]
+  per_page?: number
+  page?: number
 }): Promise<PaginatedResponse<Plan>> => {
-  const response = await apiClient.get<ApiResponse<Plan[]>>('/plans', params);
+  const response = await apiClient.get<ApiResponse<Plan[]>>("/plans", params)
   return {
     data: response.data,
     meta: response.meta || {
@@ -30,33 +30,39 @@ export const getPlans = async (params?: {
       per_page: params?.per_page || 15,
       total: response.data.length,
     },
-  };
-};
+  }
+}
 
 export const getPlan = async (id: number): Promise<Plan> => {
-  const response = await apiClient.get<ApiResponse<Plan>>(`/plans/${id}`);
-  return response.data;
-};
+  const response = await apiClient.get<ApiResponse<Plan>>(`/plans/${id}`)
+  return response.data
+}
 
 export const createPlan = async (plan: PlanFormValues): Promise<Plan> => {
   // Ensure limits is always string[] for API
   const payload = {
     ...plan,
     limits: Array.isArray(plan.limits) ? plan.limits : [],
-  };
-  const response = await apiClient.post<ApiResponse<Plan>>("/plans", payload);
-  return response.data;
-};
+  }
+  const response = await apiClient.post<ApiResponse<Plan>>("/plans", payload)
+  return response.data
+}
 
-export const updatePlan = async (id: number, plan: PlanFormValues): Promise<Plan> => {
+export const updatePlan = async (
+  id: number,
+  plan: PlanFormValues
+): Promise<Plan> => {
   const payload = {
     ...plan,
     limits: Array.isArray(plan.limits) ? plan.limits : [],
-  };
-  const response = await apiClient.put<ApiResponse<Plan>>(`/plans/${id}`, payload);
-  return response.data;
-};
+  }
+  const response = await apiClient.put<ApiResponse<Plan>>(
+    `/plans/${id}`,
+    payload
+  )
+  return response.data
+}
 
 export const deletePlan = async (id: number): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>(`/plans/${id}`);
-};
+  await apiClient.delete<ApiResponse<void>>(`/plans/${id}`)
+}

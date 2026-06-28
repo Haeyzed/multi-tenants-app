@@ -4,33 +4,33 @@ class ApiError extends Error {
     public status: number,
     public errors?: Record<string, string[]>
   ) {
-    super(message);
-    this.name = "ApiError";
+    super(message)
+    this.name = "ApiError"
   }
 }
 
 class ApiClient {
-  private baseURL: string;
-  private token: string | null = null;
+  private baseURL: string
+  private token: string | null = null
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_CENTRAL_API_URL || "";
+    this.baseURL = process.env.NEXT_PUBLIC_CENTRAL_API_URL || ""
     if (typeof window !== "undefined") {
-      this.token = localStorage.getItem("token");
+      this.token = localStorage.getItem("token")
     }
   }
 
   public setToken(token: string | null) {
-    this.token = token;
+    this.token = token
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token)
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem("token")
     }
   }
 
   public getToken(): string | null {
-    return this.token;
+    return this.token
   }
 
   private async request<T>(
@@ -42,61 +42,62 @@ class ApiClient {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       Accept: "application/json",
-    };
-
-    if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`;
     }
 
-    let url = `${this.baseURL}${path}`;
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    let url = `${this.baseURL}${path}`
     if (params) {
       const filteredParams = Object.fromEntries(
         Object.entries(params).filter(([, v]) => v !== undefined && v !== null)
-      );
-      const query = new URLSearchParams(filteredParams).toString();
-      if (query) url += `?${query}`;
+      )
+      const query = new URLSearchParams(filteredParams).toString()
+      if (query) url += `?${query}`
     }
 
     const response = await fetch(url, {
       method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
-    });
+    })
 
-    const responseData = await response.json().catch(() => null);
+    const responseData = await response.json().catch(() => null)
 
     if (!response.ok) {
       throw new ApiError(
-        responseData?.message || `HTTP ${response.status}: ${response.statusText}`,
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
         response.status,
         responseData?.errors
-      );
+      )
     }
 
     // Return the FULL response body (including success, message, data, meta)
-    return responseData as T;
+    return responseData as T
   }
 
   public get<T>(path: string, params?: Record<string, any>): Promise<T> {
-    return this.request<T>("GET", path, undefined, params);
+    return this.request<T>("GET", path, undefined, params)
   }
 
   public post<T>(path: string, body: unknown): Promise<T> {
-    return this.request<T>("POST", path, body);
+    return this.request<T>("POST", path, body)
   }
 
   public put<T>(path: string, body: unknown): Promise<T> {
-    return this.request<T>("PUT", path, body);
+    return this.request<T>("PUT", path, body)
   }
 
   public patch<T>(path: string, body: unknown): Promise<T> {
-    return this.request<T>("PATCH", path, body);
+    return this.request<T>("PATCH", path, body)
   }
 
   public delete<T>(path: string): Promise<T> {
-    return this.request<T>("DELETE", path);
+    return this.request<T>("DELETE", path)
   }
 }
 
-export const apiClient = new ApiClient();
-export { ApiError };
+export const apiClient = new ApiClient()
+export { ApiError }

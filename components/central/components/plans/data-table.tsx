@@ -1,47 +1,55 @@
-"use client"
+"use client";
 
 import {
   parseAsArrayOf,
   parseAsInteger,
   parseAsString,
   useQueryState,
-} from "nuqs"
-import * as React from "react"
-import { DataTable } from "@/components/data-table/data-table"
-import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
-import { useDataTable } from "@/hooks/use-data-table"
-import { columns } from "./columns"
-import { useGetPlans } from "@/hooks/central/use-plan-query"
-import { PlanDialog } from "./plan-dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Guard } from "@/components/central/components/auth/guard"
+} from "nuqs";
+import * as React from "react";
+import { DataTable } from "@/components/data-table/data-table";
+import { DataTableToolbar } from "@/components/data-table/data-table-toolbar";
+import { useDataTable } from "@/hooks/use-data-table";
+import { columns } from "./columns";
+import { useGetPlans } from "@/hooks/central/use-plan-query";
+import { PlanDialog } from "./plan-dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Guard } from "@/components/central/components/auth/guard";
 
 export function PlanDataTable() {
   const [search, setSearch] = useQueryState(
     "search",
     parseAsString.withDefault("")
-  )
+  );
   const [isActive, setIsActive] = useQueryState(
     "is_active",
     parseAsArrayOf(parseAsString).withDefault([])
-  )
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1))
+  );
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [perPage, setPerPage] = useQueryState(
     "per_page",
     parseAsInteger.withDefault(15)
-  )
+  );
 
-  const { data, isLoading } = useGetPlans({
+  const { data, isLoading, error } = useGetPlans({
     search: search || undefined,
     is_active:
       isActive.length > 0 ? (isActive as ("active" | "inactive")[]) : undefined,
     per_page: perPage,
     page,
-  })
+  });
+
+  // Debug logging - remove in production
+  React.useEffect(() => {
+    console.log("[PlanDataTable] Raw data:", data);
+    console.log("[PlanDataTable] Error:", error);
+  }, [data, error]);
+
+  const tableData = data?.data || [];
 
   const { table } = useDataTable({
-    data: data?.data || [],
+    data: tableData,
     columns,
     pageCount: data?.meta?.last_page || 1,
     initialState: {
@@ -49,7 +57,13 @@ export function PlanDataTable() {
       columnPinning: { left: ["select", "name"], right: ["actions"] },
     },
     getRowId: (row) => String(row.id),
-  })
+  });
+
+  // Debug table state
+  React.useEffect(() => {
+    console.log("[PlanDataTable] Table rows:", table.getRowModel().rows.length);
+    console.log("[PlanDataTable] Table data:", table.getRowModel().rows.map(r => r.original));
+  }, [table]);
 
   return (
     <div className="space-y-4">
@@ -60,7 +74,7 @@ export function PlanDataTable() {
               placeholder="Search plans..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-[250px]"
+              className="w-62.5"
             />
             <Guard permissions="plans.create">
               <PlanDialog>
@@ -75,6 +89,16 @@ export function PlanDataTable() {
           Loading plans...
         </div>
       )}
+      {error && (
+        <div className="py-8 text-center text-destructive">
+          Error: {error.message}
+        </div>
+      )}
+      {!isLoading && tableData.length === 0 && (
+        <div className="py-8 text-center text-muted-foreground">
+          No plans found.
+        </div>
+      )}
     </div>
-  )
+  );
 }

@@ -11,6 +11,7 @@ export const useGetPlans = (params?: {
   search?: string;
   is_active?: ("active" | "inactive")[];
   per_page?: number;
+  page?: number;
 }) => {
   return useQuery({
     queryKey: ["plans", params],

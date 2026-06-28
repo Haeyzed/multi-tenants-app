@@ -25,6 +25,18 @@ function FieldError({ message }: { message?: string }) {
   return <p className="text-sm text-destructive mt-1">{message}</p>;
 }
 
+/** Convert limits to string array for form editing */
+function normalizeLimits(limits: Plan["limits"]): string[] {
+  if (Array.isArray(limits)) return limits;
+  if (limits && typeof limits === "object") {
+    // Convert object limits to display strings (read-only)
+    return Object.entries(limits).map(
+      ([key, val]) => `${key}: ${val ?? "unlimited"}`
+    );
+  }
+  return [];
+}
+
 export function PlanForm({ plan, onSubmit, isSubmitting = false }: PlanFormProps) {
   const [featureInput, setFeatureInput] = useState("");
   const [limitInput, setLimitInput] = useState("");
@@ -44,7 +56,7 @@ export function PlanForm({ plan, onSubmit, isSubmitting = false }: PlanFormProps
         paystack_plan_code: plan.paystack_plan_code,
         paypal_plan_id: plan.paypal_plan_id,
         flutterwave_plan_id: plan.flutterwave_plan_id,
-        limits: Array.isArray(plan.limits) ? plan.limits : [],
+        limits: normalizeLimits(plan.limits),
         is_active: plan.is_active,
         is_featured: plan.is_featured,
         sort_order: plan.sort_order,
@@ -89,7 +101,7 @@ export function PlanForm({ plan, onSubmit, isSubmitting = false }: PlanFormProps
 
   const addLimit = () => {
     if (limitInput.trim()) {
-      form.setValue("limits", [...limits, limitInput.trim()]);
+      form.setValue("limits", [...(limits as string[]), limitInput.trim()]);
       setLimitInput("");
     }
   };
@@ -97,7 +109,7 @@ export function PlanForm({ plan, onSubmit, isSubmitting = false }: PlanFormProps
   const removeLimit = (index: number) => {
     form.setValue(
       "limits",
-      limits.filter((_, i) => i !== index)
+      (limits as string[]).filter((_, i) => i !== index)
     );
   };
 
@@ -256,21 +268,21 @@ export function PlanForm({ plan, onSubmit, isSubmitting = false }: PlanFormProps
             </Button>
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
-            {limits.map((limit, index) => (
+            {(limits as string[]).map((limit, index) => (
               <span
                 key={index}
                 className="inline-flex items-center gap-1 px-2 py-1 bg-secondary text-secondary-foreground text-sm rounded-md"
               >
-          {typeof limit === "string" ? limit : JSON.stringify(limit)}
+                {limit}
                 <button type="button" onClick={() => removeLimit(index)} className="hover:text-destructive">
-            <X className="size-3" />
-          </button>
-        </span>
+                  <X className="size-3" />
+                </button>
+              </span>
             ))}
           </div>
-          {Array.isArray(plan?.limits) === false && plan?.limits && (
+          {plan && !Array.isArray(plan.limits) && plan.limits && (
             <p className="text-xs text-muted-foreground mt-1">
-              Note: Existing limits are object-based and cannot be edited in this form.
+              Original limits were object-based and converted to strings for editing.
             </p>
           )}
         </FieldContent>

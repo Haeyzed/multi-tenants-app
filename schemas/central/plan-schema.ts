@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "zod";
 
 export const planSchema = z.object({
   slug: z.string().min(1, "Slug is required").max(100),
@@ -12,14 +12,14 @@ export const planSchema = z.object({
   paystack_plan_code: z.string().max(255).nullable().optional(),
   paypal_plan_id: z.string().max(255).nullable().optional(),
   flutterwave_plan_id: z.string().max(255).nullable().optional(),
-  limits: z
-    .union([z.record(z.number().nullable()), z.array(z.string())])
-    .nullable()
-    .optional(),
+  limits: z.union([
+    z.record(z.number().nullable()),
+    z.array(z.string())
+  ]).nullable().optional(),
   is_active: z.boolean().default(true),
   is_featured: z.boolean().default(false),
   sort_order: z.coerce.number().min(0).default(0),
   features: z.array(z.string().max(255)).nullable().optional(),
-})
+});
 
-export type PlanFormValues = z.infer<typeof planSchema>
+export type PlanFormValues = z.infer<typeof planSchema>;

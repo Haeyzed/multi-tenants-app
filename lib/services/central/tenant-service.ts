@@ -1,61 +1,123 @@
-import { Tenant } from "@/types/central/tenant";
-import { Domain } from "@/types/central/domain";
-import { apiClient } from "./api-client";
-import { PaginatedResponse } from "@/types/central/pagination";
-import { TenantFormValues, UpdateTenantFormValues } from "@/schemas/central/tenant-schema";
+import { Tenant } from "@/types/central/tenant"
+import { Domain } from "@/types/central/domain"
+import { apiClient } from "./api-client"
+import { PaginatedResponse } from "@/types/central/pagination"
+import {
+  TenantFormValues,
+  UpdateTenantFormValues,
+} from "@/schemas/central/tenant-schema"
+
+interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+  meta?: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+}
 
 export const getTenants = async (params?: {
-  search?: string;
-  status?: ("pending" | "active" | "suspended")[];
-  per_page?: number;
-  page?: number;
+  search?: string
+  status?: ("pending" | "active" | "suspended")[]
+  per_page?: number
+  page?: number
 }): Promise<PaginatedResponse<Tenant>> => {
-  return apiClient.get<PaginatedResponse<Tenant>>("/tenants", params);
-};
+  const response = await apiClient.get<ApiResponse<Tenant[]>>(
+    "/tenants",
+    params
+  )
+  return {
+    data: response.data,
+    meta: response.meta || {
+      current_page: 1,
+      last_page: 1,
+      per_page: params?.per_page || 15,
+      total: response.data.length,
+    },
+  }
+}
 
 export const getTenant = async (id: string): Promise<Tenant> => {
-  return apiClient.get<Tenant>(`/tenants/${id}`);
-};
+  const response = await apiClient.get<ApiResponse<Tenant>>(`/tenants/${id}`)
+  return response.data
+}
 
-export const createTenant = async (tenant: TenantFormValues): Promise<Tenant> => {
-  return apiClient.post<Tenant>("/tenants", tenant);
-};
+export const createTenant = async (
+  tenant: TenantFormValues
+): Promise<Tenant> => {
+  const response = await apiClient.post<ApiResponse<Tenant>>("/tenants", tenant)
+  return response.data
+}
 
-export const updateTenant = async (id: string, tenant: UpdateTenantFormValues): Promise<Tenant> => {
-  return apiClient.put<Tenant>(`/tenants/${id}`, tenant);
-};
+export const updateTenant = async (
+  id: string,
+  tenant: UpdateTenantFormValues
+): Promise<Tenant> => {
+  const response = await apiClient.put<ApiResponse<Tenant>>(
+    `/tenants/${id}`,
+    tenant
+  )
+  return response.data
+}
 
 export const deleteTenant = async (id: string): Promise<void> => {
-  await apiClient.delete<void>(`/tenants/${id}`);
-};
+  await apiClient.delete<ApiResponse<void>>(`/tenants/${id}`)
+}
 
 export const getTenantStatistics = async (): Promise<{
-  total: number;
-  active: number;
-  suspended: number;
-  pending: number;
+  total: number
+  active: number
+  suspended: number
+  pending: number
 }> => {
-  return apiClient.get("/tenants/statistics");
-};
+  const response = await apiClient.get<
+    ApiResponse<{
+      total: number
+      active: number
+      suspended: number
+      pending: number
+    }>
+  >("/tenants/statistics")
+  return response.data
+}
 
 export const activateTenant = async (id: string): Promise<Tenant> => {
-  return apiClient.post<Tenant>(`/tenants/${id}/activate`, {});
-};
+  const response = await apiClient.post<ApiResponse<Tenant>>(
+    `/tenants/${id}/activate`,
+    {}
+  )
+  return response.data
+}
 
 export const suspendTenant = async (id: string): Promise<Tenant> => {
-  return apiClient.post<Tenant>(`/tenants/${id}/suspend`, {});
-};
+  const response = await apiClient.post<ApiResponse<Tenant>>(
+    `/tenants/${id}/suspend`,
+    {}
+  )
+  return response.data
+}
 
 export const addTenantDomain = async (
   id: string,
   domain: { domain: string; is_primary?: boolean }
 ): Promise<Domain> => {
-  return apiClient.post<Domain>(`/tenants/${id}/domains`, domain);
-};
+  const response = await apiClient.post<ApiResponse<Domain>>(
+    `/tenants/${id}/domains`,
+    domain
+  )
+  return response.data
+}
 
 export const verifyTenantDomain = async (
   tenantId: string,
   domainId: number
 ): Promise<Domain> => {
-  return apiClient.post<Domain>(`/tenants/${tenantId}/domains/${domainId}/verify`, {});
-};
+  const response = await apiClient.post<ApiResponse<Domain>>(
+    `/tenants/${tenantId}/domains/${domainId}/verify`,
+    {}
+  )
+  return response.data
+}
