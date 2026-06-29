@@ -21,5 +21,5 @@ export const updateTenantSchema = tenantSchema.omit({
   slug: true,
 })
 
-export type TenantFormValues = z.infer<typeof tenantSchema>
+export type StoreTenantFormValues = z.infer<typeof tenantSchema>
 export type UpdateTenantFormValues = z.infer<typeof updateTenantSchema>

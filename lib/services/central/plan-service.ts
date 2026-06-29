@@ -1,7 +1,7 @@
 import { Plan } from "@/types/central/plan"
 import { apiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
-import { PlanFormValues } from "@/schemas/central/plan-schema"
+import { PlanForm } from "@/schemas/central/plan-schema"
 
 interface ApiResponse<T> {
   success: boolean
@@ -38,7 +38,7 @@ export const getPlan = async (id: number): Promise<Plan> => {
   return response.data
 }
 
-export const createPlan = async (plan: PlanFormValues): Promise<Plan> => {
+export const createPlan = async (plan: PlanForm): Promise<Plan> => {
   // Ensure limits is always string[] for API
   const payload = {
     ...plan,
@@ -50,7 +50,7 @@ export const createPlan = async (plan: PlanFormValues): Promise<Plan> => {
 
 export const updatePlan = async (
   id: number,
-  plan: PlanFormValues
+  plan: PlanForm
 ): Promise<Plan> => {
   const payload = {
     ...plan,

@@ -10,7 +10,7 @@ class ApiError extends Error {
 }
 
 class ApiClient {
-  private baseURL: string
+  private readonly baseURL: string
   private token: string | null = null
 
   constructor() {

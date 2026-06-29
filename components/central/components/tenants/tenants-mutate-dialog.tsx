@@ -25,7 +25,7 @@ import {
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { useCreateTenant, useUpdateTenant } from "@/hooks/central/use-tenant-query"
 import { type Tenant } from "@/types/central/tenant"
-import { tenantSchema, updateTenantSchema, type TenantFormValues, type UpdateTenantFormValues } from "@/schemas/central/tenant-schema"
+import { tenantSchema, updateTenantSchema, type StoreTenantFormValues, type UpdateTenantFormValues } from "@/schemas/central/tenant-schema"
 
 type TenantsMutateDialogProps = {
   open: boolean
@@ -50,7 +50,7 @@ export function TenantsMutateDialog({
 
   const schema = isUpdate ? updateTenantSchema : tenantSchema
 
-  const form = useForm<TenantFormValues | UpdateTenantFormValues>({
+  const form = useForm<StoreTenantFormValues | UpdateTenantFormValues>({
     resolver: zodResolver(schema),
     defaultValues: currentRow
       ? {
@@ -72,7 +72,7 @@ export function TenantsMutateDialog({
       },
   })
 
-  const onSubmit = (data: TenantFormValues | UpdateTenantFormValues) => {
+  const onSubmit = (data: StoreTenantFormValues | UpdateTenantFormValues) => {
     if (isUpdate && currentRow) {
       updateTenant.mutate(
         { id: currentRow.id, tenant: data as UpdateTenantFormValues },
@@ -88,7 +88,7 @@ export function TenantsMutateDialog({
         }
       )
     } else {
-      createTenant.mutate(data as TenantFormValues, {
+      createTenant.mutate(data as StoreTenantFormValues, {
         onSuccess: () => {
           toast.success("Tenant created successfully")
           onOpenChange(false)

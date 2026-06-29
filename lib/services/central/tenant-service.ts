@@ -3,7 +3,7 @@ import { Domain } from "@/types/central/domain"
 import { apiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
-  TenantFormValues,
+  StoreTenantFormValues,
   UpdateTenantFormValues,
 } from "@/schemas/central/tenant-schema"
 
@@ -46,7 +46,7 @@ export const getTenant = async (id: string): Promise<Tenant> => {
 }
 
 export const createTenant = async (
-  tenant: TenantFormValues
+  tenant: StoreTenantFormValues
 ): Promise<Tenant> => {
   const response = await apiClient.post<ApiResponse<Tenant>>("/tenants", tenant)
   return response.data
