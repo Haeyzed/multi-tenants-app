@@ -11,6 +11,7 @@ import { loginSchema } from "@/schemas/central/auth-schema";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
   const router = useRouter();
@@ -56,7 +57,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
             </Link>
           </div>
           <FieldContent>
-            <Input type="password" {...form.register("password")} />
+            <PasswordInput {...form.register("password")} />
             <FieldError errors={form.formState.errors.password ? [form.formState.errors.password] : []} />
           </FieldContent>
         </Field>

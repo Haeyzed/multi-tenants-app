@@ -1,4 +1,4 @@
-import { Plan } from "@/types/central/plan"
+import { Plan, PlanOption } from "@/types/central/plan"
 import { apiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import { PlanForm } from "@/schemas/central/plan-schema"
@@ -66,3 +66,8 @@ export const updatePlan = async (
 export const deletePlan = async (id: number): Promise<void> => {
   await apiClient.delete<ApiResponse<void>>(`/plans/${id}`)
 }
+
+export const getPlanOptions = async (): Promise<PlanOption[]> => {
+  const response = await apiClient.get<ApiResponse<PlanOption[]>>("/plans/options");
+  return response.data;
+};

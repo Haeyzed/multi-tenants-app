@@ -26,6 +26,10 @@ import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { useCreateTenant, useUpdateTenant } from "@/hooks/central/use-tenant-query"
 import { type Tenant } from "@/types/central/tenant"
 import { tenantSchema, updateTenantSchema, type StoreTenantFormValues, type UpdateTenantFormValues } from "@/schemas/central/tenant-schema"
+import { PhoneInput, PhoneInputCountrySelect, PhoneInputField } from "@/components/ui/phone-input"
+import { useGetPlanOptions } from "@/hooks/central/use-plan-query"
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import { PlanOption } from "@/types/central/plan"
 
 type TenantsMutateDialogProps = {
   open: boolean
@@ -46,6 +50,7 @@ export function TenantsMutateDialog({
   const isUpdate = !!currentRow
   const createTenant = useCreateTenant()
   const updateTenant = useUpdateTenant()
+  const { data: planOptions, isLoading: isLoadingPlans } = useGetPlanOptions()
   const isSubmitting = createTenant.isPending || updateTenant.isPending
 
   const schema = isUpdate ? updateTenantSchema : tenantSchema
@@ -58,7 +63,7 @@ export function TenantsMutateDialog({
         email: currentRow.email || "",
         phone: currentRow.phone || "",
         plan: currentRow.plan || "",
-        // trial_ends_at: currentRow.trial_ends_at || "",
+        trial_ends_at: currentRow.trial_ends_at || "",
       }
       : {
         name: "",
@@ -66,7 +71,7 @@ export function TenantsMutateDialog({
         email: "",
         phone: "",
         plan: "",
-        // trial_ends_at: "",
+        trial_ends_at: "",
         subdomain: "",
         owner: { name: "", email: "", phone: "" },
       },
@@ -100,6 +105,8 @@ export function TenantsMutateDialog({
       })
     }
   }
+
+  const selectedPlan = planOptions?.find(option => option.value === form.watch("plan"));
 
   return (
     <ResponsiveDialog
@@ -155,7 +162,11 @@ export function TenantsMutateDialog({
             <Field>
               <FieldLabel>Phone</FieldLabel>
               <FieldContent>
-                <Input placeholder="+1234567890" {...form.register("phone")} />
+                <PhoneInput {...form.register("phone")} required
+                >
+                  <PhoneInputCountrySelect />
+                  <PhoneInputField />
+                </PhoneInput>
                 <FieldError message={form.formState.errors.phone?.message} />
               </FieldContent>
             </Field>
@@ -165,17 +176,36 @@ export function TenantsMutateDialog({
             <Field>
               <FieldLabel>Plan</FieldLabel>
               <FieldContent>
-                <Input placeholder="pro" {...form.register("plan")} />
+                <Combobox
+                  items={planOptions || []}
+                  itemToStringValue={(plan:PlanOption) => plan.label}
+                  value={selectedPlan}
+                  onValueChange={(item) => {
+                    form.setValue("plan", item ? item.value : "");
+                  }}
+                >
+                  <ComboboxInput placeholder="Select a plan..." />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No plans found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(plan) => (
+                        <ComboboxItem key={plan.value} value={plan}>
+                          {plan.label}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
                 <FieldError message={form.formState.errors.plan?.message} />
               </FieldContent>
             </Field>
-            {/*<Field>*/}
-            {/*  <FieldLabel>Trial Ends At</FieldLabel>*/}
-            {/*  <FieldContent>*/}
-            {/*    <Input type="datetime-local" {...form.register("trial_ends_at")} />*/}
-            {/*    <FieldError message={form.formState.errors.trial_ends_at?.message} />*/}
-            {/*  </FieldContent>*/}
-            {/*</Field>*/}
+            <Field>
+              <FieldLabel>Trial Ends At</FieldLabel>
+              <FieldContent>
+                <Input type="datetime-local" {...form.register("trial_ends_at")} />
+                <FieldError message={form.formState.errors.trial_ends_at?.message} />
+              </FieldContent>
+            </Field>
           </div>
 
           {!isUpdate && (
@@ -212,7 +242,11 @@ export function TenantsMutateDialog({
                   <Field>
                     <FieldLabel>Owner Phone</FieldLabel>
                     <FieldContent>
-                      <Input placeholder="+1234567890" {...form.register("owner.phone")} />
+                      <PhoneInput {...form.register("owner.phone")} required
+                      >
+                        <PhoneInputCountrySelect />
+                        <PhoneInputField />
+                      </PhoneInput>
                       <FieldError message={(form.formState.errors as any).owner?.phone?.message} />
                     </FieldContent>
                   </Field>

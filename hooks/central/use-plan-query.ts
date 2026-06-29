@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createPlan,
   deletePlan,
+  getPlanOptions,
   getPlans,
   updatePlan,
 } from "@/lib/services/central/plan-service";
@@ -46,5 +47,12 @@ export const useDeletePlan = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plans"] });
     },
+  });
+};
+
+export const useGetPlanOptions = () => {
+  return useQuery({
+    queryKey: ["planOptions"],
+    queryFn: () => getPlanOptions(),
   });
 };

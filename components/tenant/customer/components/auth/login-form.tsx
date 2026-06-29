@@ -8,6 +8,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 
 export function LoginForm({
   className,
@@ -36,7 +37,7 @@ export function LoginForm({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <PasswordInput id="password" required />
         </Field>
         <Field>
           <Button type="submit">Login</Button>

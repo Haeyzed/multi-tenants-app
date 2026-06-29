@@ -19,3 +19,8 @@ export interface Plan {
   created_at: string;
   updated_at: string;
 }
+
+export interface PlanOption {
+  label: string;
+  value: string;
+}
