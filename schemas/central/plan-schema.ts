@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const planSchema = z.object({
+const basePlanSchema = z.object({
   slug: z.string().min(1, "Slug is required").max(100),
   name: z.string().min(1, "Name is required").max(150),
   description: z.string().max(2000).nullable().optional(),
@@ -22,4 +22,11 @@ export const planSchema = z.object({
   features: z.array(z.string().max(255)).nullable().optional(),
 })
 
-export type PlanForm = z.infer<typeof planSchema>
+export const storePlanSchema = basePlanSchema
+
+export const updatePlanSchema = basePlanSchema.omit({
+  slug: true,
+})
+
+export type StorePlanFormValues = z.infer<typeof storePlanSchema>
+export type UpdatePlanFormValues = z.infer<typeof updatePlanSchema>

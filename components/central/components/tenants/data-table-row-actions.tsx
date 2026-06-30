@@ -1,4 +1,12 @@
-import { MoreHorizontal, Trash2 } from "lucide-react"
+import {
+  MoreHorizontal,
+  Trash2,
+  Eye,
+  Globe,
+  PlayCircle,
+  PauseCircle,
+  Edit,
+} from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -36,7 +44,17 @@ export function DataTableRowActions<TData>({
           </Button>
         }
       />
-      <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(tenant)
+            setOpen("view")
+          }}
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          View Details
+        </DropdownMenuItem>
+
         <Guard permissions="tenants.update">
           <DropdownMenuItem
             onClick={() => {
@@ -44,21 +62,61 @@ export function DataTableRowActions<TData>({
               setOpen("update")
             }}
           >
+            <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
         </Guard>
+
+        <Guard permissions="domains.create">
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(tenant)
+              setOpen("add-domain")
+            }}
+          >
+            <Globe className="mr-2 h-4 w-4" />
+            Manage Domains
+          </DropdownMenuItem>
+        </Guard>
+
         <DropdownMenuSeparator />
+
+        <Guard permissions="tenants.update">
+          {tenant.status === "active" ? (
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(tenant)
+                setOpen("suspend")
+              }}
+            >
+              <PauseCircle className="text-warning mr-2 h-4 w-4" />
+              Suspend
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              onClick={() => {
+                setCurrentRow(tenant)
+                setOpen("activate")
+              }}
+            >
+              <PlayCircle className="text-success mr-2 h-4 w-4" />
+              Activate
+            </DropdownMenuItem>
+          )}
+        </Guard>
+
+        <DropdownMenuSeparator />
+
         <Guard permissions="tenants.delete">
           <DropdownMenuItem
             onClick={() => {
               setCurrentRow(tenant)
               setOpen("delete")
             }}
+            className="text-destructive focus:text-destructive"
           >
+            <Trash2 className="mr-2 h-4 w-4" />
             Delete
-            <DropdownMenuShortcut>
-              <Trash2 size={16} />
-            </DropdownMenuShortcut>
           </DropdownMenuItem>
         </Guard>
       </DropdownMenuContent>

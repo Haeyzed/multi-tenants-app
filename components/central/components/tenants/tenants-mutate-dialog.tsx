@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
@@ -23,13 +23,34 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
-import { useCreateTenant, useUpdateTenant } from "@/hooks/central/use-tenant-query"
+import {
+  useCreateTenant,
+  useUpdateTenant,
+} from "@/hooks/central/use-tenant-query"
 import { type Tenant } from "@/types/central/tenant"
-import { tenantSchema, updateTenantSchema, type StoreTenantFormValues, type UpdateTenantFormValues } from "@/schemas/central/tenant-schema"
-import { PhoneInput, PhoneInputCountrySelect, PhoneInputField } from "@/components/ui/phone-input"
+import {
+  tenantSchema,
+  updateTenantSchema,
+  type StoreTenantFormValues,
+  type UpdateTenantFormValues,
+} from "@/schemas/central/tenant-schema"
 import { useGetPlanOptions } from "@/hooks/central/use-plan-query"
-import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { PlanOption } from "@/types/central/plan"
+import { PhoneInput } from "@/components/ui/phone-input"
+import {
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  InputGroupText,
+} from "@/components/ui/input-group"
 
 type TenantsMutateDialogProps = {
   open: boolean
@@ -39,14 +60,14 @@ type TenantsMutateDialogProps = {
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
-  return <p className="text-sm text-destructive mt-1">{message}</p>
+  return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
 export function TenantsMutateDialog({
-                                    open,
-                                    onOpenChange,
-                                    currentRow,
-                                  }: TenantsMutateDialogProps) {
+                                      open,
+                                      onOpenChange,
+                                      currentRow,
+                                    }: TenantsMutateDialogProps) {
   const isUpdate = !!currentRow
   const createTenant = useCreateTenant()
   const updateTenant = useUpdateTenant()
@@ -77,6 +98,24 @@ export function TenantsMutateDialog({
       },
   })
 
+  // Watch the name field to automatically generate the slug
+  const nameValue = form.watch("name")
+
+  React.useEffect(() => {
+    if (!isUpdate && nameValue) {
+      // Convert name to a URL-friendly slug
+      const generatedSlug = nameValue
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric chars with hyphens
+        .replace(/(^-|-$)+/g, "") // Remove leading or trailing hyphens
+
+      form.setValue("slug", generatedSlug, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
+    }
+  }, [nameValue, isUpdate, form])
+
   const onSubmit = (data: StoreTenantFormValues | UpdateTenantFormValues) => {
     if (isUpdate && currentRow) {
       updateTenant.mutate(
@@ -105,8 +144,6 @@ export function TenantsMutateDialog({
       })
     }
   }
-
-  const selectedPlan = planOptions?.find(option => option.value === form.watch("plan"));
 
   return (
     <ResponsiveDialog
@@ -146,7 +183,9 @@ export function TenantsMutateDialog({
               <FieldLabel>Slug</FieldLabel>
               <FieldContent>
                 <Input placeholder="acme-inc" {...form.register("slug")} />
-                <FieldError message={(form.formState.errors as any).slug?.message} />
+                <FieldError
+                  message={(form.formState.errors as any).slug?.message}
+                />
               </FieldContent>
             </Field>
           )}
@@ -155,18 +194,28 @@ export function TenantsMutateDialog({
             <Field>
               <FieldLabel>Email</FieldLabel>
               <FieldContent>
-                <Input placeholder="contact@acme.inc" {...form.register("email")} />
+                <Input
+                  placeholder="contact@acme.inc"
+                  {...form.register("email")}
+                />
                 <FieldError message={form.formState.errors.email?.message} />
               </FieldContent>
             </Field>
             <Field>
               <FieldLabel>Phone</FieldLabel>
               <FieldContent>
-                <PhoneInput {...form.register("phone")} required
-                >
-                  <PhoneInputCountrySelect />
-                  <PhoneInputField />
-                </PhoneInput>
+                <Controller
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <PhoneInput
+                      placeholder="Enter phone number"
+                      defaultCountry="NG"
+                      value={field.value ?? undefined}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
                 <FieldError message={form.formState.errors.phone?.message} />
               </FieldContent>
             </Field>
@@ -178,10 +227,10 @@ export function TenantsMutateDialog({
               <FieldContent>
                 <Combobox
                   items={planOptions || []}
-                  itemToStringValue={(plan:PlanOption) => plan.label}
-                  value={selectedPlan}
+                  itemToStringValue={(plan: PlanOption) => plan.label}
+                  // value={form.watch("plan")}
                   onValueChange={(item) => {
-                    form.setValue("plan", item ? item.value : "");
+                    form.setValue("plan", item ? item.value : "")
                   }}
                 >
                   <ComboboxInput placeholder="Select a plan..." />
@@ -202,8 +251,25 @@ export function TenantsMutateDialog({
             <Field>
               <FieldLabel>Trial Ends At</FieldLabel>
               <FieldContent>
-                <Input type="datetime-local" {...form.register("trial_ends_at")} />
-                <FieldError message={form.formState.errors.trial_ends_at?.message} />
+                <Controller
+                  control={form.control}
+                  name="trial_ends_at"
+                  render={({ field }) => (
+                    <Input
+                      type="datetime-local"
+                      // Slice the ISO string to 16 chars (YYYY-MM-DDTHH:mm) so the HTML input can read it
+                      value={field.value ? field.value.substring(0, 16) : ""}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        // Convert the HTML local string back into a strict ISO string for Zod
+                        field.onChange(val ? new Date(val).toISOString() : null)
+                      }}
+                    />
+                  )}
+                />
+                <FieldError
+                  message={form.formState.errors.trial_ends_at?.message}
+                />
               </FieldContent>
             </Field>
           </div>
@@ -213,41 +279,76 @@ export function TenantsMutateDialog({
               <Field>
                 <FieldLabel>Subdomain</FieldLabel>
                 <FieldContent>
-                  <Input placeholder="acme" {...form.register("subdomain")} />
-                  <FieldError message={(form.formState.errors as any).subdomain?.message} />
+                  <InputGroup>
+                    <InputGroupInput
+                      placeholder="acme"
+                      {...form.register("subdomain")}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupText>.multi-tenants-api.test</InputGroupText>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <FieldError
+                    message={(form.formState.errors as any).subdomain?.message}
+                  />
                 </FieldContent>
               </Field>
 
-              <div className="border rounded-lg p-4 space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              <div className="space-y-4 rounded-lg border p-4">
+                <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
                   Owner Information
                 </h3>
 
                 <Field>
                   <FieldLabel>Owner Name *</FieldLabel>
                   <FieldContent>
-                    <Input placeholder="John Doe" {...form.register("owner.name")} />
-                    <FieldError message={(form.formState.errors as any).owner?.name?.message} />
+                    <Input
+                      placeholder="John Doe"
+                      {...form.register("owner.name")}
+                    />
+                    <FieldError
+                      message={
+                        (form.formState.errors as any).owner?.name?.message
+                      }
+                    />
                   </FieldContent>
                 </Field>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <Field>
                     <FieldLabel>Owner Email *</FieldLabel>
                     <FieldContent>
-                      <Input placeholder="john.doe@acme.inc" {...form.register("owner.email")} />
-                      <FieldError message={(form.formState.errors as any).owner?.email?.message} />
+                      <Input
+                        placeholder="john.doe@acme.inc"
+                        {...form.register("owner.email")}
+                      />
+                      <FieldError
+                        message={
+                          (form.formState.errors as any).owner?.email?.message
+                        }
+                      />
                     </FieldContent>
                   </Field>
                   <Field>
                     <FieldLabel>Owner Phone</FieldLabel>
                     <FieldContent>
-                      <PhoneInput {...form.register("owner.phone")} required
-                      >
-                        <PhoneInputCountrySelect />
-                        <PhoneInputField />
-                      </PhoneInput>
-                      <FieldError message={(form.formState.errors as any).owner?.phone?.message} />
+                      <Controller
+                        control={form.control}
+                        name="owner.phone"
+                        render={({ field }) => (
+                          <PhoneInput
+                            placeholder="Enter phone number"
+                            defaultCountry="NG"
+                            value={field.value ?? undefined}
+                            onChange={field.onChange}
+                          />
+                        )}
+                      />
+                      <FieldError
+                        message={
+                          (form.formState.errors as any).owner?.phone?.message
+                        }
+                      />
                     </FieldContent>
                   </Field>
                 </div>
@@ -260,7 +361,12 @@ export function TenantsMutateDialog({
               <FieldLabel>Status</FieldLabel>
               <FieldContent>
                 <Select
-                  onValueChange={(value) => form.setValue("status", value as "pending" | "active" | "suspended")}
+                  onValueChange={(value) =>
+                    form.setValue(
+                      "status",
+                      value as "pending" | "active" | "suspended"
+                    )
+                  }
                   defaultValue={currentRow?.status}
                 >
                   <SelectTrigger>
@@ -277,7 +383,9 @@ export function TenantsMutateDialog({
           )}
         </form>
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose render={<Button variant="outline">Close</Button>} />
+          <ResponsiveDialogClose
+            render={<Button variant="outline">Close</Button>}
+          />
           <Button type="submit" form="tenants-form" disabled={isSubmitting}>
             {isSubmitting
               ? "Saving..."

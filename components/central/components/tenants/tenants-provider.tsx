@@ -4,7 +4,15 @@ import React, { useState } from "react"
 import useDialogState from "@/hooks/use-dialog-state"
 import { type Tenant } from "@/types/central/tenant"
 
-type TenantsDialogType = "create" | "update" | "delete" | "import"
+type TenantsDialogType =
+  | "create"
+  | "update"
+  | "delete"
+  | "import"
+  | "view"
+  | "add-domain"
+  | "activate"
+  | "suspend"
 
 type TenantsContextType = {
   open: TenantsDialogType | null
@@ -20,13 +28,12 @@ export function TenantsProvider({ children }: { children: React.ReactNode }) {
   const [currentRow, setCurrentRow] = useState<Tenant | null>(null)
 
   return (
-    <TenantsContext value={{ open, setOpen, currentRow, setCurrentRow }}>
+    <TenantsContext.Provider value={{ open, setOpen, currentRow, setCurrentRow }}>
       {children}
-    </TenantsContext>
+    </TenantsContext.Provider>
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useTenants = () => {
   const tenantsContext = React.useContext(TenantsContext)
 
