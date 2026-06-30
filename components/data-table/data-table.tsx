@@ -31,7 +31,7 @@ export function DataTable<TData>({
       {...props}
     >
       {children}
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-x-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -40,8 +40,15 @@ export function DataTable<TData>({
                   <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
+                    className={cn(
+                      header.column.getIsPinned() && "bg-background",
+                    )}
                     style={{
-                      ...getColumnPinningStyle({ column: header.column }),
+                      ...getColumnPinningStyle({
+                        column: header.column,
+                        withBorder: true,
+                      }),
+                      zIndex: header.column.getIsPinned() ? 2 : undefined,
                     }}
                   >
                     {header.isPlaceholder
@@ -65,8 +72,14 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      className={cn(
+                        cell.column.getIsPinned() && "bg-background",
+                      )}
                       style={{
-                        ...getColumnPinningStyle({ column: cell.column }),
+                        ...getColumnPinningStyle({
+                          column: cell.column,
+                          withBorder: true,
+                        }),
                       }}
                     >
                       {flexRender(

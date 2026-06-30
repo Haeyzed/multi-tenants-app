@@ -52,7 +52,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
         <Field>
           <div className="flex items-center">
             <FieldLabel>Password</FieldLabel>
-            <Link href="/central/forgot-password" legacyBehavior>
+            <Link href="/central/forgot-password">
               <a className="ms-auto text-sm underline-offset-4 hover:underline">Forgot your password?</a>
             </Link>
           </div>
@@ -73,7 +73,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
           </Button>
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}
-            <Link href="/central/register" legacyBehavior>
+            <Link href="/central/register">
               <a className="underline underline-offset-4">Sign up</a>
             </Link>
           </FieldDescription>

@@ -1,58 +1,35 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { NavMain } from "@/components/central/components/nav-main";
-import { NavUser } from "@/components/central/components/nav-user";
-import { TeamSwitcher } from "@/components/central/components/team-switcher";
+import { NavGroup } from "@/components/layout/nav-group"
+import { NavUser } from "@/components/central/components/nav-user"
+import { TeamSwitcher } from "@/components/central/components/team-switcher"
+import { sidebarData } from "@/components/central/components/sidebar-data"
+import { useLayout } from "@/lib/providers/layout-provider"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { GalleryVerticalEndIcon, LayoutDashboard, Users, CreditCard } from "lucide-react";
-
-const data = {
-  teams: [
-    {
-      name: "Central",
-      logo: <GalleryVerticalEndIcon />,
-      plan: "Enterprise",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/central/dashboard",
-      icon: <LayoutDashboard />,
-    },
-    {
-      title: "Tenants",
-      url: "/central/tenants",
-      icon: <Users />,
-    },
-    {
-      title: "Plans",
-      url: "/central/plans",
-      icon: <CreditCard />,
-    },
-  ],
-};
+} from "@/components/ui/sidebar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { collapsible, variant } = useLayout()
+
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar collapsible={collapsible} variant={variant} {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={sidebarData.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        {sidebarData.navGroups.map((group) => (
+          <NavGroup key={group.title} {...group} />
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  );
+  )
 }

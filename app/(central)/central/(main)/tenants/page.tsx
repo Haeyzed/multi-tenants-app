@@ -5,15 +5,18 @@ import { TenantsPrimaryButtons } from "@/components/central/components/tenants/t
 import { TenantsTable } from "@/components/central/components/tenants/tenants-table"
 import { TenantsDialogs } from "@/components/central/components/tenants/tenants-dialogs"
 import { TenantStatistics } from "@/components/central/components/tenants/tenant-statistics"
+import { PageHeader } from "@/components/layout/page-header"
 
 export default function TenantsPage() {
   return (
     <TenantsProvider>
-      <div className="flex flex-1 flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold tracking-tight">Tenants</h1>
+      <div className="flex flex-1 flex-col gap-4 sm:gap-6">
+        <PageHeader
+          title="Tenants"
+          description="Manage and monitor all tenants across your platform."
+        >
           <TenantsPrimaryButtons />
-        </div>
+        </PageHeader>
         <TenantStatistics />
         <TenantsTable />
         <TenantsDialogs />

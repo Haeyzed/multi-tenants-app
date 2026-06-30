@@ -32,6 +32,7 @@ export const columns: ColumnDef<Plan>[] = [
     size: 32,
     enableSorting: false,
     enableHiding: false,
+    enablePinning: true,
   },
   {
     id: "name",
@@ -130,7 +131,11 @@ export const columns: ColumnDef<Plan>[] = [
   },
   {
     id: "actions",
+    header: () => null,
     cell: ({ row }) => <DataTableRowActions row={row} />,
     size: 32,
+    enableSorting: false,
+    enableHiding: false,
+    enablePinning: true,
   },
 ]

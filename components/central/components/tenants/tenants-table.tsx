@@ -8,11 +8,15 @@ import {
   useQueryState,
 } from "nuqs"
 import { DataTable } from "@/components/data-table/data-table"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useGetTenants } from "@/hooks/central/use-tenant-query"
 import { TenantsBulkActions } from "./tenants-bulk-actions"
 import { columns } from "./tenants-columns"
+
+const COLUMN_COUNT = 10
+const FILTER_COUNT = 2
 
 export function TenantsTable() {
   const [name] = useQueryState("name", parseAsString.withDefault(""))
@@ -44,25 +48,26 @@ export function TenantsTable() {
     getRowId: (row) => row.id,
   })
 
+  if (isLoading) {
+    return (
+      <DataTableSkeleton
+        columnCount={COLUMN_COUNT}
+        rowCount={perPage}
+        filterCount={FILTER_COUNT}
+        cellWidths={["auto", "10rem", "8rem", "12rem", "8rem", "8rem", "8rem", "8rem", "8rem", "3rem"]}
+      />
+    )
+  }
+
   return (
     <div className="data-table-container space-y-4">
       <DataTable table={table} actionBar={<TenantsBulkActions table={table} />}>
         <DataTableToolbar table={table} />
       </DataTable>
 
-      {isLoading && (
-        <div className="py-8 text-center text-muted-foreground">
-          Loading tenants...
-        </div>
-      )}
       {error && (
         <div className="py-8 text-center text-destructive">
           Error: {error.message}
-        </div>
-      )}
-      {!isLoading && tableData.length === 0 && (
-        <div className="py-8 text-center text-muted-foreground">
-          No tenants found.
         </div>
       )}
     </div>

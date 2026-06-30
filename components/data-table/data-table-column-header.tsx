@@ -2,10 +2,13 @@
 
 import type { Column } from "@tanstack/react-table";
 import {
+  ArrowLeftToLine,
+  ArrowRightToLine,
   ChevronDown,
   ChevronsUpDown,
   ChevronUp,
   EyeOff,
+  PinOff,
   X,
 } from "lucide-react";
 
@@ -14,6 +17,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -30,9 +34,15 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
   ...props
 }: DataTableColumnHeaderProps<TData, TValue>) {
-  if (!column.getCanSort() && !column.getCanHide()) {
+  const canSort = column.getCanSort();
+  const canHide = column.getCanHide();
+  const canPin = column.getCanPin();
+
+  if (!canSort && !canHide && !canPin) {
     return <div className={cn(className)}>{label}</div>;
   }
+
+  const isPinned = column.getIsPinned();
 
   return (
     <DropdownMenu>
@@ -44,7 +54,7 @@ export function DataTableColumnHeader<TData, TValue>({
         {...props}
       >
         {label}
-        {column.getCanSort() &&
+        {canSort &&
           (column.getIsSorted() === "desc" ? (
             <ChevronDown />
           ) : column.getIsSorted() === "asc" ? (
@@ -53,8 +63,8 @@ export function DataTableColumnHeader<TData, TValue>({
             <ChevronsUpDown />
           ))}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-28">
-        {column.getCanSort() && (
+      <DropdownMenuContent align="start" className="w-40">
+        {canSort && (
           <>
             <DropdownMenuCheckboxItem
               className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
@@ -83,7 +93,7 @@ export function DataTableColumnHeader<TData, TValue>({
             )}
           </>
         )}
-        {column.getCanHide() && (
+        {canHide && (
           <DropdownMenuCheckboxItem
             className="relative pr-8 pl-2 [&>span:first-child]:right-2 [&>span:first-child]:left-auto [&_svg]:text-muted-foreground"
             checked={!column.getIsVisible()}
@@ -92,6 +102,38 @@ export function DataTableColumnHeader<TData, TValue>({
             <EyeOff />
             Hide
           </DropdownMenuCheckboxItem>
+        )}
+        {canPin && (canSort || canHide) && <DropdownMenuSeparator />}
+        {canPin && (
+          <>
+            {isPinned !== "left" && (
+              <DropdownMenuItem
+                className="pl-2 [&_svg]:text-muted-foreground"
+                onClick={() => column.pin("left")}
+              >
+                <ArrowLeftToLine />
+                Pin to left
+              </DropdownMenuItem>
+            )}
+            {isPinned !== "right" && (
+              <DropdownMenuItem
+                className="pl-2 [&_svg]:text-muted-foreground"
+                onClick={() => column.pin("right")}
+              >
+                <ArrowRightToLine />
+                Pin to right
+              </DropdownMenuItem>
+            )}
+            {isPinned && (
+              <DropdownMenuItem
+                className="pl-2 [&_svg]:text-muted-foreground"
+                onClick={() => column.pin(false)}
+              >
+                <PinOff />
+                Unpin
+              </DropdownMenuItem>
+            )}
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
