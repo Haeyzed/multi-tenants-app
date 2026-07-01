@@ -8,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Guard } from "@/components/central/components/auth/guard"
@@ -52,15 +51,14 @@ export function DataTableRowActions<TData>({
         <DropdownMenuSeparator />
         <Guard permissions="users.delete">
           <DropdownMenuItem
+            variant="destructive"
             onClick={() => {
               setCurrentRow(user)
               setOpen("delete")
             }}
           >
+            <Trash2 className="mr-2 h-4 w-4" />
             Delete
-            <DropdownMenuShortcut>
-              <Trash2 size={16} />
-            </DropdownMenuShortcut>
           </DropdownMenuItem>
         </Guard>
       </DropdownMenuContent>

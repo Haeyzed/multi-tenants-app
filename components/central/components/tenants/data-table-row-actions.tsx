@@ -109,11 +109,11 @@ export function DataTableRowActions<TData>({
 
         <Guard permissions="tenants.delete">
           <DropdownMenuItem
+            variant="destructive"
             onClick={() => {
               setCurrentRow(tenant)
               setOpen("delete")
             }}
-            className="text-destructive focus:text-destructive"
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
