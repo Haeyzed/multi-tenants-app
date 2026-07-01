@@ -1,7 +1,8 @@
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { showSubmittedData } from "@/lib/show-submitted-data"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/responsive-dialog"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import { useImportPlans } from "@/hooks/central/use-plan-query"
 
 const formSchema = z.object({
   file: z
@@ -21,10 +23,15 @@ const formSchema = z.object({
     .refine((files) => files.length > 0, {
       message: "Please upload a file.",
     })
-    .refine(
-      (files) => ["text/csv"].includes(files?.[0]?.type),
-      "Please upload csv format."
-    ),
+    .refine((files) => {
+      const file = files?.[0]
+      if (!file) return false
+      return [
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-excel",
+        "text/csv",
+      ].includes(file.type)
+    }, "Please upload an Excel or CSV file."),
 })
 
 type PlansImportDialogProps = {
@@ -41,6 +48,8 @@ export function PlansImportDialog({
   open,
   onOpenChange,
 }: PlansImportDialogProps) {
+  const importPlans = useImportPlans()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { file: undefined },
@@ -48,18 +57,20 @@ export function PlansImportDialog({
 
   const fileRef = form.register("file")
 
-  const onSubmit = () => {
-    const file = form.getValues("file")
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const file = values.file[0]
+    if (!file) return
 
-    if (file && file[0]) {
-      const fileDetails = {
-        name: file[0].name,
-        size: file[0].size,
-        type: file[0].type,
-      }
-      showSubmittedData(fileDetails, "You have imported the following file:")
-    }
-    onOpenChange(false)
+    importPlans.mutate(file, {
+      onSuccess: () => {
+        toast.success("Plans imported successfully")
+        onOpenChange(false)
+        form.reset()
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to import plans")
+      },
+    })
   }
 
   return (
@@ -74,7 +85,7 @@ export function PlansImportDialog({
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Import Plans</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Import plans quickly from a CSV file.
+            Import plans from an Excel (.xlsx) or CSV file.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
         <form id="plans-import-form" onSubmit={form.handleSubmit(onSubmit)}>
@@ -83,7 +94,7 @@ export function PlansImportDialog({
             <FieldContent>
               <Input
                 type="file"
-                accept="text/csv"
+                accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
                 {...fileRef}
                 className="h-8 py-0"
               />
@@ -95,7 +106,12 @@ export function PlansImportDialog({
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}
           />
-          <Button type="submit" form="plans-import-form">
+          <Button
+            type="submit"
+            form="plans-import-form"
+            disabled={importPlans.isPending}
+          >
+            {importPlans.isPending && <Loader2 className="size-4 animate-spin" />}
             Import
           </Button>
         </ResponsiveDialogFooter>

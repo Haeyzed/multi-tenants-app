@@ -1,7 +1,11 @@
 import { Plan, PlanOption } from "@/types/central/plan"
+import { ExportParams, PlanStatistics } from "@/types/central/export"
 import { apiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
-import { PlanForm } from "@/schemas/central/plan-schema"
+import {
+  StorePlanFormValues,
+  UpdatePlanFormValues,
+} from "@/schemas/central/plan-schema"
 
 interface ApiResponse<T> {
   success: boolean
@@ -38,7 +42,9 @@ export const getPlan = async (id: number): Promise<Plan> => {
   return response.data
 }
 
-export const createPlan = async (plan: PlanForm): Promise<Plan> => {
+export const createPlan = async (
+  plan: StorePlanFormValues
+): Promise<Plan> => {
   // Ensure limits is always string[] for API
   const payload = {
     ...plan,
@@ -50,7 +56,7 @@ export const createPlan = async (plan: PlanForm): Promise<Plan> => {
 
 export const updatePlan = async (
   id: number,
-  plan: PlanForm
+  plan: UpdatePlanFormValues
 ): Promise<Plan> => {
   const payload = {
     ...plan,
@@ -71,3 +77,37 @@ export const getPlanOptions = async (): Promise<PlanOption[]> => {
   const response = await apiClient.get<ApiResponse<PlanOption[]>>("/plans/options");
   return response.data;
 };
+
+export const getPlanStatistics = async (): Promise<PlanStatistics> => {
+  const response = await apiClient.get<ApiResponse<PlanStatistics>>(
+    "/plans/statistics"
+  )
+  return response.data
+}
+
+export const deleteManyPlans = async (ids: number[]): Promise<void> => {
+  await apiClient.delete<ApiResponse<void>>("/plans/bulk", { ids })
+}
+
+export const exportPlans = async (params: ExportParams): Promise<void> => {
+  const body = {
+    ids: params.ids,
+    delivery: params.delivery,
+    start_date: params.start_date,
+    end_date: params.end_date,
+    recipient_id: params.recipient_id,
+  }
+
+  if (params.delivery === "email") {
+    await apiClient.post<ApiResponse<void>>("/plans/export", body)
+    return
+  }
+
+  await apiClient.postFileDownload("/plans/export", body)
+}
+
+export const importPlans = async (file: File): Promise<void> => {
+  const formData = new FormData()
+  formData.append("file", file)
+  await apiClient.upload<ApiResponse<void>>("/plans/import", formData)
+}

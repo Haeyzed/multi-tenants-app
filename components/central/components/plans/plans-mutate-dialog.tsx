@@ -16,14 +16,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { X, Plus } from "lucide-react"
 import { useCreatePlan, useUpdatePlan } from "@/hooks/central/use-plan-query"
@@ -40,6 +41,13 @@ type PlansMutateDialogProps = {
   onOpenChange: (open: boolean) => void
   currentRow?: Plan
 }
+
+type IntervalOption = { label: string; value: "monthly" | "yearly" }
+
+const intervalOptions: IntervalOption[] = [
+  { label: "Monthly", value: "monthly" },
+  { label: "Yearly", value: "yearly" },
+]
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -267,20 +275,32 @@ export function PlansMutateDialog({
               <Field>
                 <FieldLabel>Interval *</FieldLabel>
                 <FieldContent>
-                  <Select
-                    onValueChange={(value) =>
-                      form.setValue("interval", value as "monthly" | "yearly")
+                  <Combobox
+                    items={intervalOptions}
+                    itemToStringValue={(item) => item.label}
+                    value={
+                      intervalOptions.find(
+                        (item) => item.value === form.watch("interval")
+                      ) ?? null
                     }
-                    defaultValue={form.getValues("interval")}
+                    onValueChange={(item) => {
+                      if (item) {
+                        form.setValue("interval", item.value)
+                      }
+                    }}
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="yearly">Yearly</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <ComboboxInput placeholder="Select interval..." />
+                    <ComboboxContent>
+                      <ComboboxEmpty>No intervals found.</ComboboxEmpty>
+                      <ComboboxList>
+                        {(item) => (
+                          <ComboboxItem key={item.value} value={item}>
+                            {item.label}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                   <FieldError
                     message={form.formState.errors.interval?.message}
                   />

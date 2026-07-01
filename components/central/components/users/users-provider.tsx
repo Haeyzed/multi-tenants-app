@@ -2,25 +2,24 @@
 
 import React, { useState } from "react"
 import useDialogState from "@/hooks/use-dialog-state"
-import { type Plan } from "@/types/central/plan"
+import { type User } from "@/types/central/user"
 import {
   type BulkDeleteSelection,
   type ExportSelection,
 } from "@/types/central/export"
 
-type PlansDialogType =
+type UsersDialogType =
   | "create"
   | "update"
   | "delete"
-  | "import"
   | "export"
   | "deleteMany"
 
-type PlansContextType = {
-  open: PlansDialogType | null
-  setOpen: (str: PlansDialogType | null) => void
-  currentRow: Plan | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<Plan | null>>
+type UsersContextType = {
+  open: UsersDialogType | null
+  setOpen: (str: UsersDialogType | null) => void
+  currentRow: User | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<User | null>>
   exportSelection: ExportSelection | null
   setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
   deleteManySelection: BulkDeleteSelection | null
@@ -29,11 +28,11 @@ type PlansContextType = {
   >
 }
 
-const PlansContext = React.createContext<PlansContextType | null>(null)
+const UsersContext = React.createContext<UsersContextType | null>(null)
 
-export function PlansProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<PlansDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<Plan | null>(null)
+export function UsersProvider({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useDialogState<UsersDialogType>(null)
+  const [currentRow, setCurrentRow] = useState<User | null>(null)
   const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
     null
   )
@@ -41,7 +40,7 @@ export function PlansProvider({ children }: { children: React.ReactNode }) {
     useState<BulkDeleteSelection | null>(null)
 
   return (
-    <PlansContext
+    <UsersContext
       value={{
         open,
         setOpen,
@@ -54,16 +53,14 @@ export function PlansProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </PlansContext>
+    </UsersContext>
   )
 }
 
-export const usePlans = () => {
-  const plansContext = React.useContext(PlansContext)
-
-  if (!plansContext) {
-    throw new Error("usePlans has to be used within <PlansProvider>")
+export const useUsers = () => {
+  const context = React.useContext(UsersContext)
+  if (!context) {
+    throw new Error("useUsers has to be used within <UsersProvider>")
   }
-
-  return plansContext
+  return context
 }

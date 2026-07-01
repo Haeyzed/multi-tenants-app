@@ -2,6 +2,7 @@ import { Tenant } from "@/types/central/tenant"
 import { Domain } from "@/types/central/domain"
 import { apiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
+import { ExportParams } from "@/types/central/export"
 import {
   StoreTenantFormValues,
   UpdateTenantFormValues,
@@ -120,4 +121,43 @@ export const verifyTenantDomain = async (
     {}
   )
   return response.data
+}
+
+export const updateTenantDomain = async (
+  tenantId: string,
+  domainId: number,
+  data: { is_primary?: boolean }
+): Promise<Domain> => {
+  const response = await apiClient.put<ApiResponse<Domain>>(
+    `/tenants/${tenantId}/domains/${domainId}`,
+    data
+  )
+  return response.data
+}
+
+export const deleteManyTenants = async (ids: string[]): Promise<void> => {
+  await apiClient.delete<ApiResponse<void>>("/tenants/bulk", { ids })
+}
+
+export const exportTenants = async (params: ExportParams): Promise<void> => {
+  const body = {
+    ids: params.ids,
+    delivery: params.delivery,
+    start_date: params.start_date,
+    end_date: params.end_date,
+    recipient_id: params.recipient_id,
+  }
+
+  if (params.delivery === "email") {
+    await apiClient.post<ApiResponse<void>>("/tenants/export", body)
+    return
+  }
+
+  await apiClient.postFileDownload("/tenants/export", body)
+}
+
+export const importTenants = async (file: File): Promise<void> => {
+  const formData = new FormData()
+  formData.append("file", file)
+  await apiClient.upload<ApiResponse<void>>("/tenants/import", formData)
 }

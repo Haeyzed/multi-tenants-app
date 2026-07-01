@@ -16,25 +16,25 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useDeleteManyTenants } from "@/hooks/central/use-tenant-query"
+import { useDeleteManyUsers } from "@/hooks/central/use-user-query"
 
-type TenantsMultiDeleteDialogProps = {
+type UsersMultiDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  ids: string[]
+  ids: number[]
   onComplete?: () => void
 }
 
 const CONFIRM_WORD = "DELETE"
 
-export function TenantsMultiDeleteDialog({
+export function UsersMultiDeleteDialog({
   open,
   onOpenChange,
   ids,
   onComplete,
-}: TenantsMultiDeleteDialogProps) {
+}: UsersMultiDeleteDialogProps) {
   const [value, setValue] = useState("")
-  const deleteMany = useDeleteManyTenants()
+  const deleteMany = useDeleteManyUsers()
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
@@ -45,14 +45,14 @@ export function TenantsMultiDeleteDialog({
     deleteMany.mutate(ids, {
       onSuccess: () => {
         toast.success(
-          `Deleted ${ids.length} ${ids.length > 1 ? "tenants" : "tenant"}`
+          `Deleted ${ids.length} ${ids.length > 1 ? "users" : "user"}`
         )
         setValue("")
         onComplete?.()
         onOpenChange(false)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tenants")
+        toast.error(error.message || "Failed to delete users")
       },
     })
   }
@@ -69,10 +69,10 @@ export function TenantsMultiDeleteDialog({
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="size-5" />
-            Delete {ids.length} {ids.length > 1 ? "tenants" : "tenant"}
+            Delete {ids.length} {ids.length > 1 ? "users" : "user"}
           </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Are you sure you want to delete the selected tenants? This action
+            Are you sure you want to delete the selected users? This action
             cannot be undone.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>

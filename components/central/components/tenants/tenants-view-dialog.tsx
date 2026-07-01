@@ -12,8 +12,10 @@ import {
   ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
-import { type Tenant } from "@/types/central/tenant"
 import { Badge } from "@/components/ui/badge"
+import { type Tenant } from "@/types/central/tenant"
+import { type Domain } from "@/types/central/domain"
+import { CheckCircle2, Globe } from "lucide-react"
 
 type TenantsViewDialogProps = {
   open: boolean
@@ -21,21 +23,35 @@ type TenantsViewDialogProps = {
   tenant: Tenant
 }
 
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h4 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
+      {children}
+    </h4>
+  )
+}
+
 function DetailItem({
   label,
   value,
+  className,
 }: {
   label: string
   value: React.ReactNode
+  className?: string
 }) {
   return (
-    <div className="flex flex-col space-y-1">
-      <span className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+    <div className={className}>
+      <p className="text-xs font-medium tracking-wider text-muted-foreground uppercase">
         {label}
-      </span>
-      <span className="text-sm font-medium">{value || "—"}</span>
+      </p>
+      <div className="mt-1 text-sm font-medium">{value ?? "—"}</div>
     </div>
   )
+}
+
+function isDomainVerified(domain: Domain) {
+  return domain.verification_status === "verified"
 }
 
 export function TenantsViewDialog({
@@ -54,39 +70,43 @@ export function TenantsViewDialog({
         </ResponsiveDialogHeader>
 
         <div className="space-y-6 py-4">
-          <div className="grid grid-cols-2 gap-4 border-b pb-6 md:grid-cols-3">
-            <DetailItem label="Name" value={tenant.name} />
-            <DetailItem label="Slug" value={tenant.slug} />
-            <DetailItem
-              label="Status"
-              value={
-                <Badge
-                  variant={
-                    tenant.status === "active"
-                      ? "default"
-                      : tenant.status === "suspended"
-                        ? "destructive"
-                        : "secondary"
-                  }
-                >
-                  {tenant.status}
-                </Badge>
-              }
-            />
-            <DetailItem label="Email" value={tenant.email} />
-            <DetailItem label="Phone" value={tenant.phone} />
-            <DetailItem label="Plan" value={tenant.plan} />
+          <div className="space-y-4">
+            <SectionTitle>General</SectionTitle>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <DetailItem label="Name" value={tenant.name} />
+              <DetailItem label="Slug" value={tenant.slug} />
+              <DetailItem label="Email" value={tenant.email} />
+              <DetailItem label="Phone" value={tenant.phone} />
+              <DetailItem label="Plan" value={tenant.plan} />
+              <DetailItem
+                label="Status"
+                value={
+                  <Badge
+                    variant={
+                      tenant.status === "active"
+                        ? "default"
+                        : tenant.status === "suspended"
+                          ? "destructive"
+                          : "secondary"
+                    }
+                    className="capitalize"
+                  >
+                    {tenant.status}
+                  </Badge>
+                }
+              />
+            </div>
           </div>
 
-          <div className="space-y-4 border-b pb-6">
-            <h4 className="text-sm font-semibold">System Dates</h4>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          <div className="space-y-4 border-t pt-6">
+            <SectionTitle>System Dates</SectionTitle>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <DetailItem
                 label="Created At"
                 value={
                   tenant.created_at
                     ? format(new Date(tenant.created_at), "PPP")
-                    : ""
+                    : "—"
                 }
               />
               <DetailItem
@@ -94,7 +114,7 @@ export function TenantsViewDialog({
                 value={
                   tenant.trial_ends_at
                     ? format(new Date(tenant.trial_ends_at), "PPP")
-                    : ""
+                    : "—"
                 }
               />
               <DetailItem
@@ -102,30 +122,47 @@ export function TenantsViewDialog({
                 value={
                   tenant.suspended_at
                     ? format(new Date(tenant.suspended_at), "PPP")
-                    : "N/A"
+                    : "—"
                 }
               />
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h4 className="text-sm font-semibold">Associated Domains</h4>
+          <div className="space-y-4 border-t pt-6">
+            <SectionTitle>Associated Domains</SectionTitle>
             {tenant.domains?.length > 0 ? (
-              <ul className="space-y-2">
-                {tenant.domains.map((d: any) => (
-                  <li
-                    key={d.id || d.domain}
-                    className="flex items-center space-x-2 rounded-md border p-2 text-sm"
+              <div className="space-y-2">
+                {tenant.domains.map((domain) => (
+                  <div
+                    key={domain.id}
+                    className="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2"
                   >
-                    <span className="font-medium">{d.domain}</span>
-                    {d.is_primary && (
-                      <Badge variant="outline" className="text-xs">
-                        Primary
-                      </Badge>
-                    )}
-                  </li>
+                    <div className="flex min-w-0 items-center gap-2">
+                      <Globe className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate text-sm font-medium">
+                        {domain.domain}
+                      </span>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      {domain.is_primary && (
+                        <Badge variant="secondary" className="text-xs">
+                          Primary
+                        </Badge>
+                      )}
+                      {isDomainVerified(domain) ? (
+                        <span className="flex items-center gap-1 text-xs text-emerald-600">
+                          <CheckCircle2 className="size-3" />
+                          Verified
+                        </span>
+                      ) : (
+                        <Badge variant="outline" className="text-xs">
+                          Unverified
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               <p className="text-sm text-muted-foreground">
                 No domains associated with this tenant.

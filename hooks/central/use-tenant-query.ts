@@ -9,7 +9,12 @@ import {
   suspendTenant,
   addTenantDomain,
   verifyTenantDomain,
+  updateTenantDomain,
+  deleteManyTenants,
+  exportTenants,
+  importTenants,
 } from "@/lib/services/central/tenant-service";
+import { type ExportParams } from "@/types/central/export";
 
 export const useGetTenants = (params?: {
   search?: string;
@@ -99,6 +104,51 @@ export const useVerifyTenantDomain = () => {
       verifyTenantDomain(tenantId, domainId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    },
+  });
+};
+
+export const useUpdateTenantDomain = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      tenantId,
+      domainId,
+      data,
+    }: {
+      tenantId: string;
+      domainId: number;
+      data: { is_primary?: boolean };
+    }) => updateTenantDomain(tenantId, domainId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    },
+  });
+};
+
+export const useDeleteManyTenants = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (ids: string[]) => deleteManyTenants(ids),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    },
+  });
+};
+
+export const useExportTenants = () => {
+  return useMutation({
+    mutationFn: (params: ExportParams) => exportTenants(params),
+  });
+};
+
+export const useImportTenants = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => importTenants(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      queryClient.invalidateQueries({ queryKey: ["tenant-statistics"] });
     },
   });
 };

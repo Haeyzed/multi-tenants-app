@@ -1,10 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { type Table } from "@tanstack/react-table"
 import { AlertTriangle, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { sleep } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -18,24 +16,25 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useDeleteManyPlans } from "@/hooks/central/use-plan-query"
 
-type PlansMultiDeleteDialogProps<TData> = {
+type PlansMultiDeleteDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  table: Table<TData>
+  ids: number[]
+  onComplete?: () => void
 }
 
 const CONFIRM_WORD = "DELETE"
 
-export function PlansMultiDeleteDialog<TData>({
+export function PlansMultiDeleteDialog({
   open,
   onOpenChange,
-  table,
-}: PlansMultiDeleteDialogProps<TData>) {
+  ids,
+  onComplete,
+}: PlansMultiDeleteDialogProps) {
   const [value, setValue] = useState("")
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  const selectedRows = table.getFilteredSelectedRowModel().rows
+  const deleteMany = useDeleteManyPlans()
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
@@ -43,34 +42,34 @@ export function PlansMultiDeleteDialog<TData>({
       return
     }
 
-    setIsDeleting(true)
-
-    toast.promise(sleep(2000), {
-      loading: "Deleting plans...",
-      success: () => {
+    deleteMany.mutate(ids, {
+      onSuccess: () => {
+        toast.success(
+          `Deleted ${ids.length} ${ids.length > 1 ? "plans" : "plan"}`
+        )
         setValue("")
-        setIsDeleting(false)
-        table.resetRowSelection()
+        onComplete?.()
         onOpenChange(false)
-        return `Deleted ${selectedRows.length} ${
-          selectedRows.length > 1 ? "plans" : "plan"
-        }`
       },
-      error: () => {
-        setIsDeleting(false)
-        return "Error"
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete plans")
       },
     })
   }
 
   return (
-    <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
+    <ResponsiveDialog
+      open={open}
+      onOpenChange={(val) => {
+        if (!val) setValue("")
+        onOpenChange(val)
+      }}
+    >
       <ResponsiveDialogContent>
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle className="flex items-center gap-2 text-destructive">
             <AlertTriangle className="size-5" />
-            Delete {selectedRows.length}{" "}
-            {selectedRows.length > 1 ? "plans" : "plan"}
+            Delete {ids.length} {ids.length > 1 ? "plans" : "plan"}
           </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
             Are you sure you want to delete the selected plans? This action
@@ -104,9 +103,9 @@ export function PlansMultiDeleteDialog<TData>({
           <Button
             variant="destructive"
             onClick={handleDelete}
-            disabled={value.trim() !== CONFIRM_WORD || isDeleting}
+            disabled={value.trim() !== CONFIRM_WORD || deleteMany.isPending}
           >
-            {isDeleting && <Loader2 className="size-4 animate-spin" />}
+            {deleteMany.isPending && <Loader2 className="size-4 animate-spin" />}
             Delete
           </Button>
         </ResponsiveDialogFooter>

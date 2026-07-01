@@ -1,8 +1,9 @@
 import {
+  Building2Icon,
   CreditCardIcon,
   GalleryVerticalEndIcon,
   LayoutDashboardIcon,
-  UsersIcon,
+  UserRoundIcon,
 } from "lucide-react"
 import type { SidebarData } from "@/components/layout/types"
 
@@ -26,12 +27,17 @@ export const sidebarData: SidebarData = {
         {
           title: "Tenants",
           url: "/central/tenants",
-          icon: UsersIcon,
+          icon: Building2Icon,
         },
         {
           title: "Plans",
           url: "/central/plans",
           icon: CreditCardIcon,
+        },
+        {
+          title: "Users",
+          url: "/central/users",
+          icon: UserRoundIcon,
         },
       ],
     },

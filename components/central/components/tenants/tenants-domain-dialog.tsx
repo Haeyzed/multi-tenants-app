@@ -5,7 +5,14 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Globe, Plus, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
+import {
+  Globe,
+  Plus,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Star,
+} from "lucide-react"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -21,8 +28,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Badge } from "@/components/ui/badge"
 import { type Tenant } from "@/types/central/tenant"
+import { type Domain } from "@/types/central/domain"
 import {
   useAddTenantDomain,
+  useUpdateTenantDomain,
   useVerifyTenantDomain,
 } from "@/hooks/central/use-tenant-query"
 
@@ -39,14 +48,20 @@ type TenantsDomainDialogProps = {
   tenant: Tenant
 }
 
+function isDomainVerified(domain: Domain) {
+  return domain.verification_status === "verified"
+}
+
 export function TenantsDomainDialog({
   open,
   onOpenChange,
   tenant,
 }: TenantsDomainDialogProps) {
   const addDomain = useAddTenantDomain()
+  const updateDomain = useUpdateTenantDomain()
   const verifyDomain = useVerifyTenantDomain()
   const [verifyingId, setVerifyingId] = React.useState<number | null>(null)
+  const [updatingId, setUpdatingId] = React.useState<number | null>(null)
 
   const form = useForm<DomainFormValues>({
     resolver: zodResolver(domainSchema),
@@ -77,12 +92,31 @@ export function TenantsDomainDialog({
       { tenantId: tenant.id, domainId },
       {
         onSuccess: () => {
-          toast.success("Domain verification initiated")
+          toast.success("Domain verified successfully")
           setVerifyingId(null)
         },
         onError: (error) => {
           toast.error(error.message || "Failed to verify domain")
           setVerifyingId(null)
+        },
+      }
+    )
+  }
+
+  const handleSetPrimary = (domain: Domain) => {
+    if (domain.is_primary) return
+
+    setUpdatingId(domain.id)
+    updateDomain.mutate(
+      { tenantId: tenant.id, domainId: domain.id, data: { is_primary: true } },
+      {
+        onSuccess: () => {
+          toast.success("Primary domain updated")
+          setUpdatingId(null)
+        },
+        onError: (error) => {
+          toast.error(error.message || "Failed to update domain")
+          setUpdatingId(null)
         },
       }
     )
@@ -96,7 +130,7 @@ export function TenantsDomainDialog({
         if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <ResponsiveDialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Manage Domains</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
@@ -105,10 +139,9 @@ export function TenantsDomainDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <div className="grid grid-cols-1 gap-8 py-4 md:grid-cols-2">
-          {/* Add New Domain Form */}
-          <div className="space-y-4">
-            <h3 className="border-b pb-2 text-sm font-semibold">
+        <div className="grid grid-cols-1 gap-6 py-4 lg:grid-cols-2">
+          <div className="space-y-4 rounded-lg border p-4">
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               Add New Domain
             </h3>
             <form
@@ -130,7 +163,7 @@ export function TenantsDomainDialog({
                   )}
                 </FieldContent>
               </Field>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox
                   id="is_primary"
                   checked={form.watch("is_primary")}
@@ -138,10 +171,7 @@ export function TenantsDomainDialog({
                     form.setValue("is_primary", !!checked)
                   }
                 />
-                <label
-                  htmlFor="is_primary"
-                  className="text-sm leading-none font-medium"
-                >
+                <label htmlFor="is_primary" className="text-sm font-medium">
                   Set as primary domain
                 </label>
               </div>
@@ -151,73 +181,94 @@ export function TenantsDomainDialog({
                 className="w-full"
               >
                 {addDomain.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                 ) : (
-                  <Plus className="mr-2 h-4 w-4" />
+                  <Plus className="mr-2 size-4" />
                 )}
                 Add Domain
               </Button>
             </form>
           </div>
 
-          {/* Existing Domains List */}
-          <div className="space-y-4">
-            <h3 className="border-b pb-2 text-sm font-semibold">
+          <div className="space-y-4 rounded-lg border p-4">
+            <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               Existing Domains
             </h3>
             {tenant.domains?.length > 0 ? (
               <div className="space-y-3">
-                {tenant.domains.map((d: any) => (
+                {tenant.domains.map((domain) => (
                   <div
-                    key={d.id || d.domain}
-                    className="flex flex-col space-y-2 rounded-lg border bg-muted/30 p-3"
+                    key={domain.id}
+                    className="space-y-3 rounded-lg border bg-muted/30 p-3"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <Globe className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{d.domain}</span>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <Globe className="size-4 shrink-0 text-muted-foreground" />
+                        <span className="truncate text-sm font-medium">
+                          {domain.domain}
+                        </span>
                       </div>
-                      {d.is_primary && (
-                        <Badge variant="secondary" className="text-xs">
+                      {domain.is_primary && (
+                        <Badge variant="secondary" className="shrink-0 text-xs">
                           Primary
                         </Badge>
                       )}
                     </div>
 
-                    <div className="mt-2 flex items-center justify-between border-t pt-2">
-                      <div className="flex items-center space-x-1 text-xs">
-                        {d.is_verified ? (
-                          <span className="text-success flex items-center">
-                            <CheckCircle2 className="mr-1 h-3 w-3" /> Verified
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+                      <div className="flex items-center gap-1 text-xs">
+                        {isDomainVerified(domain) ? (
+                          <span className="flex items-center text-emerald-600">
+                            <CheckCircle2 className="mr-1 size-3" />
+                            Verified
                           </span>
                         ) : (
-                          <span className="text-warning flex items-center">
-                            <AlertCircle className="mr-1 h-3 w-3" /> Unverified
+                          <span className="flex items-center text-amber-600">
+                            <AlertCircle className="mr-1 size-3" />
+                            Unverified
                           </span>
                         )}
                       </div>
 
-                      {!d.is_verified && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 text-xs"
-                          onClick={() => handleVerify(d.id)}
-                          disabled={verifyingId === d.id}
-                        >
-                          {verifyingId === d.id && (
-                            <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                          )}
-                          Verify Setup
-                        </Button>
-                      )}
+                      <div className="flex flex-wrap gap-2">
+                        {!domain.is_primary && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                            onClick={() => handleSetPrimary(domain)}
+                            disabled={updatingId === domain.id}
+                          >
+                            {updatingId === domain.id ? (
+                              <Loader2 className="mr-1 size-3 animate-spin" />
+                            ) : (
+                              <Star className="mr-1 size-3" />
+                            )}
+                            Set Primary
+                          </Button>
+                        )}
+                        {!isDomainVerified(domain) && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                            onClick={() => handleVerify(domain.id)}
+                            disabled={verifyingId === domain.id}
+                          >
+                            {verifyingId === domain.id && (
+                              <Loader2 className="mr-1 size-3 animate-spin" />
+                            )}
+                            Verify Setup
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center rounded-lg border border-dashed bg-muted/30 py-8 text-center">
-                <Globe className="mb-2 h-8 w-8 text-muted-foreground opacity-50" />
+                <Globe className="mb-2 size-8 text-muted-foreground opacity-50" />
                 <p className="text-sm text-muted-foreground">
                   No domains added yet.
                 </p>

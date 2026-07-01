@@ -4,6 +4,7 @@ import { PlansProvider } from "@/components/central/components/plans/plans-provi
 import { PlansPrimaryButtons } from "@/components/central/components/plans/plans-primary-buttons"
 import { PlansTable } from "@/components/central/components/plans/plans-table"
 import { PlansDialogs } from "@/components/central/components/plans/plans-dialogs"
+import { PlanStatistics } from "@/components/central/components/plans/plan-statistics"
 import { PageHeader } from "@/components/layout/page-header"
 
 export default function PlansPage() {
@@ -16,6 +17,7 @@ export default function PlansPage() {
         >
           <PlansPrimaryButtons />
         </PageHeader>
+        <PlanStatistics />
         <PlansTable />
         <PlansDialogs />
       </div>

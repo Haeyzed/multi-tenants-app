@@ -14,7 +14,8 @@ import { User } from "@/types/central/user";
 export const useLogin = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (credentials: Pick<User, "email" | "password">) => login(credentials),
+    mutationFn: (credentials: { email: string; password: string }) =>
+      login(credentials),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
     },

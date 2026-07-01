@@ -1,14 +1,3 @@
-class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public errors?: Record<string, string[]>
-  ) {
-    super(message)
-    this.name = "ApiError"
-  }
-}
-
 class ApiClient {
   private readonly baseURL: string
   private token: string | null = null
@@ -94,10 +83,95 @@ class ApiClient {
     return this.request<T>("PATCH", path, body)
   }
 
-  public delete<T>(path: string): Promise<T> {
-    return this.request<T>("DELETE", path)
+  public delete<T>(path: string, body?: unknown): Promise<T> {
+    return this.request<T>("DELETE", path, body)
+  }
+
+  /**
+   * POST export request and trigger browser download from Laravel Excel response.
+   */
+  public async postFileDownload(path: string, body?: unknown): Promise<string> {
+    const headers: HeadersInit = {
+      Accept:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    if (body) {
+      headers["Content-Type"] = "application/json"
+    }
+
+    const response = await fetch(`${this.baseURL}${path}`, {
+      method: "POST",
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+    if (!response.ok) {
+      const responseData = await response.json().catch(() => null)
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    const { parseFilenameFromContentDisposition, triggerBrowserDownload } =
+      await import("@/lib/export-utils")
+
+    const blob = await response.blob()
+    const filename =
+      parseFilenameFromContentDisposition(
+        response.headers.get("Content-Disposition")
+      ) ?? "export.xlsx"
+
+    triggerBrowserDownload(blob, filename)
+    return filename
+  }
+
+  public async upload<T>(path: string, formData: FormData): Promise<T> {
+    const headers: HeadersInit = {
+      Accept: "application/json",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    const response = await fetch(`${this.baseURL}${path}`, {
+      method: "POST",
+      headers,
+      body: formData,
+    })
+
+    const responseData = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    return responseData as T
+  }
+}
+
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public errors?: Record<string, string[]>
+  ) {
+    super(message)
+    this.name = "ApiError"
   }
 }
 
 export const apiClient = new ApiClient()
-export { ApiError }

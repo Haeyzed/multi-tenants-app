@@ -1,0 +1,107 @@
+import { User } from "@/types/central/user"
+import {
+  ExportParams,
+  UserOption,
+  UserStatistics,
+} from "@/types/central/export"
+import { apiClient } from "./api-client"
+import { PaginatedResponse } from "@/types/central/pagination"
+import {
+  StoreUserFormValues,
+  UpdateUserFormValues,
+} from "@/schemas/central/user-schema"
+
+interface ApiResponse<T> {
+  success: boolean
+  message: string
+  data: T
+  meta?: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
+}
+
+export const getUsers = async (params?: {
+  search?: string
+  is_active?: ("active" | "inactive")[]
+  per_page?: number
+  page?: number
+}): Promise<PaginatedResponse<User>> => {
+  const response = await apiClient.get<ApiResponse<User[]>>("/users", params)
+  return {
+    data: response.data,
+    meta: response.meta || {
+      current_page: 1,
+      last_page: 1,
+      per_page: params?.per_page || 15,
+      total: response.data.length,
+    },
+  }
+}
+
+export const getUser = async (id: number): Promise<User> => {
+  const response = await apiClient.get<ApiResponse<User>>(`/users/${id}`)
+  return response.data
+}
+
+export const createUser = async (
+  user: StoreUserFormValues
+): Promise<User> => {
+  const response = await apiClient.post<ApiResponse<User>>("/users", user)
+  return response.data
+}
+
+export const updateUser = async (
+  id: number,
+  user: UpdateUserFormValues
+): Promise<User> => {
+  const response = await apiClient.put<ApiResponse<User>>(`/users/${id}`, user)
+  return response.data
+}
+
+export const deleteUser = async (id: number): Promise<void> => {
+  await apiClient.delete<ApiResponse<void>>(`/users/${id}`)
+}
+
+export const getUserStatistics = async (): Promise<UserStatistics> => {
+  const response = await apiClient.get<ApiResponse<UserStatistics>>(
+    "/users/statistics"
+  )
+  return response.data
+}
+
+export const getUserOptions = async (): Promise<UserOption[]> => {
+  const response = await apiClient.get<ApiResponse<UserOption[]>>(
+    "/users/options"
+  )
+  return response.data
+}
+
+export const deleteManyUsers = async (ids: number[]): Promise<void> => {
+  await apiClient.delete<ApiResponse<void>>("/users/bulk", { ids })
+}
+
+export const exportUsers = async (params: ExportParams): Promise<void> => {
+  const body = {
+    ids: params.ids,
+    delivery: params.delivery,
+    start_date: params.start_date,
+    end_date: params.end_date,
+    recipient_id: params.recipient_id,
+  }
+
+  if (params.delivery === "email") {
+    await apiClient.post<ApiResponse<void>>("/users/export", body)
+    return
+  }
+
+  await apiClient.postFileDownload("/users/export", body)
+}
+
+export const importUsers = async (file: File): Promise<void> => {
+  const formData = new FormData()
+  formData.append("file", file)
+  await apiClient.upload<ApiResponse<void>>("/users/import", formData)
+}

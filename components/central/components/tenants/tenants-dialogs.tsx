@@ -19,13 +19,25 @@ import {
   useSuspendTenant
 } from "@/hooks/central/use-tenant-query"
 import { TenantsMutateDialog } from "./tenants-mutate-dialog"
+import { exportTenants } from "@/lib/services/central/tenant-service"
+import { ModuleExportDialog } from "@/components/central/components/shared/module-export-dialog"
 import { TenantsImportDialog } from "./tenants-import-dialog"
 import { TenantsViewDialog } from "./tenants-view-dialog"
 import { TenantsDomainDialog } from "./tenants-domain-dialog"
+import { TenantsMultiDeleteDialog } from "./tenants-multi-delete-dialog"
 import { useTenants } from "./tenants-provider"
 
 export function TenantsDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useTenants()
+  const {
+    open,
+    setOpen,
+    currentRow,
+    setCurrentRow,
+    exportSelection,
+    setExportSelection,
+    deleteManySelection,
+    setDeleteManySelection,
+  } = useTenants()
 
   const deleteTenant = useDeleteTenant()
   const activateTenant = useActivateTenant()
@@ -80,6 +92,40 @@ export function TenantsDialogs() {
         key="tenants-import"
         open={open === "import"}
         onOpenChange={(val) => { if (!val) setOpen(null) }}
+      />
+
+      <ModuleExportDialog
+        key="tenants-export"
+        open={open === "export"}
+        onOpenChange={(val) => {
+          if (!val) {
+            setOpen(null)
+            setExportSelection(null)
+          }
+        }}
+        resourceLabel="Tenants"
+        selectedIds={exportSelection?.ids ?? []}
+        onExport={exportTenants}
+        onComplete={() => {
+          exportSelection?.onComplete?.()
+          setExportSelection(null)
+        }}
+      />
+
+      <TenantsMultiDeleteDialog
+        key="tenants-delete-many"
+        open={open === "deleteMany"}
+        onOpenChange={(val) => {
+          if (!val) {
+            setOpen(null)
+            setDeleteManySelection(null)
+          }
+        }}
+        ids={(deleteManySelection?.ids ?? []) as string[]}
+        onComplete={() => {
+          deleteManySelection?.onComplete?.()
+          setDeleteManySelection(null)
+        }}
       />
 
       {currentRow && (

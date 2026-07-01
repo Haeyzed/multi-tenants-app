@@ -39,7 +39,7 @@ export function NavUser() {
             }
           >
             <Avatar>
-              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
               <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-start text-sm leading-tight">
@@ -58,7 +58,7 @@ export function NavUser() {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                   <Avatar>
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
                     <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-start text-sm leading-tight">
