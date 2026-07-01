@@ -1,10 +1,14 @@
 export type ExportParams = {
   ids?: (number | string)[]
   delivery: "download" | "email"
+  type?: "xlsx" | "csv"
   start_date?: string
   end_date?: string
   recipient_id?: number
+  columns?: string[]
 }
+
+export type ExportFileType = "xlsx" | "csv"
 
 export type ExportSelection = {
   ids: (number | string)[]

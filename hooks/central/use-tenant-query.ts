@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import {
   createTenant,
   deleteTenant,
@@ -10,11 +10,33 @@ import {
   addTenantDomain,
   verifyTenantDomain,
   updateTenantDomain,
+  deleteTenantDomain,
+  getTenantDomains,
   deleteManyTenants,
   exportTenants,
   importTenants,
 } from "@/lib/services/central/tenant-service";
 import { type ExportParams } from "@/types/central/export";
+import { type Domain } from "@/types/central/domain";
+
+function invalidateTenantDomainQueries(
+  queryClient: QueryClient,
+  tenantId: string
+) {
+  queryClient.invalidateQueries({ queryKey: ["tenant-domains", tenantId] });
+  queryClient.invalidateQueries({ queryKey: ["tenants"] });
+}
+
+export const useGetTenantDomains = (
+  tenantId: string | null,
+  enabled = true
+) => {
+  return useQuery({
+    queryKey: ["tenant-domains", tenantId],
+    queryFn: () => getTenantDomains(tenantId!),
+    enabled: enabled && !!tenantId,
+  });
+};
 
 export const useGetTenants = (params?: {
   search?: string;
@@ -91,8 +113,11 @@ export const useAddTenantDomain = () => {
   return useMutation({
     mutationFn: ({ id, domain }: { id: string; domain: { domain: string; is_primary?: boolean } }) =>
       addTenantDomain(id, domain),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    onSuccess: (newDomain, { id }) => {
+      queryClient.setQueryData<Domain[]>(["tenant-domains", id], (current: Domain[] | undefined) =>
+        current ? [...current, newDomain] : [newDomain]
+      );
+      invalidateTenantDomainQueries(queryClient, id);
     },
   });
 };
@@ -102,8 +127,8 @@ export const useVerifyTenantDomain = () => {
   return useMutation({
     mutationFn: ({ tenantId, domainId }: { tenantId: string; domainId: number }) =>
       verifyTenantDomain(tenantId, domainId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    onSuccess: (_, { tenantId }) => {
+      invalidateTenantDomainQueries(queryClient, tenantId);
     },
   });
 };
@@ -120,8 +145,29 @@ export const useUpdateTenantDomain = () => {
       domainId: number;
       data: { is_primary?: boolean };
     }) => updateTenantDomain(tenantId, domainId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+    onSuccess: (_, { tenantId }) => {
+      invalidateTenantDomainQueries(queryClient, tenantId);
+    },
+  });
+};
+
+export const useDeleteTenantDomain = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      tenantId,
+      domainId,
+    }: {
+      tenantId: string;
+      domainId: number;
+    }) => deleteTenantDomain(tenantId, domainId),
+    onSuccess: (_, { tenantId, domainId }) => {
+      queryClient.setQueryData<Domain[]>(
+        ["tenant-domains", tenantId],
+        (current: Domain[] | undefined) =>
+          current?.filter((domain) => domain.id !== domainId) ?? []
+      );
+      invalidateTenantDomainQueries(queryClient, tenantId);
     },
   });
 };

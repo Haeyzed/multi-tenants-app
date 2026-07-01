@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -20,6 +20,7 @@ import {
 } from "@/hooks/central/use-tenant-query"
 import { TenantsMutateDialog } from "./tenants-mutate-dialog"
 import { exportTenants } from "@/lib/services/central/tenant-service"
+import { TENANT_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { ModuleExportDialog } from "@/components/central/components/shared/module-export-dialog"
 import { TenantsImportDialog } from "./tenants-import-dialog"
 import { TenantsViewDialog } from "./tenants-view-dialog"
@@ -104,6 +105,7 @@ export function TenantsDialogs() {
           }
         }}
         resourceLabel="Tenants"
+        columnOptions={TENANT_EXPORT_COLUMNS}
         selectedIds={exportSelection?.ids ?? []}
         onExport={exportTenants}
         onComplete={() => {
@@ -161,7 +163,7 @@ export function TenantsDialogs() {
               <ResponsiveDialogFooter>
                 <ResponsiveDialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button variant="destructive" onClick={() => handleAction("delete")} disabled={isMutating}>
-                  {isMutating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isMutating && <Spinner className="mr-2" />}
                   Delete
                 </Button>
               </ResponsiveDialogFooter>
@@ -180,7 +182,7 @@ export function TenantsDialogs() {
               <ResponsiveDialogFooter>
                 <ResponsiveDialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button onClick={() => handleAction("activate")} disabled={isMutating}>
-                  {isMutating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isMutating && <Spinner className="mr-2" />}
                   Activate
                 </Button>
               </ResponsiveDialogFooter>
@@ -199,7 +201,7 @@ export function TenantsDialogs() {
               <ResponsiveDialogFooter>
                 <ResponsiveDialogClose render={<Button variant="outline">Cancel</Button>} />
                 <Button variant="destructive" onClick={() => handleAction("suspend")} disabled={isMutating}>
-                  {isMutating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isMutating && <Spinner className="mr-2" />}
                   Suspend
                 </Button>
               </ResponsiveDialogFooter>

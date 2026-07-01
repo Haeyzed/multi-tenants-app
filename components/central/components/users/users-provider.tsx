@@ -12,6 +12,7 @@ type UsersDialogType =
   | "create"
   | "update"
   | "delete"
+  | "import"
   | "export"
   | "deleteMany"
 

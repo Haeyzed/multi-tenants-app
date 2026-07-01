@@ -83,7 +83,7 @@ export function TenantsMutateDialog({
         name: currentRow.name,
         email: currentRow.email || "",
         phone: currentRow.phone || "",
-        plan: currentRow.plan || "",
+        plan_id: currentRow.plan_id ?? undefined,
         trial_ends_at: currentRow.trial_ends_at || "",
       }
       : {
@@ -91,12 +91,18 @@ export function TenantsMutateDialog({
         slug: "",
         email: "",
         phone: "",
-        plan: "",
+        plan_id: undefined,
         trial_ends_at: "",
         subdomain: "",
         owner: { name: "", email: "", phone: "" },
       },
   })
+
+  const planIdValue = form.watch("plan_id")
+  const selectedPlan = React.useMemo(
+    () => planOptions?.find((p) => p.value === planIdValue) ?? null,
+    [planOptions, planIdValue]
+  )
 
   // Watch the name field to automatically generate the slug
   const nameValue = form.watch("name")
@@ -228,9 +234,9 @@ export function TenantsMutateDialog({
                 <Combobox
                   items={planOptions || []}
                   itemToStringValue={(plan: PlanOption) => plan.label}
-                  // value={form.watch("plan")}
+                  value={selectedPlan}
                   onValueChange={(item) => {
-                    form.setValue("plan", item ? item.value : "")
+                    form.setValue("plan_id", item ? item.value : null)
                   }}
                 >
                   <ComboboxInput placeholder="Select a plan..." />
@@ -245,33 +251,33 @@ export function TenantsMutateDialog({
                     </ComboboxList>
                   </ComboboxContent>
                 </Combobox>
-                <FieldError message={form.formState.errors.plan?.message} />
+                <FieldError message={form.formState.errors.plan_id?.message} />
               </FieldContent>
             </Field>
-            <Field>
-              <FieldLabel>Trial Ends At</FieldLabel>
-              <FieldContent>
-                <Controller
-                  control={form.control}
-                  name="trial_ends_at"
-                  render={({ field }) => (
-                    <Input
-                      type="datetime-local"
-                      // Slice the ISO string to 16 chars (YYYY-MM-DDTHH:mm) so the HTML input can read it
-                      value={field.value ? field.value.substring(0, 16) : ""}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        // Convert the HTML local string back into a strict ISO string for Zod
-                        field.onChange(val ? new Date(val).toISOString() : null)
-                      }}
-                    />
-                  )}
-                />
-                <FieldError
-                  message={form.formState.errors.trial_ends_at?.message}
-                />
-              </FieldContent>
-            </Field>
+            {isUpdate && (
+              <Field>
+                <FieldLabel>Trial Ends At</FieldLabel>
+                <FieldContent>
+                  <Controller
+                    control={form.control}
+                    name="trial_ends_at"
+                    render={({ field }) => (
+                      <Input
+                        type="datetime-local"
+                        value={field.value ? field.value.substring(0, 16) : ""}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          field.onChange(val ? new Date(val).toISOString() : null)
+                        }}
+                      />
+                    )}
+                  />
+                  <FieldError
+                    message={form.formState.errors.trial_ends_at?.message}
+                  />
+                </FieldContent>
+              </Field>
+            )}
           </div>
 
           {!isUpdate && (

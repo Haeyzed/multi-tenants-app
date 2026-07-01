@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/responsive-dialog"
 import { useDeleteUser } from "@/hooks/central/use-user-query"
 import { exportUsers } from "@/lib/services/central/user-service"
+import { USER_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { ModuleExportDialog } from "@/components/central/components/shared/module-export-dialog"
 import { UsersMutateDialog } from "./users-mutate-dialog"
+import { UsersImportDialog } from "./users-import-dialog"
 import { UsersMultiDeleteDialog } from "./users-multi-delete-dialog"
 import { useUsers } from "./users-provider"
 
@@ -63,6 +65,14 @@ export function UsersDialogs() {
         }}
       />
 
+      <UsersImportDialog
+        key="users-import"
+        open={open === "import"}
+        onOpenChange={(val) => {
+          if (!val) setOpen(null)
+        }}
+      />
+
       <ModuleExportDialog
         key="users-export"
         open={open === "export"}
@@ -73,6 +83,7 @@ export function UsersDialogs() {
           }
         }}
         resourceLabel="Users"
+        columnOptions={USER_EXPORT_COLUMNS}
         selectedIds={exportSelection?.ids ?? []}
         onExport={exportUsers}
         onComplete={() => {
@@ -142,7 +153,7 @@ export function UsersDialogs() {
                   onClick={handleDelete}
                   disabled={isDeleting}
                 >
-                  {isDeleting && <Loader2 className="size-4 animate-spin" />}
+                  {isDeleting && <Spinner />}
                   Delete
                 </Button>
               </ResponsiveDialogFooter>

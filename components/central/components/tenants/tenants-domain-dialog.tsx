@@ -10,9 +10,10 @@ import {
   Plus,
   CheckCircle2,
   AlertCircle,
-  Loader2,
   Star,
+  Trash2,
 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -31,6 +32,8 @@ import { type Tenant } from "@/types/central/tenant"
 import { type Domain } from "@/types/central/domain"
 import {
   useAddTenantDomain,
+  useDeleteTenantDomain,
+  useGetTenantDomains,
   useUpdateTenantDomain,
   useVerifyTenantDomain,
 } from "@/hooks/central/use-tenant-query"
@@ -60,8 +63,14 @@ export function TenantsDomainDialog({
   const addDomain = useAddTenantDomain()
   const updateDomain = useUpdateTenantDomain()
   const verifyDomain = useVerifyTenantDomain()
+  const deleteDomain = useDeleteTenantDomain()
+  const { data: domains = [], isLoading: isLoadingDomains } = useGetTenantDomains(
+    tenant.id,
+    open
+  )
   const [verifyingId, setVerifyingId] = React.useState<number | null>(null)
   const [updatingId, setUpdatingId] = React.useState<number | null>(null)
+  const [deletingId, setDeletingId] = React.useState<number | null>(null)
 
   const form = useForm<DomainFormValues>({
     resolver: zodResolver(domainSchema),
@@ -122,6 +131,26 @@ export function TenantsDomainDialog({
     )
   }
 
+  const handleDelete = (domain: Domain) => {
+    setDeletingId(domain.id)
+    deleteDomain.mutate(
+      { tenantId: tenant.id, domainId: domain.id },
+      {
+        onSuccess: () => {
+          toast.success("Domain deleted successfully")
+          setDeletingId(null)
+        },
+        onError: (error) => {
+          toast.error(error.message || "Failed to delete domain")
+          setDeletingId(null)
+        },
+      }
+    )
+  }
+
+  const canDeleteDomain = (domain: Domain) =>
+    !domain.is_primary && domains.length > 1
+
   return (
     <ResponsiveDialog
       open={open}
@@ -139,7 +168,7 @@ export function TenantsDomainDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <div className="grid grid-cols-1 gap-6 py-4 lg:grid-cols-2">
+        <div className="space-y-6 py-4">
           <div className="space-y-4 rounded-lg border p-4">
             <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               Add New Domain
@@ -181,7 +210,7 @@ export function TenantsDomainDialog({
                 className="w-full"
               >
                 {addDomain.isPending ? (
-                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  <Spinner className="mr-2" />
                 ) : (
                   <Plus className="mr-2 size-4" />
                 )}
@@ -194,9 +223,13 @@ export function TenantsDomainDialog({
             <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               Existing Domains
             </h3>
-            {tenant.domains?.length > 0 ? (
+            {isLoadingDomains ? (
+              <div className="flex items-center justify-center py-8">
+                <Spinner />
+              </div>
+            ) : domains.length > 0 ? (
               <div className="space-y-3">
-                {tenant.domains.map((domain) => (
+                {domains.map((domain) => (
                   <div
                     key={domain.id}
                     className="space-y-3 rounded-lg border bg-muted/30 p-3"
@@ -240,7 +273,7 @@ export function TenantsDomainDialog({
                             disabled={updatingId === domain.id}
                           >
                             {updatingId === domain.id ? (
-                              <Loader2 className="mr-1 size-3 animate-spin" />
+                              <Spinner className="mr-1 size-3" />
                             ) : (
                               <Star className="mr-1 size-3" />
                             )}
@@ -256,9 +289,25 @@ export function TenantsDomainDialog({
                             disabled={verifyingId === domain.id}
                           >
                             {verifyingId === domain.id && (
-                              <Loader2 className="mr-1 size-3 animate-spin" />
+                              <Spinner className="mr-1 size-3" />
                             )}
                             Verify Setup
+                          </Button>
+                        )}
+                        {canDeleteDomain(domain) && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs text-destructive hover:text-destructive"
+                            onClick={() => handleDelete(domain)}
+                            disabled={deletingId === domain.id}
+                          >
+                            {deletingId === domain.id ? (
+                              <Spinner className="mr-1 size-3" />
+                            ) : (
+                              <Trash2 className="mr-1 size-3" />
+                            )}
+                            Delete
                           </Button>
                         )}
                       </div>

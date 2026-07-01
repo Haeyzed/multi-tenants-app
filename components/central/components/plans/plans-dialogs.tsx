@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Loader2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/responsive-dialog"
 import { useDeletePlan } from "@/hooks/central/use-plan-query"
 import { exportPlans } from "@/lib/services/central/plan-service"
+import { PLAN_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { ModuleExportDialog } from "@/components/central/components/shared/module-export-dialog"
 import { PlansMutateDialog } from "./plans-mutate-dialog"
 import { PlansImportDialog } from "./plans-import-dialog"
@@ -82,6 +83,7 @@ export function PlansDialogs() {
           }
         }}
         resourceLabel="Plans"
+        columnOptions={PLAN_EXPORT_COLUMNS}
         selectedIds={exportSelection?.ids ?? []}
         onExport={exportPlans}
         onComplete={() => {
@@ -151,7 +153,7 @@ export function PlansDialogs() {
                   onClick={handleDelete}
                   disabled={isDeleting}
                 >
-                  {isDeleting && <Loader2 className="size-4 animate-spin" />}
+                  {isDeleting && <Spinner />}
                   Delete
                 </Button>
               </ResponsiveDialogFooter>

@@ -22,5 +22,5 @@ export interface Plan {
 
 export interface PlanOption {
   label: string;
-  value: string;
+  value: number;
 }

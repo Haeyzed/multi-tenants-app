@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { PasswordInput } from "@/components/ui/password-input";
+import { Spinner } from "@/components/ui/spinner";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
   const router = useRouter();
@@ -52,8 +53,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
         <Field>
           <div className="flex items-center">
             <FieldLabel>Password</FieldLabel>
-            <Link href="/central/forgot-password">
-              <a className="ms-auto text-sm underline-offset-4 hover:underline">Forgot your password?</a>
+            <Link
+              href="/central/forgot-password"
+              className="ms-auto text-sm underline-offset-4 hover:underline"
+            >
+              Forgot your password?
             </Link>
           </div>
           <FieldContent>
@@ -63,6 +67,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
         </Field>
         <Field>
           <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+            {loginMutation.isPending && <Spinner />}
             {loginMutation.isPending ? "Logging in..." : "Login"}
           </Button>
         </Field>
@@ -73,8 +78,8 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
           </Button>
           <FieldDescription className="text-center">
             Don&apos;t have an account?{" "}
-            <Link href="/central/register">
-              <a className="underline underline-offset-4">Sign up</a>
+            <Link href="/central/register" className="underline underline-offset-4">
+              Sign up
             </Link>
           </FieldDescription>
         </Field>

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useRegister } from "@/hooks/central/use-auth-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -64,13 +65,14 @@ export function RegisterForm() {
               </FieldContent>
             </Field>
             <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+              {registerMutation.isPending && <Spinner />}
               {registerMutation.isPending ? "Creating account..." : "Create an account"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
-            <Link href="/central/login" legacyBehavior>
-              <a className="underline">Sign in</a>
+            <Link href="/central/login" className="underline">
+              Sign in
             </Link>
           </div>
         </CardContent>

@@ -77,7 +77,7 @@ export function TenantsViewDialog({
               <DetailItem label="Slug" value={tenant.slug} />
               <DetailItem label="Email" value={tenant.email} />
               <DetailItem label="Phone" value={tenant.phone} />
-              <DetailItem label="Plan" value={tenant.plan} />
+              <DetailItem label="Plan" value={tenant.plan_name ?? tenant.plan} />
               <DetailItem
                 label="Status"
                 value={

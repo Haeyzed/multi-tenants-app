@@ -12,6 +12,7 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useGetTenants } from "@/hooks/central/use-tenant-query"
+import { useQueryErrorToast } from "@/hooks/use-query-error-toast"
 import { TenantsBulkActions } from "./tenants-bulk-actions"
 import { columns } from "./tenants-columns"
 
@@ -34,6 +35,8 @@ export function TenantsTable() {
     per_page: perPage,
     page,
   })
+
+  useQueryErrorToast(error, "Failed to load tenants.")
 
   const tableData = data?.data || []
 
@@ -64,12 +67,6 @@ export function TenantsTable() {
       <DataTable table={table} actionBar={<TenantsBulkActions table={table} />}>
         <DataTableToolbar table={table} />
       </DataTable>
-
-      {error && (
-        <div className="py-8 text-center text-destructive">
-          Error: {error.message}
-        </div>
-      )}
     </div>
   )
 }

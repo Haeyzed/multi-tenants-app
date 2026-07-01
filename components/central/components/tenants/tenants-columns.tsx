@@ -96,7 +96,9 @@ export const columns: ColumnDef<Tenant>[] = [
       <DataTableColumnHeader column={column} label="Plan" />
     ),
     cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.getValue("plan") || "—"}</span>
+      <span className="text-muted-foreground">
+        {row.original.plan_name ?? row.getValue("plan") ?? "—"}
+      </span>
     ),
   },
   {

@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { AlertTriangle, Loader2 } from "lucide-react"
+import { AlertTriangle } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
@@ -105,7 +106,7 @@ export function UsersMultiDeleteDialog({
             onClick={handleDelete}
             disabled={value.trim() !== CONFIRM_WORD || deleteMany.isPending}
           >
-            {deleteMany.isPending && <Loader2 className="size-4 animate-spin" />}
+            {deleteMany.isPending && <Spinner />}
             Delete
           </Button>
         </ResponsiveDialogFooter>

@@ -90,10 +90,18 @@ class ApiClient {
   /**
    * POST export request and trigger browser download from Laravel Excel response.
    */
-  public async postFileDownload(path: string, body?: unknown): Promise<string> {
+  public async postFileDownload(
+    path: string,
+    body?: unknown,
+    options?: {
+      accept?: string
+      defaultFilename?: string
+    }
+  ): Promise<string> {
     const headers: HeadersInit = {
       Accept:
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/octet-stream",
+        options?.accept ??
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv, application/octet-stream",
     }
 
     if (this.token) {
@@ -127,7 +135,58 @@ class ApiClient {
     const filename =
       parseFilenameFromContentDisposition(
         response.headers.get("Content-Disposition")
-      ) ?? "export.xlsx"
+      ) ?? options?.defaultFilename ?? "export.xlsx"
+
+    triggerBrowserDownload(blob, filename)
+    return filename
+  }
+
+  /**
+   * GET file download (import samples, etc.).
+   */
+  public async getFileDownload(
+    path: string,
+    params?: Record<string, string | undefined>,
+    defaultFilename = "download.xlsx"
+  ): Promise<string> {
+    const headers: HeadersInit = {
+      Accept:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv, application/octet-stream",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    let url = `${this.baseURL}${path}`
+    if (params) {
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([, value]) => value !== undefined)
+      ) as Record<string, string>
+      const query = new URLSearchParams(filteredParams).toString()
+      if (query) url += `?${query}`
+    }
+
+    const response = await fetch(url, { method: "GET", headers })
+
+    if (!response.ok) {
+      const responseData = await response.json().catch(() => null)
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    const { parseFilenameFromContentDisposition, triggerBrowserDownload } =
+      await import("@/lib/export-utils")
+
+    const blob = await response.blob()
+    const filename =
+      parseFilenameFromContentDisposition(
+        response.headers.get("Content-Disposition")
+      ) ?? defaultFilename
 
     triggerBrowserDownload(blob, filename)
     return filename

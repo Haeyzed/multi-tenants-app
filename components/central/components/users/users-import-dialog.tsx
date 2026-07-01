@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/responsive-dialog"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
-import { useImportTenants } from "@/hooks/central/use-tenant-query"
-import { downloadTenantsImportSample } from "@/lib/services/central/tenant-service"
+import { useImportUsers } from "@/hooks/central/use-user-query"
+import { downloadUsersImportSample } from "@/lib/services/central/user-service"
 
 const formSchema = z.object({
   file: z
@@ -36,7 +36,7 @@ const formSchema = z.object({
     }, "Please upload an Excel or CSV file."),
 })
 
-type TenantsImportDialogProps = {
+type UsersImportDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -46,11 +46,11 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
-export function TenantsImportDialog({
+export function UsersImportDialog({
   open,
   onOpenChange,
-}: TenantsImportDialogProps) {
-  const importTenants = useImportTenants()
+}: UsersImportDialogProps) {
+  const importUsers = useImportUsers()
   const [isDownloadingSample, setIsDownloadingSample] = React.useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,14 +64,14 @@ export function TenantsImportDialog({
     const file = values.file[0]
     if (!file) return
 
-    importTenants.mutate(file, {
+    importUsers.mutate(file, {
       onSuccess: () => {
-        toast.success("Tenants imported successfully")
+        toast.success("Users imported successfully")
         onOpenChange(false)
         form.reset()
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to import tenants")
+        toast.error(error.message || "Failed to import users")
       },
     })
   }
@@ -86,13 +86,12 @@ export function TenantsImportDialog({
     >
       <ResponsiveDialogContent className="sm:max-w-sm">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Import Tenants</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>Import Users</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Import tenants from Excel or CSV. Each row provisions a tenant with
-            database, domain, and owner account (same as Create Tenant).
+            Import central admin users from an Excel (.xlsx) or CSV file.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <form id="tenants-import-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form id="users-import-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <Button
             type="button"
             variant="outline"
@@ -101,7 +100,7 @@ export function TenantsImportDialog({
             onClick={async () => {
               setIsDownloadingSample(true)
               try {
-                await downloadTenantsImportSample("xlsx")
+                await downloadUsersImportSample("xlsx")
                 toast.success("Sample template downloaded")
               } catch (error) {
                 toast.error(
@@ -136,10 +135,10 @@ export function TenantsImportDialog({
           />
           <Button
             type="submit"
-            form="tenants-import-form"
-            disabled={importTenants.isPending}
+            form="users-import-form"
+            disabled={importUsers.isPending}
           >
-            {importTenants.isPending && <Spinner />}
+            {importUsers.isPending && <Spinner />}
             Import
           </Button>
         </ResponsiveDialogFooter>

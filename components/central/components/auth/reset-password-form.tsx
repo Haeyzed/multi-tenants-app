@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { useResetPassword } from "@/hooks/central/use-auth-query";
 import { resetPasswordSchema } from "@/schemas/central/auth-schema";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 export function ResetPasswordForm() {
   const router = useRouter();
@@ -71,6 +72,7 @@ export function ResetPasswordForm() {
               </FieldContent>
             </Field>
             <Button type="submit" className="w-full" disabled={resetPasswordMutation.isPending}>
+              {resetPasswordMutation.isPending && <Spinner />}
               {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
             </Button>
           </form>

@@ -93,9 +93,11 @@ export const exportPlans = async (params: ExportParams): Promise<void> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
+    type: params.type ?? "xlsx",
     start_date: params.start_date,
     end_date: params.end_date,
     recipient_id: params.recipient_id,
+    columns: params.columns,
   }
 
   if (params.delivery === "email") {
@@ -103,7 +105,16 @@ export const exportPlans = async (params: ExportParams): Promise<void> => {
     return
   }
 
-  await apiClient.postFileDownload("/plans/export", body)
+  const extension = body.type === "csv" ? "csv" : "xlsx"
+  await apiClient.postFileDownload("/plans/export", body, {
+    defaultFilename: `plans-export.${extension}`,
+  })
+}
+
+export const downloadPlansImportSample = async (
+  type: "xlsx" | "csv" = "xlsx"
+): Promise<void> => {
+  await apiClient.getFileDownload("/plans/import/sample", { type }, `plans-import-sample.${type}`)
 }
 
 export const importPlans = async (file: File): Promise<void> => {

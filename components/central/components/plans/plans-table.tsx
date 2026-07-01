@@ -12,6 +12,7 @@ import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useGetPlans } from "@/hooks/central/use-plan-query"
+import { useQueryErrorToast } from "@/hooks/use-query-error-toast"
 import { PlansBulkActions } from "./plans-bulk-actions"
 import { columns } from "./plans-columns"
 
@@ -34,6 +35,8 @@ export function PlansTable() {
     per_page: perPage,
     page,
   })
+
+  useQueryErrorToast(error, "Failed to load plans.")
 
   const tableData = data?.data || []
 
@@ -64,12 +67,6 @@ export function PlansTable() {
       <DataTable table={table} actionBar={<PlansBulkActions table={table} />}>
         <DataTableToolbar table={table} />
       </DataTable>
-
-      {error && (
-        <div className="py-8 text-center text-destructive">
-          Error: {error.message}
-        </div>
-      )}
     </div>
   )
 }

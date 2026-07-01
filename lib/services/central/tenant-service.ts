@@ -101,6 +101,13 @@ export const suspendTenant = async (id: string): Promise<Tenant> => {
   return response.data
 }
 
+export const getTenantDomains = async (tenantId: string): Promise<Domain[]> => {
+  const response = await apiClient.get<ApiResponse<Domain[]>>(
+    `/tenants/${tenantId}/domains`
+  )
+  return response.data
+}
+
 export const addTenantDomain = async (
   id: string,
   domain: { domain: string; is_primary?: boolean }
@@ -135,6 +142,15 @@ export const updateTenantDomain = async (
   return response.data
 }
 
+export const deleteTenantDomain = async (
+  tenantId: string,
+  domainId: number
+): Promise<void> => {
+  await apiClient.delete<ApiResponse<void>>(
+    `/tenants/${tenantId}/domains/${domainId}`
+  )
+}
+
 export const deleteManyTenants = async (ids: string[]): Promise<void> => {
   await apiClient.delete<ApiResponse<void>>("/tenants/bulk", { ids })
 }
@@ -143,9 +159,11 @@ export const exportTenants = async (params: ExportParams): Promise<void> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
+    type: params.type ?? "xlsx",
     start_date: params.start_date,
     end_date: params.end_date,
     recipient_id: params.recipient_id,
+    columns: params.columns,
   }
 
   if (params.delivery === "email") {
@@ -153,7 +171,16 @@ export const exportTenants = async (params: ExportParams): Promise<void> => {
     return
   }
 
-  await apiClient.postFileDownload("/tenants/export", body)
+  const extension = body.type === "csv" ? "csv" : "xlsx"
+  await apiClient.postFileDownload("/tenants/export", body, {
+    defaultFilename: `tenants-export.${extension}`,
+  })
+}
+
+export const downloadTenantsImportSample = async (
+  type: "xlsx" | "csv" = "xlsx"
+): Promise<void> => {
+  await apiClient.getFileDownload("/tenants/import/sample", { type }, `tenants-import-sample.${type}`)
 }
 
 export const importTenants = async (file: File): Promise<void> => {

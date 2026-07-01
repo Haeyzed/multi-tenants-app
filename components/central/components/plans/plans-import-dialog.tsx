@@ -1,8 +1,9 @@
 import { z } from "zod"
+import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { useImportPlans } from "@/hooks/central/use-plan-query"
+import { downloadPlansImportSample } from "@/lib/services/central/plan-service"
 
 const formSchema = z.object({
   file: z
@@ -49,6 +51,7 @@ export function PlansImportDialog({
   onOpenChange,
 }: PlansImportDialogProps) {
   const importPlans = useImportPlans()
+  const [isDownloadingSample, setIsDownloadingSample] = React.useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -88,7 +91,31 @@ export function PlansImportDialog({
             Import plans from an Excel (.xlsx) or CSV file.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <form id="plans-import-form" onSubmit={form.handleSubmit(onSubmit)}>
+        <form id="plans-import-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isDownloadingSample}
+            onClick={async () => {
+              setIsDownloadingSample(true)
+              try {
+                await downloadPlansImportSample("xlsx")
+                toast.success("Sample template downloaded")
+              } catch (error) {
+                toast.error(
+                  error instanceof Error
+                    ? error.message
+                    : "Failed to download sample template"
+                )
+              } finally {
+                setIsDownloadingSample(false)
+              }
+            }}
+          >
+            {isDownloadingSample && <Spinner />}
+            Download sample template
+          </Button>
           <Field>
             <FieldLabel>File</FieldLabel>
             <FieldContent>
@@ -111,7 +138,7 @@ export function PlansImportDialog({
             form="plans-import-form"
             disabled={importPlans.isPending}
           >
-            {importPlans.isPending && <Loader2 className="size-4 animate-spin" />}
+            {importPlans.isPending && <Spinner />}
             Import
           </Button>
         </ResponsiveDialogFooter>

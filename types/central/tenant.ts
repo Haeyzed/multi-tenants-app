@@ -9,7 +9,9 @@ export interface Tenant {
   email: string | null
   phone: string | null
   status: TenantStatus
+  plan_id: number | null
   plan: string | null
+  plan_name: string | null
   trial_ends_at: string | null
   suspended_at: string | null
   domains: Domain[]

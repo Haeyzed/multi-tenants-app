@@ -87,9 +87,11 @@ export const exportUsers = async (params: ExportParams): Promise<void> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
+    type: params.type ?? "xlsx",
     start_date: params.start_date,
     end_date: params.end_date,
     recipient_id: params.recipient_id,
+    columns: params.columns,
   }
 
   if (params.delivery === "email") {
@@ -97,7 +99,16 @@ export const exportUsers = async (params: ExportParams): Promise<void> => {
     return
   }
 
-  await apiClient.postFileDownload("/users/export", body)
+  const extension = body.type === "csv" ? "csv" : "xlsx"
+  await apiClient.postFileDownload("/users/export", body, {
+    defaultFilename: `users-export.${extension}`,
+  })
+}
+
+export const downloadUsersImportSample = async (
+  type: "xlsx" | "csv" = "xlsx"
+): Promise<void> => {
+  await apiClient.getFileDownload("/users/import/sample", { type }, `users-import-sample.${type}`)
 }
 
 export const importUsers = async (file: File): Promise<void> => {
