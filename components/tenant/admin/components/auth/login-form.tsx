@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Spinner } from "@/components/ui/spinner"
 import { useTenantLogin } from "@/hooks/tenant/use-auth-query"
-import { loginSchema } from "@/schemas/central/auth-schema"
+import { tenantAdminLoginSchema } from "@/schemas/tenant/tenant-admin-auth-schema"
 import { handleFormApiError } from "@/lib/form-api-errors"
 
 export function LoginForm({
@@ -30,12 +30,12 @@ export function LoginForm({
   const router = useRouter()
   const loginMutation = useTenantLogin()
 
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof tenantAdminLoginSchema>>({
+    resolver: zodResolver(tenantAdminLoginSchema),
     defaultValues: { email: "", password: "" },
   })
 
-  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = (values: z.infer<typeof tenantAdminLoginSchema>) => {
     loginMutation.mutate(values, {
       onSuccess: () => {
         router.push("/admin/dashboard")

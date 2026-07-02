@@ -2,7 +2,7 @@ import { AppSidebar } from "@/components/central/components/app-sidebar"
 import { CommandMenu } from "@/components/central/components/command-menu"
 import { Guard } from "@/components/central/components/auth/guard"
 import { DashboardShell } from "@/components/layout/dashboard-shell"
-import { AuthProvider } from "@/lib/providers/auth-provider"
+import { AuthProvider } from "@/lib/providers/central/auth-provider"
 
 export default function MainLayout({
   children,

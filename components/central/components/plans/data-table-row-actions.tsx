@@ -1,4 +1,4 @@
-import { MoreHorizontal, Trash2 } from "lucide-react"
+import { MoreHorizontal, Trash2, Edit } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -43,6 +43,7 @@ export function DataTableRowActions<TData>({
               setOpen("update")
             }}
           >
+            <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
         </Guard>

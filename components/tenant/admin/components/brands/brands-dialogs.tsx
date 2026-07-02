@@ -1,0 +1,181 @@
+"use client"
+
+import * as React from "react"
+import { Spinner } from "@/components/ui/spinner"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent,
+  ResponsiveDialogDescription,
+  ResponsiveDialogFooter,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
+  ResponsiveDialogClose,
+} from "@/components/ui/responsive-dialog"
+import { useDeleteBrand } from "@/hooks/tenant/use-brand-query"
+import { exportBrands } from "@/lib/services/tenant/brand-service"
+import { BRAND_EXPORT_COLUMNS } from "@/lib/export-columns"
+import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { BrandsMutateDialog } from "./brands-mutate-dialog"
+import { BrandsViewDialog } from "./brands-view-dialog"
+import { BrandsImportDialog } from "./brands-import-dialog"
+import { BrandsMultiDeleteDialog } from "./brands-multi-delete-dialog"
+import { useBrands } from "./brands-provider"
+
+export function BrandsDialogs() {
+  const {
+    open,
+    setOpen,
+    currentRow,
+    setCurrentRow,
+    exportSelection,
+    setExportSelection,
+    deleteManySelection,
+    setDeleteManySelection,
+  } = useBrands()
+  const deleteBrand = useDeleteBrand()
+  const [isDeleting, setIsDeleting] = React.useState(false)
+
+  const handleDelete = React.useCallback(() => {
+    if (!currentRow) return
+    setIsDeleting(true)
+    deleteBrand.mutate(currentRow.id, {
+      onSuccess: () => {
+        toast.success(`Brand "${currentRow.name}" deleted successfully`)
+        setIsDeleting(false)
+        setOpen(null)
+        setTimeout(() => {
+          setCurrentRow(null)
+        }, 500)
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete brand")
+        setIsDeleting(false)
+      },
+    })
+  }, [currentRow, deleteBrand, setOpen, setCurrentRow])
+
+  return (
+    <>
+      <BrandsMutateDialog
+        key="brand-create"
+        open={open === "create"}
+        onOpenChange={(val) => {
+          if (!val) setOpen(null)
+        }}
+      />
+
+      <BrandsImportDialog
+        key="brands-import"
+        open={open === "import"}
+        onOpenChange={(val) => {
+          if (!val) setOpen(null)
+        }}
+      />
+
+      <TenantModuleExportDialog
+        key="brands-export"
+        open={open === "export"}
+        onOpenChange={(val) => {
+          if (!val) {
+            setOpen(null)
+            setExportSelection(null)
+          }
+        }}
+        resourceLabel="Brands"
+        columnOptions={BRAND_EXPORT_COLUMNS}
+        selectedIds={exportSelection?.ids ?? []}
+        onExport={exportBrands}
+        onComplete={() => {
+          exportSelection?.onComplete?.()
+          setExportSelection(null)
+        }}
+      />
+
+      <BrandsMultiDeleteDialog
+        key="brands-delete-many"
+        open={open === "deleteMany"}
+        onOpenChange={(val) => {
+          if (!val) {
+            setOpen(null)
+            setDeleteManySelection(null)
+          }
+        }}
+        ids={(deleteManySelection?.ids ?? []) as number[]}
+        onComplete={() => {
+          deleteManySelection?.onComplete?.()
+          setDeleteManySelection(null)
+        }}
+      />
+
+      {currentRow && (
+        <>
+          <BrandsViewDialog
+            key={`brand-view-${currentRow.id}`}
+            open={open === "view"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            brand={currentRow}
+          />
+
+          <BrandsMutateDialog
+            key={`brand-update-${currentRow.id}`}
+            open={open === "update"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            currentRow={currentRow}
+          />
+
+          <ResponsiveDialog
+            open={open === "delete"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+          >
+            <ResponsiveDialogContent>
+              <ResponsiveDialogHeader>
+                <ResponsiveDialogTitle>Delete brand?</ResponsiveDialogTitle>
+                <ResponsiveDialogDescription>
+                  You are about to delete a brand with the ID{" "}
+                  <strong>{currentRow.id}</strong>. This action cannot be
+                  undone.
+                </ResponsiveDialogDescription>
+              </ResponsiveDialogHeader>
+              <ResponsiveDialogFooter>
+                <ResponsiveDialogClose
+                  render={<Button variant="outline">Cancel</Button>}
+                />
+                <Button
+                  variant="destructive"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                >
+                  {isDeleting && <Spinner />}
+                  Delete
+                </Button>
+              </ResponsiveDialogFooter>
+            </ResponsiveDialogContent>
+          </ResponsiveDialog>
+        </>
+      )}
+    </>
+  )
+}

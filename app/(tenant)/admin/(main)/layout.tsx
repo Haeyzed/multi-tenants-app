@@ -1,7 +1,8 @@
 import { AppSidebar } from "@/components/tenant/admin/components/app-sidebar"
+import { CommandMenu } from "@/components/tenant/admin/components/command-menu"
 import { TenantAdminAuthGuard } from "@/components/tenant/admin/components/auth-guard"
 import { DashboardShell } from "@/components/layout/dashboard-shell"
-import { TenantAuthProvider } from "@/lib/providers/tenant-auth-provider"
+import { TenantAuthProvider } from "@/lib/providers/tenant/tenant-auth-provider"
 
 export default function AdminMainLayout({
   children,
@@ -10,7 +11,10 @@ export default function AdminMainLayout({
 }) {
   return (
     <TenantAuthProvider>
-      <DashboardShell sidebar={<AppSidebar />}>
+      <DashboardShell
+        sidebar={<AppSidebar />}
+        commandMenu={<CommandMenu />}
+      >
         <TenantAdminAuthGuard>{children}</TenantAdminAuthGuard>
       </DashboardShell>
     </TenantAuthProvider>

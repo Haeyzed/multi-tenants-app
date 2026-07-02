@@ -25,7 +25,7 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { useAuth } from "@/lib/providers/auth-provider"
+import { useAuth } from "@/lib/providers/central/auth-provider"
 import { useGetUserOptions } from "@/hooks/central/use-user-query"
 import { type ExportColumnOption } from "@/lib/export-columns"
 import { type ExportParams, type ExportFileType } from "@/types/central/export"

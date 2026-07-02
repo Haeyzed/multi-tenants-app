@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { useCustomerAuth } from "@/lib/providers/customer-auth-provider"
+import { useCustomerAuth } from "@/lib/providers/tenant/customer-auth-provider"
 import { tenantCustomerApiClient } from "@/lib/services/tenant/api-client"
 
 export function CustomerAuthGuard({

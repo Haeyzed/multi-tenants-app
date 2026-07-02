@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { useTenantForgotPassword } from "@/hooks/tenant/use-auth-query"
-import { forgotPasswordSchema } from "@/schemas/central/auth-schema"
+import { tenantAdminForgotPasswordSchema } from "@/schemas/tenant/tenant-admin-auth-schema"
 import { handleFormApiError } from "@/lib/form-api-errors"
 
 export function ForgotPasswordForm({
@@ -28,12 +28,12 @@ export function ForgotPasswordForm({
 }: React.ComponentProps<"form">) {
   const forgotPasswordMutation = useTenantForgotPassword()
 
-  const form = useForm<z.infer<typeof forgotPasswordSchema>>({
-    resolver: zodResolver(forgotPasswordSchema),
+  const form = useForm<z.infer<typeof tenantAdminForgotPasswordSchema>>({
+    resolver: zodResolver(tenantAdminForgotPasswordSchema),
     defaultValues: { email: "" },
   })
 
-  const onSubmit = (values: z.infer<typeof forgotPasswordSchema>) => {
+  const onSubmit = (values: z.infer<typeof tenantAdminForgotPasswordSchema>) => {
     forgotPasswordMutation.mutate(values.email, {
       onSuccess: () => {
         toast.success("Password reset OTP sent to your email")

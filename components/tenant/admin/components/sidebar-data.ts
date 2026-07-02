@@ -1,4 +1,10 @@
-import { GalleryVerticalEndIcon, LayoutDashboardIcon } from "lucide-react"
+import {
+  GalleryVerticalEndIcon,
+  ImageIcon,
+  LayoutDashboardIcon,
+  TagIcon,
+  TagsIcon,
+} from "lucide-react"
 import type { SidebarData } from "@/components/layout/types"
 
 export const sidebarUser = {
@@ -23,6 +29,26 @@ export const sidebarData: SidebarData = {
           title: "Dashboard",
           url: "/admin/dashboard",
           icon: LayoutDashboardIcon,
+        },
+      ],
+    },
+    {
+      title: "Catalog",
+      items: [
+        {
+          title: "Brands",
+          url: "/admin/brands",
+          icon: TagIcon,
+        },
+        {
+          title: "Categories",
+          url: "/admin/categories",
+          icon: TagsIcon,
+        },
+        {
+          title: "Media",
+          url: "/admin/media",
+          icon: ImageIcon,
         },
       ],
     },

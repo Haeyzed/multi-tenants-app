@@ -45,7 +45,7 @@ class TenantApiClient {
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     path: string,
     body?: unknown,
-    params?: Record<string, string | undefined>
+    params?: Record<string, string | number | boolean | undefined>
   ): Promise<T> {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -59,7 +59,9 @@ class TenantApiClient {
     let url = `${resolveTenantApiBaseUrl()}${path}`
     if (params) {
       const filteredParams = Object.fromEntries(
-        Object.entries(params).filter(([, value]) => value !== undefined)
+        Object.entries(params)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => [key, String(value)])
       ) as Record<string, string>
       const query = new URLSearchParams(filteredParams).toString()
       if (query) url += `?${query}`
@@ -85,7 +87,10 @@ class TenantApiClient {
     return responseData as T
   }
 
-  public get<T>(path: string, params?: Record<string, string | undefined>) {
+  public get<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>
+  ) {
     return this.request<T>("GET", path, undefined, params)
   }
 
@@ -103,6 +108,136 @@ class TenantApiClient {
 
   public delete<T>(path: string, body?: unknown) {
     return this.request<T>("DELETE", path, body)
+  }
+
+  public async postFileDownload(
+    path: string,
+    body?: unknown,
+    options?: {
+      accept?: string
+      defaultFilename?: string
+    }
+  ): Promise<string> {
+    const headers: HeadersInit = {
+      Accept:
+        options?.accept ??
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv, application/octet-stream",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    if (body) {
+      headers["Content-Type"] = "application/json"
+    }
+
+    const response = await fetch(`${resolveTenantApiBaseUrl()}${path}`, {
+      method: "POST",
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+    if (!response.ok) {
+      const responseData = await response.json().catch(() => null)
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    const { parseFilenameFromContentDisposition, triggerBrowserDownload } =
+      await import("@/lib/export-utils")
+
+    const blob = await response.blob()
+    const filename =
+      parseFilenameFromContentDisposition(
+        response.headers.get("Content-Disposition")
+      ) ?? options?.defaultFilename ?? "export.xlsx"
+
+    triggerBrowserDownload(blob, filename)
+    return filename
+  }
+
+  public async getFileDownload(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>,
+    defaultFilename = "download.xlsx"
+  ): Promise<string> {
+    const headers: HeadersInit = {
+      Accept:
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv, application/octet-stream",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    let url = `${resolveTenantApiBaseUrl()}${path}`
+    if (params) {
+      const filteredParams = Object.fromEntries(
+        Object.entries(params)
+          .filter(([, value]) => value !== undefined)
+          .map(([key, value]) => [key, String(value)])
+      ) as Record<string, string>
+      const query = new URLSearchParams(filteredParams).toString()
+      if (query) url += `?${query}`
+    }
+
+    const response = await fetch(url, { method: "GET", headers })
+
+    if (!response.ok) {
+      const responseData = await response.json().catch(() => null)
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    const { parseFilenameFromContentDisposition, triggerBrowserDownload } =
+      await import("@/lib/export-utils")
+
+    const blob = await response.blob()
+    const filename =
+      parseFilenameFromContentDisposition(
+        response.headers.get("Content-Disposition")
+      ) ?? defaultFilename
+
+    triggerBrowserDownload(blob, filename)
+    return filename
+  }
+
+  public async upload<T>(path: string, formData: FormData): Promise<T> {
+    const headers: HeadersInit = {
+      Accept: "application/json",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    const response = await fetch(`${resolveTenantApiBaseUrl()}${path}`, {
+      method: "POST",
+      headers,
+      body: formData,
+    })
+
+    const responseData = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    return responseData as T
   }
 }
 

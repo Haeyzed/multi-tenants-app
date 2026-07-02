@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useCustomerAuth } from "@/lib/providers/customer-auth-provider"
+import { useCustomerAuth } from "@/lib/providers/tenant/customer-auth-provider"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,

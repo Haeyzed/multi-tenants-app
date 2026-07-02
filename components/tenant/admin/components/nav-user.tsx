@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useTenantAuth } from "@/lib/providers/tenant-auth-provider"
+import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,

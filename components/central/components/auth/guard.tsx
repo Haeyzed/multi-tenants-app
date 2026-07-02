@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/lib/providers/central/auth-provider";
 import { apiClient } from "@/lib/services/central/api-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

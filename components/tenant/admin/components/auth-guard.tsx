@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { useTenantAuth } from "@/lib/providers/tenant-auth-provider"
+import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
 import { tenantApiClient } from "@/lib/services/tenant/api-client"
 
 export function TenantAdminAuthGuard({
