@@ -26,6 +26,8 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import { Spinner } from "@/components/ui/spinner"
+import { handleFormApiError } from "@/lib/form-api-errors"
 import { X, Plus } from "lucide-react"
 import { useCreatePlan, useUpdatePlan } from "@/hooks/central/use-plan-query"
 import { type Plan } from "@/types/central/plan"
@@ -161,7 +163,7 @@ export function PlansMutateDialog({
             form.reset()
           },
           onError: (error) => {
-            toast.error(error.message || "Failed to update plan")
+            handleFormApiError(error, form.setError, "Failed to update plan")
           },
         }
       )
@@ -173,7 +175,7 @@ export function PlansMutateDialog({
           form.reset()
         },
         onError: (error) => {
-          toast.error(error.message || "Failed to create plan")
+          handleFormApiError(error, form.setError, "Failed to create plan")
         },
       })
     }
@@ -493,6 +495,7 @@ export function PlansMutateDialog({
             render={<Button variant="outline">Close</Button>}
           />
           <Button type="submit" form="plans-form" disabled={isSubmitting}>
+            {isSubmitting && <Spinner />}
             {isSubmitting
               ? "Saving..."
               : isUpdate

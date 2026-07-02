@@ -3,6 +3,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import TanstackProvider from "@/lib/providers/tanstack-provider"
 import { cn } from "@/lib/utils"
@@ -32,6 +33,7 @@ export default function RootLayout({
           <NuqsAdapter>
             {children}
           </NuqsAdapter>
+          <Toaster richColors closeButton />
         </TooltipProvider>
       </TanstackProvider>
     </ThemeProvider>

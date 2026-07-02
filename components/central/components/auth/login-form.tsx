@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Spinner } from "@/components/ui/spinner";
+import { handleFormApiError } from "@/lib/form-api-errors";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
   const router = useRouter();
@@ -28,8 +29,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
         router.push("/central/dashboard");
       },
       onError: (error) => {
-        // You can handle the error here, e.g., show a toast notification
-        console.error("Login failed:", error);
+        handleFormApiError(error, form.setError, "Login failed");
       },
     });
   };

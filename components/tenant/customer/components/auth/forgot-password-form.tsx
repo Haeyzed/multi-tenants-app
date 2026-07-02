@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { useCustomerForgotPassword } from "@/hooks/tenant/use-customer-auth-query"
 import { customerForgotPasswordSchema } from "@/schemas/tenant/customer-auth-schema"
+import { handleFormApiError } from "@/lib/form-api-errors"
 
 export function ForgotPasswordForm({
   className,
@@ -38,7 +39,7 @@ export function ForgotPasswordForm({
         toast.success("Password reset OTP sent to your email")
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to send reset OTP")
+        handleFormApiError(error, form.setError, "Failed to send reset OTP")
       },
     })
   }

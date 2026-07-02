@@ -11,6 +11,7 @@ import { useResetPassword } from "@/hooks/central/use-auth-query";
 import { resetPasswordSchema } from "@/schemas/central/auth-schema";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { handleFormApiError } from "@/lib/form-api-errors";
 
 export function ResetPasswordForm() {
   const router = useRouter();
@@ -30,6 +31,9 @@ export function ResetPasswordForm() {
     resetPasswordMutation.mutate(values, {
       onSuccess: () => {
         router.push("/central/login");
+      },
+      onError: (error) => {
+        handleFormApiError(error, form.setError, "Failed to reset password");
       },
     });
   };

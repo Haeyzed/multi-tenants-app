@@ -17,6 +17,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import { Spinner } from "@/components/ui/spinner"
+import { handleFormApiError } from "@/lib/form-api-errors"
 import { useCreateUser, useUpdateUser } from "@/hooks/central/use-user-query"
 import { type User } from "@/types/central/user"
 import {
@@ -96,7 +98,8 @@ export function UsersMutateDialog({
         onOpenChange(false)
         createForm.reset()
       },
-      onError: (error) => toast.error(error.message || "Failed to create user"),
+      onError: (error) =>
+        handleFormApiError(error, createForm.setError, "Failed to create user"),
     })
   }
 
@@ -114,7 +117,8 @@ export function UsersMutateDialog({
           onOpenChange(false)
           updateForm.reset()
         },
-        onError: (error) => toast.error(error.message || "Failed to update user"),
+        onError: (error) =>
+          handleFormApiError(error, updateForm.setError, "Failed to update user"),
       }
     )
   }
@@ -168,6 +172,7 @@ export function UsersMutateDialog({
               <FieldLabel>Phone</FieldLabel>
               <FieldContent>
                 <Input placeholder="+1234567890" {...updateForm.register("phone")} />
+                <FieldError message={updateForm.formState.errors.phone?.message} />
               </FieldContent>
             </Field>
             <Field>
@@ -218,6 +223,7 @@ export function UsersMutateDialog({
               <FieldLabel>Phone</FieldLabel>
               <FieldContent>
                 <Input placeholder="+1234567890" {...createForm.register("phone")} />
+                <FieldError message={createForm.formState.errors.phone?.message} />
               </FieldContent>
             </Field>
             <Field>
@@ -249,6 +255,7 @@ export function UsersMutateDialog({
         <ResponsiveDialogFooter>
           <ResponsiveDialogClose render={<Button variant="outline">Close</Button>} />
           <Button type="submit" form={formId} disabled={isSubmitting}>
+            {isSubmitting && <Spinner />}
             {isSubmitting ? "Saving..." : isUpdate ? "Update User" : "Create User"}
           </Button>
         </ResponsiveDialogFooter>

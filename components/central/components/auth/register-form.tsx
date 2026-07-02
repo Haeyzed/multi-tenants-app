@@ -11,6 +11,7 @@ import { useRegister } from "@/hooks/central/use-auth-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { handleFormApiError } from "@/lib/form-api-errors";
 
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -30,6 +31,9 @@ export function RegisterForm() {
     registerMutation.mutate(values, {
       onSuccess: () => {
         router.push("/central/dashboard");
+      },
+      onError: (error) => {
+        handleFormApiError(error, form.setError, "Registration failed");
       },
     });
   };

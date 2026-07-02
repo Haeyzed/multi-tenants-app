@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +21,7 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { Spinner } from "@/components/ui/spinner"
 import { useTenantLogin } from "@/hooks/tenant/use-auth-query"
 import { loginSchema } from "@/schemas/central/auth-schema"
+import { handleFormApiError } from "@/lib/form-api-errors"
 
 export function LoginForm({
   className,
@@ -41,7 +41,7 @@ export function LoginForm({
         router.push("/admin/dashboard")
       },
       onError: (error) => {
-        toast.error(error.message || "Login failed")
+        handleFormApiError(error, form.setError, "Login failed")
       },
     })
   }

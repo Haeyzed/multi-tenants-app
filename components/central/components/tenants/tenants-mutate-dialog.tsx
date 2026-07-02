@@ -45,6 +45,8 @@ import {
 } from "@/components/ui/combobox"
 import { PlanOption } from "@/types/central/plan"
 import { PhoneInput } from "@/components/ui/phone-input"
+import { Spinner } from "@/components/ui/spinner"
+import { handleFormApiError } from "@/lib/form-api-errors"
 import {
   InputGroup,
   InputGroupInput,
@@ -133,7 +135,11 @@ export function TenantsMutateDialog({
             form.reset()
           },
           onError: (error) => {
-            toast.error(error.message || "Failed to update tenant")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update tenant"
+            )
           },
         }
       )
@@ -145,7 +151,7 @@ export function TenantsMutateDialog({
           form.reset()
         },
         onError: (error) => {
-          toast.error(error.message || "Failed to create tenant")
+          handleFormApiError(error, form.setError, "Failed to create tenant")
         },
       })
     }
@@ -393,6 +399,7 @@ export function TenantsMutateDialog({
             render={<Button variant="outline">Close</Button>}
           />
           <Button type="submit" form="tenants-form" disabled={isSubmitting}>
+            {isSubmitting && <Spinner />}
             {isSubmitting
               ? "Saving..."
               : isUpdate

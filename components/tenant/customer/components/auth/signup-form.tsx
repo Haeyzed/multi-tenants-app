@@ -22,6 +22,7 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { Spinner } from "@/components/ui/spinner"
 import { useCustomerRegister } from "@/hooks/tenant/use-customer-auth-query"
 import { customerRegisterSchema } from "@/schemas/tenant/customer-auth-schema"
+import { handleFormApiError } from "@/lib/form-api-errors"
 
 export function SignupForm({
   className,
@@ -49,7 +50,7 @@ export function SignupForm({
         router.push("/dashboard")
       },
       onError: (error) => {
-        toast.error(error.message || "Registration failed")
+        handleFormApiError(error, form.setError, "Registration failed")
       },
     })
   }
@@ -114,6 +115,11 @@ export function SignupForm({
           <FieldLabel>Phone</FieldLabel>
           <FieldContent>
             <Input placeholder="+1234567890" {...form.register("phone")} />
+            <FieldError
+              errors={
+                form.formState.errors.phone ? [form.formState.errors.phone] : []
+              }
+            />
           </FieldContent>
         </Field>
         <Field>
