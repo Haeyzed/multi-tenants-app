@@ -1,6 +1,7 @@
 import {
   resolveTenantApiBaseUrl,
   TENANT_TOKEN_KEY,
+  TENANT_CUSTOMER_TOKEN_KEY,
 } from "@/lib/tenant-api-url"
 
 export class ApiError extends Error {
@@ -17,9 +18,9 @@ export class ApiError extends Error {
 class TenantApiClient {
   private token: string | null = null
 
-  constructor() {
+  constructor(private readonly tokenKey: string) {
     if (typeof window !== "undefined") {
-      this.token = localStorage.getItem(TENANT_TOKEN_KEY)
+      this.token = localStorage.getItem(this.tokenKey)
     }
   }
 
@@ -30,9 +31,9 @@ class TenantApiClient {
     }
 
     if (token) {
-      localStorage.setItem(TENANT_TOKEN_KEY, token)
+      localStorage.setItem(this.tokenKey, token)
     } else {
-      localStorage.removeItem(TENANT_TOKEN_KEY)
+      localStorage.removeItem(this.tokenKey)
     }
   }
 
@@ -105,4 +106,7 @@ class TenantApiClient {
   }
 }
 
-export const tenantApiClient = new TenantApiClient()
+export const tenantApiClient = new TenantApiClient(TENANT_TOKEN_KEY)
+export const tenantCustomerApiClient = new TenantApiClient(
+  TENANT_CUSTOMER_TOKEN_KEY
+)

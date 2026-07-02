@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/tenant/customer/components/app-sidebar"
 import { DashboardShell } from "@/components/layout/dashboard-shell"
+import { CustomerAuthProvider } from "@/lib/providers/customer-auth-provider"
 
 export default function CustomerMainLayout({
   children,
@@ -7,6 +8,8 @@ export default function CustomerMainLayout({
   children: React.ReactNode
 }) {
   return (
-    <DashboardShell sidebar={<AppSidebar />}>{children}</DashboardShell>
+    <CustomerAuthProvider>
+      <DashboardShell sidebar={<AppSidebar />}>{children}</DashboardShell>
+    </CustomerAuthProvider>
   )
 }

@@ -5,7 +5,6 @@ import { NavUser } from "@/components/tenant/customer/components/nav-user"
 import { TeamSwitcher } from "@/components/tenant/customer/components/team-switcher"
 import {
   sidebarData,
-  sidebarUser,
 } from "@/components/tenant/customer/components/sidebar-data"
 import { useLayout } from "@/lib/providers/layout-provider"
 import {
@@ -30,7 +29,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={sidebarUser} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
