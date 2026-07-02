@@ -1,6 +1,7 @@
 "use client"
 
 import { GalleryVerticalEndIcon } from "lucide-react"
+import { CentralGuestGuard } from "@/components/central/components/auth/guest-guard"
 
 export default function AuthLayout({
                                      children,
@@ -8,7 +9,8 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
+    <CentralGuestGuard>
+      <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
@@ -31,6 +33,7 @@ export default function AuthLayout({
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
-    </div>
+      </div>
+    </CentralGuestGuard>
   )
 }

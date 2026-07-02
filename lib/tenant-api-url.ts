@@ -1,6 +1,7 @@
+import { getTenantSubdomainFromHost } from "@/lib/tenant-host"
+
 const TOKEN_KEY = "tenant_token"
 const CUSTOMER_TOKEN_KEY = "tenant_customer_token"
-
 export function resolveTenantApiBaseUrl(): string {
   if (process.env.NEXT_PUBLIC_TENANT_API_URL) {
     return process.env.NEXT_PUBLIC_TENANT_API_URL
@@ -13,11 +14,10 @@ export function resolveTenantApiBaseUrl(): string {
     return `http://${apiBaseDomain}/api/v1/tenant`
   }
 
-  const hostname = window.location.hostname
-  const parts = hostname.split(".")
+  const subdomain = getTenantSubdomainFromHost(window.location.host)
 
-  if (parts.length >= 2 && parts[0] && parts[0] !== "www") {
-    return `http://${parts[0]}.${apiBaseDomain}/api/v1/tenant`
+  if (subdomain) {
+    return `http://${subdomain}.${apiBaseDomain}/api/v1/tenant`
   }
 
   return `http://${apiBaseDomain}/api/v1/tenant`

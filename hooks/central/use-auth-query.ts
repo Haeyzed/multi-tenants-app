@@ -9,6 +9,7 @@ import {
   updateProfile,
   changePassword,
 } from "@/lib/services/central/auth-service";
+import { apiClient } from "@/lib/services/central/api-client";
 import { User } from "@/types/central/user";
 
 export const useLogin = () => {
@@ -58,6 +59,8 @@ export const useGetProfile = () => {
   return useQuery({
     queryKey: ["profile"],
     queryFn: getProfile,
+    enabled: !!apiClient.getToken(),
+    retry: false,
   });
 };
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { z } from "zod"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -18,6 +18,7 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { PasswordInput } from "@/components/ui/password-input"
 import { Spinner } from "@/components/ui/spinner"
 import { useCustomerRegister } from "@/hooks/tenant/use-customer-auth-query"
@@ -114,7 +115,18 @@ export function SignupForm({
         <Field>
           <FieldLabel>Phone</FieldLabel>
           <FieldContent>
-            <Input placeholder="+1234567890" {...form.register("phone")} />
+            <Controller
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <PhoneInput
+                  placeholder="Enter phone number"
+                  defaultCountry="NG"
+                  value={field.value ?? undefined}
+                  onChange={field.onChange}
+                />
+              )}
+            />
             <FieldError
               errors={
                 form.formState.errors.phone ? [form.formState.errors.phone] : []

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/providers/auth-provider";
+import { apiClient } from "@/lib/services/central/api-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -15,13 +16,17 @@ export function Guard({
   const router = useRouter();
 
   useEffect(() => {
+    if (!apiClient.getToken()) {
+      router.replace("/central/login");
+      return;
+    }
+
     if (!isLoading && !user) {
-      router.push("/central/login");
+      router.replace("/central/login");
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || !user) {
-    // You can render a loading spinner here
+  if (!apiClient.getToken() || isLoading || !user) {
     return null;
   }
 
