@@ -4,7 +4,7 @@ import {
   CheckIcon,
   CopyIcon,
   DownloadIcon,
-  FileIcon,
+  EyeIcon,
   FolderInputIcon,
   FolderIcon,
   ImageIcon,
@@ -15,7 +15,13 @@ import {
 
 import { cn } from "@/lib/utils"
 import { downloadMediaItem } from "@/lib/tenant/media-download"
+import {
+  getMediaFileExtension,
+  isMediaImage,
+  isMediaPreviewable,
+} from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
+import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -54,6 +60,7 @@ interface MediaGridProps {
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onPreviewItem?: (item: MediaItem) => void
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
 }
@@ -63,13 +70,17 @@ function MediaFileActions({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onPreviewItem,
 }: {
   item: MediaItem
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onPreviewItem?: (item: MediaItem) => void
 }) {
-  if (!onMoveItem && !onCopyItem && !onDeleteItem) return null
+  if (!onMoveItem && !onCopyItem && !onDeleteItem && !onPreviewItem) return null
+
+  const canPreview = isMediaPreviewable(item)
 
   return (
     <DropdownMenu modal={false}>
@@ -88,6 +99,12 @@ function MediaFileActions({
         }
       />
       <DropdownMenuContent align="end" className="w-40">
+        {canPreview && onPreviewItem ? (
+          <DropdownMenuItem onClick={() => onPreviewItem(item)}>
+            <EyeIcon />
+            Open
+          </DropdownMenuItem>
+        ) : null}
         {onMoveItem ? (
           <DropdownMenuItem onClick={() => onMoveItem(item.id)}>
             <FolderInputIcon />
@@ -126,14 +143,24 @@ function FileContextMenuItems({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onPreviewItem,
 }: {
   item: MediaItem
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onPreviewItem?: (item: MediaItem) => void
 }) {
+  const canPreview = isMediaPreviewable(item)
+
   return (
     <>
+      {canPreview && onPreviewItem ? (
+        <ContextMenuItem onClick={() => onPreviewItem(item)}>
+          <EyeIcon />
+          Open
+        </ContextMenuItem>
+      ) : null}
       {onMoveItem ? (
         <ContextMenuItem onClick={() => onMoveItem(item.id)}>
           <FolderInputIcon />
@@ -213,6 +240,7 @@ export function MediaGrid({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onPreviewItem,
   onRenameFolder,
   onDeleteFolder,
 }: MediaGridProps) {
@@ -276,7 +304,8 @@ export function MediaGrid({
       })}
 
       {items.map((item) => {
-        const isImage = item.mime_type?.startsWith("image/")
+        const isImage = isMediaImage(item)
+        const extension = getMediaFileExtension(item)
         const isSelected =
           mode === "picker"
             ? pickerValue === item.id
@@ -298,6 +327,12 @@ export function MediaGrid({
 
               onToggleSelect?.(item.id)
             }}
+            onDoubleClick={(event) => {
+              event.preventDefault()
+              if (isMediaPreviewable(item)) {
+                onPreviewItem?.(item)
+              }
+            }}
           >
             <div className="relative aspect-square bg-muted/40">
               {isImage ? (
@@ -309,7 +344,7 @@ export function MediaGrid({
                 />
               ) : (
                 <div className="flex size-full items-center justify-center">
-                  <FileIcon className="size-7 text-muted-foreground" />
+                  <MediaFileIcon item={item} size="lg" />
                 </div>
               )}
 
@@ -329,6 +364,7 @@ export function MediaGrid({
                     onMoveItem={onMoveItem}
                     onCopyItem={onCopyItem}
                     onDeleteItem={onDeleteItem}
+                    onPreviewItem={onPreviewItem}
                   />
                 </>
               ) : null}
@@ -347,7 +383,11 @@ export function MediaGrid({
                 {item.title ?? item.name}
               </p>
               <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                {isImage ? <ImageIcon className="size-3" /> : null}
+                {isImage ? (
+                  <ImageIcon className="size-3" />
+                ) : extension ? (
+                  <span className="uppercase">{extension}</span>
+                ) : null}
                 <span>{formatFileSize(item.size)}</span>
               </div>
             </div>
@@ -367,6 +407,7 @@ export function MediaGrid({
                 onMoveItem={onMoveItem}
                 onCopyItem={onCopyItem}
                 onDeleteItem={onDeleteItem}
+                onPreviewItem={onPreviewItem}
               />
             </ContextMenuContent>
           </ContextMenu>

@@ -5,7 +5,7 @@ import {
   CheckIcon,
   CopyIcon,
   DownloadIcon,
-  FileIcon,
+  EyeIcon,
   FolderInputIcon,
   FolderIcon,
   PencilIcon,
@@ -14,7 +14,9 @@ import {
 
 import { cn } from "@/lib/utils"
 import { downloadMediaItem } from "@/lib/tenant/media-download"
+import { isMediaImage, isMediaPreviewable } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
+import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -52,6 +54,7 @@ interface MediaListProps {
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onPreviewItem?: (item: MediaItem) => void
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
 }
@@ -61,14 +64,24 @@ function FileContextMenuItems({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onPreviewItem,
 }: {
   item: MediaItem
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onPreviewItem?: (item: MediaItem) => void
 }) {
+  const canPreview = isMediaPreviewable(item)
+
   return (
     <>
+      {canPreview && onPreviewItem ? (
+        <ContextMenuItem onClick={() => onPreviewItem(item)}>
+          <EyeIcon />
+          Open
+        </ContextMenuItem>
+      ) : null}
       {onMoveItem ? (
         <ContextMenuItem onClick={() => onMoveItem(item.id)}>
           <FolderInputIcon />
@@ -148,6 +161,7 @@ export function MediaList({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onPreviewItem,
   onRenameFolder,
   onDeleteFolder,
 }: MediaListProps) {
@@ -201,7 +215,7 @@ export function MediaList({
       })}
 
       {items.map((item) => {
-        const isImage = item.mime_type?.startsWith("image/")
+        const isImage = isMediaImage(item)
         const isSelected =
           mode === "picker"
             ? pickerValue === item.id
@@ -221,6 +235,12 @@ export function MediaList({
                 return
               }
               onToggleSelect?.(item.id)
+            }}
+            onDoubleClick={(event) => {
+              event.preventDefault()
+              if (isMediaPreviewable(item)) {
+                onPreviewItem?.(item)
+              }
             }}
           >
             {mode === "manage" ? (
@@ -243,7 +263,7 @@ export function MediaList({
                   zoomable={mode === "manage"}
                 />
               ) : (
-                <FileIcon />
+                <MediaFileIcon item={item} size="sm" />
               )}
             </ItemMedia>
 
@@ -278,6 +298,7 @@ export function MediaList({
                 onMoveItem={onMoveItem}
                 onCopyItem={onCopyItem}
                 onDeleteItem={onDeleteItem}
+                onPreviewItem={onPreviewItem}
               />
             </ContextMenuContent>
           </ContextMenu>

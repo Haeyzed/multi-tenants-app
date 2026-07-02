@@ -19,6 +19,7 @@ import { MediaBulkDeleteDialog } from "@/components/tenant/admin/components/medi
 import { MediaFolderDeleteDialog } from "@/components/tenant/admin/components/media/media-folder-delete-dialog"
 import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
 import { MediaImportUrlDialog } from "@/components/tenant/admin/components/media/media-import-url-dialog"
+import { MediaPreviewDialog } from "@/components/tenant/admin/components/media/media-preview-dialog"
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import { MediaGrid } from "@/components/tenant/admin/components/media/media-grid"
 import { MediaList } from "@/components/tenant/admin/components/media/media-list"
@@ -41,7 +42,7 @@ import {
   useGetMediaFolders,
   useGetMediaPaginated,
 } from "@/hooks/tenant/use-media-query"
-import type { MediaBrowserFolder } from "@/types/tenant/media"
+import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
 
 type ViewMode = "grid" | "list"
@@ -129,7 +130,7 @@ function ActionToolbar({
 interface MediaLibraryPanelProps {
   mode?: "manage" | "picker"
   pickerValue?: number | null
-  onPick?: (item: import("@/types/tenant/media").MediaItem) => void
+  onPick?: (item: MediaItem) => void
   accept?: string
   className?: string
 }
@@ -154,6 +155,7 @@ export function MediaLibraryPanel({
   const [folderDeleteTarget, setFolderDeleteTarget] =
     React.useState<MediaBrowserFolder | null>(null)
   const [importUrlOpen, setImportUrlOpen] = React.useState(false)
+  const [previewItem, setPreviewItem] = React.useState<MediaItem | null>(null)
   const [moveDialogOpen, setMoveDialogOpen] = React.useState(false)
   const [copyDialogOpen, setCopyDialogOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
@@ -303,6 +305,7 @@ export function MediaLibraryPanel({
     onDeleteFolder: canManage
       ? (folder: MediaBrowserFolder) => setFolderDeleteTarget(folder)
       : undefined,
+    onPreviewItem: (item: MediaItem) => setPreviewItem(item),
   }
 
   return (
@@ -471,6 +474,14 @@ export function MediaLibraryPanel({
         open={importUrlOpen}
         onOpenChange={setImportUrlOpen}
         folderId={folderId}
+      />
+
+      <MediaPreviewDialog
+        open={!!previewItem}
+        onOpenChange={(open) => {
+          if (!open) setPreviewItem(null)
+        }}
+        item={previewItem}
       />
 
       <MediaMoveDialog
