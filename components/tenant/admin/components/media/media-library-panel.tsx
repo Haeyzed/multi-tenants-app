@@ -20,6 +20,7 @@ import { MediaFolderDeleteDialog } from "@/components/tenant/admin/components/me
 import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
 import { MediaImportUrlDialog } from "@/components/tenant/admin/components/media/media-import-url-dialog"
 import { MediaPreviewDialog } from "@/components/tenant/admin/components/media/media-preview-dialog"
+import { MediaPropertiesDialog } from "@/components/tenant/admin/components/media/media-properties-dialog"
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import { MediaGrid } from "@/components/tenant/admin/components/media/media-grid"
 import { MediaList } from "@/components/tenant/admin/components/media/media-list"
@@ -159,6 +160,9 @@ export function MediaLibraryPanel({
     React.useState<MediaBrowserFolder | null>(null)
   const [importUrlOpen, setImportUrlOpen] = React.useState(false)
   const [previewItem, setPreviewItem] = React.useState<MediaItem | null>(null)
+  const [propertiesItem, setPropertiesItem] = React.useState<MediaItem | null>(
+    null
+  )
   const [processingItemId, setProcessingItemId] = React.useState<number | null>(
     null
   )
@@ -375,6 +379,7 @@ export function MediaLibraryPanel({
       ? (folder: MediaBrowserFolder) => setFolderDeleteTarget(folder)
       : undefined,
     onPreviewItem: (item: MediaItem) => setPreviewItem(item),
+    onViewProperties: (item: MediaItem) => setPropertiesItem(item),
     onRemoveBackground: canManage ? handleRemoveBackground : undefined,
     processingItemId,
   }
@@ -553,6 +558,14 @@ export function MediaLibraryPanel({
           if (!open) setPreviewItem(null)
         }}
         item={previewItem}
+      />
+
+      <MediaPropertiesDialog
+        open={!!propertiesItem}
+        onOpenChange={(open) => {
+          if (!open) setPropertiesItem(null)
+        }}
+        item={propertiesItem}
       />
 
       <MediaMoveDialog

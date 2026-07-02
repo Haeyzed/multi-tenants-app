@@ -8,6 +8,7 @@ import {
   FolderInputIcon,
   FolderIcon,
   ImageIcon,
+  InfoIcon,
   MoreHorizontalIcon,
   PencilIcon,
   Trash2Icon,
@@ -65,6 +66,7 @@ interface MediaGridProps {
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onViewProperties?: (item: MediaItem) => void
   onRemoveBackground?: (item: MediaItem) => void
   processingItemId?: number | null
   onRenameFolder?: (folder: MediaBrowserFolder) => void
@@ -77,6 +79,7 @@ function MediaFileActions({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onViewProperties,
   onRemoveBackground,
   processingItemId,
 }: {
@@ -85,6 +88,7 @@ function MediaFileActions({
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onViewProperties?: (item: MediaItem) => void
   onRemoveBackground?: (item: MediaItem) => void
   processingItemId?: number | null
 }) {
@@ -93,6 +97,7 @@ function MediaFileActions({
     !onCopyItem &&
     !onDeleteItem &&
     !onPreviewItem &&
+    !onViewProperties &&
     !onRemoveBackground
   ) {
     return null
@@ -121,6 +126,12 @@ function MediaFileActions({
           <DropdownMenuItem onClick={() => onPreviewItem(item)}>
             <EyeIcon />
             Open
+          </DropdownMenuItem>
+        ) : null}
+        {onViewProperties ? (
+          <DropdownMenuItem onClick={() => onViewProperties(item)}>
+            <InfoIcon />
+            Properties
           </DropdownMenuItem>
         ) : null}
         {onMoveItem ? (
@@ -167,6 +178,7 @@ function FileContextMenuItems({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onViewProperties,
   onRemoveBackground,
   processingItemId,
 }: {
@@ -175,6 +187,7 @@ function FileContextMenuItems({
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onViewProperties?: (item: MediaItem) => void
   onRemoveBackground?: (item: MediaItem) => void
   processingItemId?: number | null
 }) {
@@ -186,6 +199,12 @@ function FileContextMenuItems({
         <ContextMenuItem onClick={() => onPreviewItem(item)}>
           <EyeIcon />
           Open
+        </ContextMenuItem>
+      ) : null}
+      {onViewProperties ? (
+        <ContextMenuItem onClick={() => onViewProperties(item)}>
+          <InfoIcon />
+          Properties
         </ContextMenuItem>
       ) : null}
       {onMoveItem ? (
@@ -273,6 +292,7 @@ export function MediaGrid({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onViewProperties,
   onRemoveBackground,
   processingItemId,
   onRenameFolder,
@@ -399,6 +419,7 @@ export function MediaGrid({
                     onCopyItem={onCopyItem}
                     onDeleteItem={onDeleteItem}
                     onPreviewItem={onPreviewItem}
+                    onViewProperties={onViewProperties}
                     onRemoveBackground={onRemoveBackground}
                     processingItemId={processingItemId}
                   />
@@ -444,6 +465,7 @@ export function MediaGrid({
                 onCopyItem={onCopyItem}
                 onDeleteItem={onDeleteItem}
                 onPreviewItem={onPreviewItem}
+                onViewProperties={onViewProperties}
                 onRemoveBackground={onRemoveBackground}
                 processingItemId={processingItemId}
               />

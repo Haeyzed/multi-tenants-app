@@ -47,6 +47,7 @@ export interface MediaItem {
   updated_at: string | null
   folder?: MediaFolder | null
   uploader?: MediaUploader | null
+  custom_properties?: Record<string, unknown> | null
 }
 
 export interface MediaListParams {

@@ -8,6 +8,7 @@ import {
   EyeIcon,
   FolderInputIcon,
   FolderIcon,
+  InfoIcon,
   PencilIcon,
   Trash2Icon,
 } from "lucide-react"
@@ -56,6 +57,7 @@ interface MediaListProps {
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onViewProperties?: (item: MediaItem) => void
   onRemoveBackground?: (item: MediaItem) => void
   processingItemId?: number | null
   onRenameFolder?: (folder: MediaBrowserFolder) => void
@@ -68,6 +70,7 @@ function FileContextMenuItems({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onViewProperties,
   onRemoveBackground,
   processingItemId,
 }: {
@@ -76,6 +79,7 @@ function FileContextMenuItems({
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onViewProperties?: (item: MediaItem) => void
   onRemoveBackground?: (item: MediaItem) => void
   processingItemId?: number | null
 }) {
@@ -87,6 +91,12 @@ function FileContextMenuItems({
         <ContextMenuItem onClick={() => onPreviewItem(item)}>
           <EyeIcon />
           Open
+        </ContextMenuItem>
+      ) : null}
+      {onViewProperties ? (
+        <ContextMenuItem onClick={() => onViewProperties(item)}>
+          <InfoIcon />
+          Properties
         </ContextMenuItem>
       ) : null}
       {onMoveItem ? (
@@ -174,6 +184,7 @@ export function MediaList({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onViewProperties,
   onRemoveBackground,
   processingItemId,
   onRenameFolder,
@@ -313,6 +324,7 @@ export function MediaList({
                 onCopyItem={onCopyItem}
                 onDeleteItem={onDeleteItem}
                 onPreviewItem={onPreviewItem}
+                onViewProperties={onViewProperties}
                 onRemoveBackground={onRemoveBackground}
                 processingItemId={processingItemId}
               />
