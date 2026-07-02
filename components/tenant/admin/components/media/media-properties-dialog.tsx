@@ -129,10 +129,20 @@ export function MediaPropertiesDialog({
       }
       fields={
         isLoading || !displayItem
-          ? Array.from({ length: 8 }).map((_, index) => ({
-              label: `loading-${index}`,
-              value: <Skeleton className="h-5 w-full" />,
-            }))
+          ? [
+              {
+                label: "Loading",
+                value: (
+                  <div className="space-y-3 sm:col-span-2">
+                    <Skeleton className="mx-auto size-24 rounded-md" />
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-5 w-full" />
+                  </div>
+                ),
+                className: "sm:col-span-2",
+              },
+            ]
           : buildFields(displayItem)
       }
     />
