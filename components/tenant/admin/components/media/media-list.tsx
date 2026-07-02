@@ -4,12 +4,16 @@ import { formatDistanceToNow } from "date-fns"
 import {
   CheckIcon,
   CopyIcon,
+  DownloadIcon,
   FileIcon,
+  FolderInputIcon,
   FolderIcon,
+  PencilIcon,
   Trash2Icon,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { downloadMediaItem } from "@/lib/tenant/media-download"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -48,6 +52,88 @@ interface MediaListProps {
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onRenameFolder?: (folder: MediaBrowserFolder) => void
+  onDeleteFolder?: (folder: MediaBrowserFolder) => void
+}
+
+function FileContextMenuItems({
+  item,
+  onMoveItem,
+  onCopyItem,
+  onDeleteItem,
+}: {
+  item: MediaItem
+  onMoveItem?: (id: number) => void
+  onCopyItem?: (id: number) => void
+  onDeleteItem?: (id: number) => void
+}) {
+  return (
+    <>
+      {onMoveItem ? (
+        <ContextMenuItem onClick={() => onMoveItem(item.id)}>
+          <FolderInputIcon />
+          Move
+        </ContextMenuItem>
+      ) : null}
+      {onCopyItem ? (
+        <ContextMenuItem onClick={() => onCopyItem(item.id)}>
+          <CopyIcon />
+          Copy
+        </ContextMenuItem>
+      ) : null}
+      <ContextMenuItem onClick={() => downloadMediaItem(item)}>
+        <DownloadIcon />
+        Download
+      </ContextMenuItem>
+      {onDeleteItem ? (
+        <>
+          <ContextMenuSeparator />
+          <ContextMenuItem
+            variant="destructive"
+            onClick={() => onDeleteItem(item.id)}
+          >
+            <Trash2Icon />
+            Delete
+          </ContextMenuItem>
+        </>
+      ) : null}
+    </>
+  )
+}
+
+function FolderContextMenuItems({
+  folder,
+  onRenameFolder,
+  onDeleteFolder,
+}: {
+  folder: MediaBrowserFolder
+  onRenameFolder?: (folder: MediaBrowserFolder) => void
+  onDeleteFolder?: (folder: MediaBrowserFolder) => void
+}) {
+  if (!onRenameFolder && !onDeleteFolder) return null
+
+  return (
+    <>
+      {onRenameFolder ? (
+        <ContextMenuItem onClick={() => onRenameFolder(folder)}>
+          <PencilIcon />
+          Rename
+        </ContextMenuItem>
+      ) : null}
+      {onDeleteFolder ? (
+        <>
+          {onRenameFolder ? <ContextMenuSeparator /> : null}
+          <ContextMenuItem
+            variant="destructive"
+            onClick={() => onDeleteFolder(folder)}
+          >
+            <Trash2Icon />
+            Delete
+          </ContextMenuItem>
+        </>
+      ) : null}
+    </>
+  )
 }
 
 export function MediaList({
@@ -62,6 +148,8 @@ export function MediaList({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onRenameFolder,
+  onDeleteFolder,
 }: MediaListProps) {
   const isEmpty = folders.length === 0 && items.length === 0
 
@@ -76,23 +164,41 @@ export function MediaList({
 
   return (
     <ItemGroup className="gap-1">
-      {folders.map((folder) => (
-        <Item
-          key={`folder-${folder.id}`}
-          size="sm"
-          variant="outline"
-          className="cursor-pointer hover:bg-muted/50"
-          onClick={() => onOpenFolder?.(folder.id)}
-        >
-          <ItemMedia variant="icon">
-            <FolderIcon className="text-amber-600 dark:text-amber-400" />
-          </ItemMedia>
-          <ItemContent>
-            <ItemTitle>{folder.name}</ItemTitle>
-            <ItemDescription>{folder.media_count ?? 0} files</ItemDescription>
-          </ItemContent>
-        </Item>
-      ))}
+      {folders.map((folder) => {
+        const row = (
+          <Item
+            size="sm"
+            variant="outline"
+            className="cursor-pointer hover:bg-muted/50"
+            onClick={() => onOpenFolder?.(folder.id)}
+          >
+            <ItemMedia variant="icon">
+              <FolderIcon className="text-amber-600 dark:text-amber-400" />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{folder.name}</ItemTitle>
+              <ItemDescription>{folder.media_count ?? 0} files</ItemDescription>
+            </ItemContent>
+          </Item>
+        )
+
+        if (mode !== "manage" || (!onRenameFolder && !onDeleteFolder)) {
+          return <div key={`folder-${folder.id}`}>{row}</div>
+        }
+
+        return (
+          <ContextMenu key={`folder-${folder.id}`}>
+            <ContextMenuTrigger render={row} />
+            <ContextMenuContent>
+              <FolderContextMenuItems
+                folder={folder}
+                onRenameFolder={onRenameFolder}
+                onDeleteFolder={onDeleteFolder}
+              />
+            </ContextMenuContent>
+          </ContextMenu>
+        )
+      })}
 
       {items.map((item) => {
         const isImage = item.mime_type?.startsWith("image/")
@@ -159,7 +265,7 @@ export function MediaList({
           </Item>
         )
 
-        if (mode !== "manage" || (!onMoveItem && !onCopyItem && !onDeleteItem)) {
+        if (mode !== "manage") {
           return <div key={item.id}>{row}</div>
         }
 
@@ -167,29 +273,12 @@ export function MediaList({
           <ContextMenu key={item.id}>
             <ContextMenuTrigger render={row} />
             <ContextMenuContent>
-              {onMoveItem ? (
-                <ContextMenuItem onClick={() => onMoveItem(item.id)}>
-                  Move
-                </ContextMenuItem>
-              ) : null}
-              {onCopyItem ? (
-                <ContextMenuItem onClick={() => onCopyItem(item.id)}>
-                  <CopyIcon />
-                  Copy
-                </ContextMenuItem>
-              ) : null}
-              {onDeleteItem ? (
-                <>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem
-                    variant="destructive"
-                    onClick={() => onDeleteItem(item.id)}
-                  >
-                    <Trash2Icon />
-                    Delete
-                  </ContextMenuItem>
-                </>
-              ) : null}
+              <FileContextMenuItems
+                item={item}
+                onMoveItem={onMoveItem}
+                onCopyItem={onCopyItem}
+                onDeleteItem={onDeleteItem}
+              />
             </ContextMenuContent>
           </ContextMenu>
         )

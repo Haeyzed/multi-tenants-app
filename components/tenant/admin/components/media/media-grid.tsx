@@ -1,17 +1,20 @@
 "use client"
 
-import { formatDistanceToNow } from "date-fns"
 import {
   CheckIcon,
   CopyIcon,
+  DownloadIcon,
   FileIcon,
+  FolderInputIcon,
   FolderIcon,
   ImageIcon,
   MoreHorizontalIcon,
+  PencilIcon,
   Trash2Icon,
 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
+import { downloadMediaItem } from "@/lib/tenant/media-download"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -51,15 +54,17 @@ interface MediaGridProps {
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
+  onRenameFolder?: (folder: MediaBrowserFolder) => void
+  onDeleteFolder?: (folder: MediaBrowserFolder) => void
 }
 
 function MediaFileActions({
-  itemId,
+  item,
   onMoveItem,
   onCopyItem,
   onDeleteItem,
 }: {
-  itemId: number
+  item: MediaItem
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
@@ -84,22 +89,27 @@ function MediaFileActions({
       />
       <DropdownMenuContent align="end" className="w-40">
         {onMoveItem ? (
-          <DropdownMenuItem onClick={() => onMoveItem(itemId)}>
+          <DropdownMenuItem onClick={() => onMoveItem(item.id)}>
+            <FolderInputIcon />
             Move
           </DropdownMenuItem>
         ) : null}
         {onCopyItem ? (
-          <DropdownMenuItem onClick={() => onCopyItem(itemId)}>
+          <DropdownMenuItem onClick={() => onCopyItem(item.id)}>
             <CopyIcon />
             Copy
           </DropdownMenuItem>
         ) : null}
+        <DropdownMenuItem onClick={() => downloadMediaItem(item)}>
+          <DownloadIcon />
+          Download
+        </DropdownMenuItem>
         {onDeleteItem ? (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => onDeleteItem(itemId)}
+              onClick={() => onDeleteItem(item.id)}
             >
               <Trash2Icon />
               Delete
@@ -108,6 +118,86 @@ function MediaFileActions({
         ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+function FileContextMenuItems({
+  item,
+  onMoveItem,
+  onCopyItem,
+  onDeleteItem,
+}: {
+  item: MediaItem
+  onMoveItem?: (id: number) => void
+  onCopyItem?: (id: number) => void
+  onDeleteItem?: (id: number) => void
+}) {
+  return (
+    <>
+      {onMoveItem ? (
+        <ContextMenuItem onClick={() => onMoveItem(item.id)}>
+          <FolderInputIcon />
+          Move
+        </ContextMenuItem>
+      ) : null}
+      {onCopyItem ? (
+        <ContextMenuItem onClick={() => onCopyItem(item.id)}>
+          <CopyIcon />
+          Copy
+        </ContextMenuItem>
+      ) : null}
+      <ContextMenuItem onClick={() => downloadMediaItem(item)}>
+        <DownloadIcon />
+        Download
+      </ContextMenuItem>
+      {onDeleteItem ? (
+        <>
+          <ContextMenuSeparator />
+          <ContextMenuItem
+            variant="destructive"
+            onClick={() => onDeleteItem(item.id)}
+          >
+            <Trash2Icon />
+            Delete
+          </ContextMenuItem>
+        </>
+      ) : null}
+    </>
+  )
+}
+
+function FolderContextMenuItems({
+  folder,
+  onRenameFolder,
+  onDeleteFolder,
+}: {
+  folder: MediaBrowserFolder
+  onRenameFolder?: (folder: MediaBrowserFolder) => void
+  onDeleteFolder?: (folder: MediaBrowserFolder) => void
+}) {
+  if (!onRenameFolder && !onDeleteFolder) return null
+
+  return (
+    <>
+      {onRenameFolder ? (
+        <ContextMenuItem onClick={() => onRenameFolder(folder)}>
+          <PencilIcon />
+          Rename
+        </ContextMenuItem>
+      ) : null}
+      {onDeleteFolder ? (
+        <>
+          {onRenameFolder ? <ContextMenuSeparator /> : null}
+          <ContextMenuItem
+            variant="destructive"
+            onClick={() => onDeleteFolder(folder)}
+          >
+            <Trash2Icon />
+            Delete
+          </ContextMenuItem>
+        </>
+      ) : null}
+    </>
   )
 }
 
@@ -123,6 +213,8 @@ export function MediaGrid({
   onMoveItem,
   onCopyItem,
   onDeleteItem,
+  onRenameFolder,
+  onDeleteFolder,
 }: MediaGridProps) {
   const isEmpty = folders.length === 0 && items.length === 0
 
@@ -143,27 +235,45 @@ export function MediaGrid({
 
   return (
     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
-      {folders.map((folder) => (
-        <button
-          key={`folder-${folder.id}`}
-          type="button"
-          data-media-folder
-          className="group relative overflow-hidden rounded-md border bg-card text-left transition-colors hover:border-primary/40"
-          onClick={() => onOpenFolder?.(folder.id)}
-        >
-          <div className="relative aspect-square bg-amber-500/10">
-            <div className="flex size-full items-center justify-center">
-              <FolderIcon className="size-8 text-amber-600 dark:text-amber-400" />
+      {folders.map((folder) => {
+        const folderTile = (
+          <button
+            type="button"
+            data-media-folder
+            className="group relative w-full overflow-hidden rounded-md border bg-card text-left transition-colors hover:border-primary/40"
+            onClick={() => onOpenFolder?.(folder.id)}
+          >
+            <div className="relative aspect-square bg-amber-500/10">
+              <div className="flex size-full items-center justify-center">
+                <FolderIcon className="size-8 text-amber-600 dark:text-amber-400" />
+              </div>
             </div>
-          </div>
-          <div className="space-y-0.5 p-2">
-            <p className="truncate text-xs font-medium">{folder.name}</p>
-            <p className="text-[11px] text-muted-foreground">
-              {folder.media_count ?? 0} files
-            </p>
-          </div>
-        </button>
-      ))}
+            <div className="space-y-0.5 p-2">
+              <p className="truncate text-xs font-medium">{folder.name}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {folder.media_count ?? 0} files
+              </p>
+            </div>
+          </button>
+        )
+
+        if (mode !== "manage" || (!onRenameFolder && !onDeleteFolder)) {
+          return <div key={`folder-${folder.id}`}>{folderTile}</div>
+        }
+
+        return (
+          <ContextMenu key={`folder-${folder.id}`}>
+            <ContextMenuTrigger render={folderTile} />
+            <ContextMenuContent>
+              <FolderContextMenuItems
+                folder={folder}
+                onRenameFolder={onRenameFolder}
+                onDeleteFolder={onDeleteFolder}
+              />
+            </ContextMenuContent>
+          </ContextMenu>
+        )
+      })}
 
       {items.map((item) => {
         const isImage = item.mime_type?.startsWith("image/")
@@ -215,7 +325,7 @@ export function MediaGrid({
                     />
                   </div>
                   <MediaFileActions
-                    itemId={item.id}
+                    item={item}
                     onMoveItem={onMoveItem}
                     onCopyItem={onCopyItem}
                     onDeleteItem={onDeleteItem}
@@ -244,7 +354,7 @@ export function MediaGrid({
           </button>
         )
 
-        if (mode !== "manage" || (!onMoveItem && !onCopyItem && !onDeleteItem)) {
+        if (mode !== "manage") {
           return <div key={item.id}>{tile}</div>
         }
 
@@ -252,29 +362,12 @@ export function MediaGrid({
           <ContextMenu key={item.id}>
             <ContextMenuTrigger render={tile} />
             <ContextMenuContent>
-              {onMoveItem ? (
-                <ContextMenuItem onClick={() => onMoveItem(item.id)}>
-                  Move
-                </ContextMenuItem>
-              ) : null}
-              {onCopyItem ? (
-                <ContextMenuItem onClick={() => onCopyItem(item.id)}>
-                  <CopyIcon />
-                  Copy
-                </ContextMenuItem>
-              ) : null}
-              {onDeleteItem ? (
-                <>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem
-                    variant="destructive"
-                    onClick={() => onDeleteItem(item.id)}
-                  >
-                    <Trash2Icon />
-                    Delete
-                  </ContextMenuItem>
-                </>
-              ) : null}
+              <FileContextMenuItems
+                item={item}
+                onMoveItem={onMoveItem}
+                onCopyItem={onCopyItem}
+                onDeleteItem={onDeleteItem}
+              />
             </ContextMenuContent>
           </ContextMenu>
         )

@@ -1,11 +1,13 @@
 "use client"
 
-import { FolderPlusIcon } from "lucide-react"
 import * as React from "react"
 import { toast } from "sonner"
 
-import { useCreateMediaFolder } from "@/hooks/tenant/use-media-query"
-import type { MediaFolder } from "@/types/tenant/media"
+import {
+  useCreateMediaFolder,
+  useUpdateMediaFolder,
+} from "@/hooks/tenant/use-media-query"
+import type { MediaBrowserFolder, MediaFolder } from "@/types/tenant/media"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
@@ -23,26 +25,53 @@ interface MediaFolderFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   parentId?: number | null
+  folder?: MediaFolder | MediaBrowserFolder | null
   onCreated?: (folder: MediaFolder) => void
+  onUpdated?: (folder: MediaFolder) => void
 }
 
 export function MediaFolderFormDialog({
   open,
   onOpenChange,
   parentId = null,
+  folder = null,
   onCreated,
+  onUpdated,
 }: MediaFolderFormDialogProps) {
+  const isEdit = !!folder
   const [name, setName] = React.useState("")
   const createFolder = useCreateMediaFolder()
+  const updateFolder = useUpdateMediaFolder()
+  const isPending = createFolder.isPending || updateFolder.isPending
 
   React.useEffect(() => {
     if (open) {
-      setName("")
+      setName(folder?.name ?? "")
     }
-  }, [open])
+  }, [open, folder])
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
+
+    if (isEdit && folder) {
+      updateFolder.mutate(
+        {
+          id: folder.id,
+          payload: { name: name.trim() },
+        },
+        {
+          onSuccess: (updated) => {
+            toast.success("Folder renamed successfully")
+            onUpdated?.(updated)
+            onOpenChange(false)
+          },
+          onError: (error) => {
+            toast.error(error.message || "Unable to rename folder")
+          },
+        }
+      )
+      return
+    }
 
     createFolder.mutate(
       {
@@ -50,9 +79,9 @@ export function MediaFolderFormDialog({
         parent_id: parentId,
       },
       {
-        onSuccess: (folder) => {
+        onSuccess: (created) => {
           toast.success("Folder created successfully")
-          onCreated?.(folder)
+          onCreated?.(created)
           onOpenChange(false)
         },
         onError: (error) => {
@@ -66,9 +95,13 @@ export function MediaFolderFormDialog({
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent className="sm:max-w-md">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Create folder</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>
+            {isEdit ? "Rename folder" : "Create folder"}
+          </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Organize your media library with folders.
+            {isEdit
+              ? "Update the folder name."
+              : "Organize your media library with folders."}
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
@@ -96,20 +129,22 @@ export function MediaFolderFormDialog({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={createFolder.isPending}
+            disabled={isPending}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             form="media-folder-form"
-            disabled={createFolder.isPending || !name.trim()}
+            disabled={isPending || !name.trim()}
           >
-            {createFolder.isPending ? (
+            {isPending ? (
               <>
                 <Spinner />
-                Creating...
+                {isEdit ? "Saving..." : "Creating..."}
               </>
+            ) : isEdit ? (
+              "Save"
             ) : (
               "Create folder"
             )}

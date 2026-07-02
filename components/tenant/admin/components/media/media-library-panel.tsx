@@ -3,8 +3,10 @@
 import {
   ChevronRightIcon,
   CopyIcon,
+  FolderInputIcon,
   FolderPlusIcon,
   LayoutGridIcon,
+  LinkIcon,
   ListIcon,
   SearchIcon,
   Trash2Icon,
@@ -14,7 +16,9 @@ import * as React from "react"
 import { toast } from "sonner"
 
 import { MediaBulkDeleteDialog } from "@/components/tenant/admin/components/media/media-bulk-delete-dialog"
+import { MediaFolderDeleteDialog } from "@/components/tenant/admin/components/media/media-folder-delete-dialog"
 import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
+import { MediaImportUrlDialog } from "@/components/tenant/admin/components/media/media-import-url-dialog"
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import { MediaGrid } from "@/components/tenant/admin/components/media/media-grid"
 import { MediaList } from "@/components/tenant/admin/components/media/media-list"
@@ -32,10 +36,12 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   useBulkUploadMedia,
   useDeleteMedia,
+  useDeleteMediaFolder,
   useGetMediaFolderTree,
   useGetMediaFolders,
   useGetMediaPaginated,
 } from "@/hooks/tenant/use-media-query"
+import type { MediaBrowserFolder } from "@/types/tenant/media"
 import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
 
 type ViewMode = "grid" | "list"
@@ -49,6 +55,7 @@ function ActionToolbar({
   onMove,
   onCopy,
   onDelete,
+  onImportUrl,
   canUpload,
 }: {
   mode: "manage" | "picker"
@@ -59,6 +66,7 @@ function ActionToolbar({
   onMove: () => void
   onCopy: () => void
   onDelete: () => void
+  onImportUrl: () => void
   canUpload: boolean
 }) {
   return (
@@ -66,6 +74,7 @@ function ActionToolbar({
       {mode === "manage" && selectedCount > 0 ? (
         <>
           <Button type="button" variant="outline" size="sm" onClick={onMove}>
+            <FolderInputIcon />
             Move ({selectedCount})
           </Button>
           <Button type="button" variant="outline" size="sm" onClick={onCopy}>
@@ -102,10 +111,16 @@ function ActionToolbar({
       </ToggleGroup>
 
       {canUpload ? (
-        <MediaUploadTrigger>
-          {uploadPending ? <Spinner /> : <UploadIcon />}
-          Upload
-        </MediaUploadTrigger>
+        <>
+          <Button type="button" variant="outline" size="sm" onClick={onImportUrl}>
+            <LinkIcon />
+            Import URL
+          </Button>
+          <MediaUploadTrigger>
+            {uploadPending ? <Spinner /> : <UploadIcon />}
+            Upload
+          </MediaUploadTrigger>
+        </>
       ) : null}
     </div>
   )
@@ -134,6 +149,11 @@ export function MediaLibraryPanel({
   const [viewMode, setViewMode] = React.useState<ViewMode>("grid")
   const [selectedIds, setSelectedIds] = React.useState<number[]>([])
   const [folderDialogOpen, setFolderDialogOpen] = React.useState(false)
+  const [folderEditTarget, setFolderEditTarget] =
+    React.useState<MediaBrowserFolder | null>(null)
+  const [folderDeleteTarget, setFolderDeleteTarget] =
+    React.useState<MediaBrowserFolder | null>(null)
+  const [importUrlOpen, setImportUrlOpen] = React.useState(false)
   const [moveDialogOpen, setMoveDialogOpen] = React.useState(false)
   const [copyDialogOpen, setCopyDialogOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
@@ -156,6 +176,7 @@ export function MediaLibraryPanel({
   })
   const uploadMutation = useBulkUploadMedia()
   const deleteMediaMutation = useDeleteMedia()
+  const deleteFolderMutation = useDeleteMediaFolder()
 
   const breadcrumb = React.useMemo(() => {
     const tree = treeQuery.data?.tree ?? []
@@ -246,6 +267,24 @@ export function MediaLibraryPanel({
     })
   }
 
+  function handleDeleteFolder() {
+    if (!folderDeleteTarget) return
+
+    deleteFolderMutation.mutate(folderDeleteTarget.id, {
+      onSuccess: () => {
+        toast.success("Folder deleted successfully")
+        if (folderId === folderDeleteTarget.id) {
+          setFolderId(null)
+          setPage(1)
+        }
+        setFolderDeleteTarget(null)
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete folder")
+      },
+    })
+  }
+
   const browserProps = {
     folders,
     items,
@@ -258,6 +297,12 @@ export function MediaLibraryPanel({
     onMoveItem: canManage ? (id: number) => openMoveDialog([id]) : undefined,
     onCopyItem: canManage ? (id: number) => openCopyDialog([id]) : undefined,
     onDeleteItem: canManage ? handleDeleteItem : undefined,
+    onRenameFolder: canManage
+      ? (folder: MediaBrowserFolder) => setFolderEditTarget(folder)
+      : undefined,
+    onDeleteFolder: canManage
+      ? (folder: MediaBrowserFolder) => setFolderDeleteTarget(folder)
+      : undefined,
   }
 
   return (
@@ -349,6 +394,7 @@ export function MediaLibraryPanel({
                   onMove={() => openMoveDialog(selectedIds)}
                   onCopy={() => openCopyDialog(selectedIds)}
                   onDelete={() => openDeleteDialog(selectedIds)}
+                  onImportUrl={() => setImportUrlOpen(true)}
                   canUpload={canManage}
                 />
               </div>
@@ -401,6 +447,30 @@ export function MediaLibraryPanel({
         open={folderDialogOpen}
         onOpenChange={setFolderDialogOpen}
         parentId={folderId}
+      />
+
+      <MediaFolderFormDialog
+        open={!!folderEditTarget}
+        onOpenChange={(open) => {
+          if (!open) setFolderEditTarget(null)
+        }}
+        folder={folderEditTarget}
+      />
+
+      <MediaFolderDeleteDialog
+        open={!!folderDeleteTarget}
+        onOpenChange={(open) => {
+          if (!open) setFolderDeleteTarget(null)
+        }}
+        folder={folderDeleteTarget}
+        onConfirm={handleDeleteFolder}
+        isDeleting={deleteFolderMutation.isPending}
+      />
+
+      <MediaImportUrlDialog
+        open={importUrlOpen}
+        onOpenChange={setImportUrlOpen}
+        folderId={folderId}
       />
 
       <MediaMoveDialog

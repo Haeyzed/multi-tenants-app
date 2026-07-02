@@ -215,3 +215,16 @@ export const deleteMedia = async (id: number): Promise<void> => {
 export const deleteManyMedia = async (ids: number[]): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>("/media/bulk", { ids })
 }
+
+export const importMediaFromUrl = async (payload: {
+  url: string
+  folder_id?: number | null
+  title?: string
+  alt_text?: string
+}): Promise<MediaItem> => {
+  const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
+    "/media/import-url",
+    payload
+  )
+  return normalizeMediaItem(response.data)
+}

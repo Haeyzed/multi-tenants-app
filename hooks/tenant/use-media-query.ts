@@ -9,6 +9,7 @@ import {
   getMedia,
   getMediaPaginated,
   getMediaStatistics,
+  importMediaFromUrl,
   moveMedia,
   moveMediaItem,
   updateMedia,
@@ -93,6 +94,23 @@ export const useBulkUploadMedia = () => {
       files: File[]
       meta?: { folder_id?: number | null; title?: string; alt_text?: string }
     }) => bulkUploadMedia(files, meta),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["media"] })
+      queryClient.invalidateQueries({ queryKey: ["media-statistics"] })
+      queryClient.invalidateQueries({ queryKey: ["media-folders"] })
+    },
+  })
+}
+
+export const useImportMediaFromUrl = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: {
+      url: string
+      folder_id?: number | null
+      title?: string
+      alt_text?: string
+    }) => importMediaFromUrl(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["media"] })
       queryClient.invalidateQueries({ queryKey: ["media-statistics"] })
