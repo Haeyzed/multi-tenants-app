@@ -82,6 +82,11 @@ export interface MediaBulkActionResponse {
   items: MediaItem[]
 }
 
+export interface MediaBackgroundRemovalResponse {
+  status: "completed" | "queued"
+  item?: MediaItem
+}
+
 export interface MediaFolderFormPayload {
   name: string
   parent_id?: number | null

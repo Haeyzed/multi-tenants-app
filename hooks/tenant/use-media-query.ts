@@ -12,6 +12,7 @@ import {
   importMediaFromUrl,
   moveMedia,
   moveMediaItem,
+  removeMediaBackground,
   updateMedia,
   uploadMedia,
 } from "@/lib/services/tenant/media-service"
@@ -111,6 +112,18 @@ export const useImportMediaFromUrl = () => {
       title?: string
       alt_text?: string
     }) => importMediaFromUrl(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["media"] })
+      queryClient.invalidateQueries({ queryKey: ["media-statistics"] })
+      queryClient.invalidateQueries({ queryKey: ["media-folders"] })
+    },
+  })
+}
+
+export const useRemoveMediaBackground = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => removeMediaBackground(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["media"] })
       queryClient.invalidateQueries({ queryKey: ["media-statistics"] })

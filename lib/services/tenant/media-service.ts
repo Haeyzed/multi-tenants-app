@@ -2,6 +2,7 @@ import { PaginatedResponse } from "@/types/central/pagination"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import {
   MediaBulkActionResponse,
+  MediaBackgroundRemovalResponse,
   MediaBulkUploadResponse,
   MediaItem,
   MediaListParams,
@@ -227,4 +228,26 @@ export const importMediaFromUrl = async (payload: {
     payload
   )
   return normalizeMediaItem(response.data)
+}
+
+export const removeMediaBackground = async (
+  id: number
+): Promise<MediaBackgroundRemovalResponse> => {
+  const response = await tenantApiClient.post<
+    ApiResponse<MediaItem | { status: "queued" }>
+  >(`/media/${id}/remove-background`)
+
+  if (
+    response.data &&
+    typeof response.data === "object" &&
+    "status" in response.data &&
+    response.data.status === "queued"
+  ) {
+    return { status: "queued" }
+  }
+
+  return {
+    status: "completed",
+    item: normalizeMediaItem(response.data as MediaItem),
+  }
 }

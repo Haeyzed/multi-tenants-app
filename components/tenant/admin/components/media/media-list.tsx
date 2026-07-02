@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { downloadMediaItem } from "@/lib/tenant/media-download"
 import { isMediaImage, isMediaPreviewable } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
+import { MediaAiContextMenuSub } from "@/components/tenant/admin/components/media/media-ai-features-menu"
 import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -55,6 +56,8 @@ interface MediaListProps {
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onRemoveBackground?: (item: MediaItem) => void
+  processingItemId?: number | null
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
 }
@@ -65,12 +68,16 @@ function FileContextMenuItems({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onRemoveBackground,
+  processingItemId,
 }: {
   item: MediaItem
   onMoveItem?: (id: number) => void
   onCopyItem?: (id: number) => void
   onDeleteItem?: (id: number) => void
   onPreviewItem?: (item: MediaItem) => void
+  onRemoveBackground?: (item: MediaItem) => void
+  processingItemId?: number | null
 }) {
   const canPreview = isMediaPreviewable(item)
 
@@ -94,6 +101,11 @@ function FileContextMenuItems({
           Copy
         </ContextMenuItem>
       ) : null}
+      <MediaAiContextMenuSub
+        item={item}
+        onRemoveBackground={onRemoveBackground}
+        processingItemId={processingItemId}
+      />
       <ContextMenuItem onClick={() => downloadMediaItem(item)}>
         <DownloadIcon />
         Download
@@ -162,6 +174,8 @@ export function MediaList({
   onCopyItem,
   onDeleteItem,
   onPreviewItem,
+  onRemoveBackground,
+  processingItemId,
   onRenameFolder,
   onDeleteFolder,
 }: MediaListProps) {
@@ -299,6 +313,8 @@ export function MediaList({
                 onCopyItem={onCopyItem}
                 onDeleteItem={onDeleteItem}
                 onPreviewItem={onPreviewItem}
+                onRemoveBackground={onRemoveBackground}
+                processingItemId={processingItemId}
               />
             </ContextMenuContent>
           </ContextMenu>

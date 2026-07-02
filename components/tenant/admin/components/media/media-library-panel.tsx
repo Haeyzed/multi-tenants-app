@@ -41,9 +41,11 @@ import {
   useGetMediaFolderTree,
   useGetMediaFolders,
   useGetMediaPaginated,
+  useRemoveMediaBackground,
 } from "@/hooks/tenant/use-media-query"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
+import { useQueryClient } from "@tanstack/react-query"
 
 type ViewMode = "grid" | "list"
 
@@ -143,6 +145,7 @@ export function MediaLibraryPanel({
   className,
 }: MediaLibraryPanelProps) {
   const { hasPermission, isStoreOwner } = useTenantAuth()
+  const queryClient = useQueryClient()
   const canManage = isStoreOwner || hasPermission("settings.update")
   const [folderId, setFolderId] = React.useState<number | null>(null)
   const [search, setSearch] = React.useState("")
@@ -156,6 +159,12 @@ export function MediaLibraryPanel({
     React.useState<MediaBrowserFolder | null>(null)
   const [importUrlOpen, setImportUrlOpen] = React.useState(false)
   const [previewItem, setPreviewItem] = React.useState<MediaItem | null>(null)
+  const [processingItemId, setProcessingItemId] = React.useState<number | null>(
+    null
+  )
+  const pollIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(
+    null
+  )
   const [moveDialogOpen, setMoveDialogOpen] = React.useState(false)
   const [copyDialogOpen, setCopyDialogOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
@@ -179,6 +188,35 @@ export function MediaLibraryPanel({
   const uploadMutation = useBulkUploadMedia()
   const deleteMediaMutation = useDeleteMedia()
   const deleteFolderMutation = useDeleteMediaFolder()
+  const removeBackgroundMutation = useRemoveMediaBackground()
+
+  React.useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current)
+      }
+    }
+  }, [])
+
+  function startMediaPolling() {
+    if (pollIntervalRef.current) {
+      clearInterval(pollIntervalRef.current)
+    }
+
+    let elapsed = 0
+
+    pollIntervalRef.current = setInterval(() => {
+      elapsed += 3000
+      queryClient.invalidateQueries({ queryKey: ["media"] })
+      queryClient.invalidateQueries({ queryKey: ["media-statistics"] })
+      queryClient.invalidateQueries({ queryKey: ["media-folders"] })
+
+      if (elapsed >= 60000 && pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current)
+        pollIntervalRef.current = null
+      }
+    }, 3000)
+  }
 
   const breadcrumb = React.useMemo(() => {
     const tree = treeQuery.data?.tree ?? []
@@ -229,7 +267,14 @@ export function MediaLibraryPanel({
   )
 
   const items = mediaQuery.data?.data ?? []
-  const folders = search ? [] : (foldersQuery.data ?? [])
+  const folders: MediaBrowserFolder[] = search
+    ? []
+    : (foldersQuery.data ?? []).map((folder) => ({
+        id: folder.id,
+        name: folder.name,
+        parent_id: folder.parent_id,
+        media_count: folder.media_count ?? 0,
+      }))
   const pageCount = mediaQuery.data?.meta.last_page ?? 1
   const isLoading = mediaQuery.isLoading || foldersQuery.isLoading
 
@@ -287,6 +332,30 @@ export function MediaLibraryPanel({
     })
   }
 
+  function handleRemoveBackground(item: MediaItem) {
+    setProcessingItemId(item.id)
+
+    removeBackgroundMutation.mutate(item.id, {
+      onSuccess: (result) => {
+        if (result.status === "queued") {
+          toast.success(
+            "Background removal started. The new file will appear shortly."
+          )
+          startMediaPolling()
+          return
+        }
+
+        toast.success("Background removed successfully")
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to remove background")
+      },
+      onSettled: () => {
+        setProcessingItemId(null)
+      },
+    })
+  }
+
   const browserProps = {
     folders,
     items,
@@ -306,6 +375,8 @@ export function MediaLibraryPanel({
       ? (folder: MediaBrowserFolder) => setFolderDeleteTarget(folder)
       : undefined,
     onPreviewItem: (item: MediaItem) => setPreviewItem(item),
+    onRemoveBackground: canManage ? handleRemoveBackground : undefined,
+    processingItemId,
   }
 
   return (
