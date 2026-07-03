@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic"
 import * as React from "react"
 
-import "@iamjariwala/react-doc-viewer/dist/index.css"
+import "@cyntler/react-doc-viewer/dist/index.css"
 
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { getMediaFileExtension } from "@/lib/tenant/media-file-kind"
@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button"
 
 const DocViewer = dynamic(
   () =>
-    import("@iamjariwala/react-doc-viewer").then((mod) => {
+    import("@cyntler/react-doc-viewer").then((mod) => {
       function MediaDocViewer({ item }: { item: MediaItem }) {
         const uri = resolveTenantMediaUrl(item)
         const extension = getMediaFileExtension(item)

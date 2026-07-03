@@ -29,3 +29,15 @@ export type CategoryStatistics = {
   hidden: number
   root: number
 }
+
+export type CustomerStatistics = {
+  total: number
+  active: number
+  inactive: number
+}
+
+export type CustomerGroupStatistics = {
+  total: number
+  active: number
+  inactive: number
+}

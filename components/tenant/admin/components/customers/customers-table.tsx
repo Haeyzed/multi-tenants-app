@@ -11,34 +11,34 @@ import { DataTable } from "@/components/data-table/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import { useGetBrands } from "@/hooks/tenant/use-brand-query"
+import { useGetCustomers } from "@/hooks/tenant/use-customer-query"
 import { useQueryErrorToast } from "@/hooks/use-query-error-toast"
-import { BrandsBulkActions } from "./brands-bulk-actions"
-import { columns } from "./brands-columns"
+import { CustomersBulkActions } from "./customers-bulk-actions"
+import { columns } from "./customers-columns"
 
-const COLUMN_COUNT = 9
+const COLUMN_COUNT = 10
 const FILTER_COUNT = 2
 
-export function BrandsTable() {
-  const [name] = useQueryState("name", parseAsString.withDefault(""))
-  const [visibility] = useQueryState(
-    "is_visible",
+export function CustomersTable() {
+  const [fullName] = useQueryState("full_name", parseAsString.withDefault(""))
+  const [isActive] = useQueryState(
+    "is_active",
     parseAsArrayOf(parseAsString).withDefault([])
   )
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))
   const [perPage] = useQueryState("per_page", parseAsInteger.withDefault(15))
 
-  const { data, isLoading, error } = useGetBrands({
-    search: name || undefined,
-    is_visible:
-      visibility.length > 0
-        ? (visibility as ("visible" | "hidden")[])
+  const { data, isLoading, error } = useGetCustomers({
+    search: fullName || undefined,
+    is_active:
+      isActive.length > 0
+        ? (isActive as ("active" | "inactive")[])
         : undefined,
     per_page: perPage,
     page,
   })
 
-  useQueryErrorToast(error, "Failed to load brands.")
+  useQueryErrorToast(error, "Failed to load customers.")
 
   const tableData = data?.data || []
 
@@ -47,8 +47,8 @@ export function BrandsTable() {
     columns,
     pageCount: data?.meta?.last_page || 1,
     initialState: {
-      sorting: [{ id: "name", desc: false }],
-      columnPinning: { left: ["select", "name"], right: ["actions"] },
+      sorting: [{ id: "full_name", desc: false }],
+      columnPinning: { left: ["select", "full_name"], right: ["actions"] },
     },
     getRowId: (row) => String(row.id),
   })
@@ -59,14 +59,13 @@ export function BrandsTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "10rem", "8rem", "12rem", "8rem", "8rem", "3rem"]}
       />
     )
   }
 
   return (
     <div className="data-table-container space-y-4">
-      <DataTable table={table} actionBar={<BrandsBulkActions table={table} />}>
+      <DataTable table={table} actionBar={<CustomersBulkActions table={table} />}>
         <DataTableToolbar table={table} />
       </DataTable>
     </div>

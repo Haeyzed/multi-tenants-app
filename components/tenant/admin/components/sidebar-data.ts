@@ -4,6 +4,8 @@ import {
   LayoutDashboardIcon,
   TagIcon,
   TagsIcon,
+  UsersIcon,
+  UsersRoundIcon,
 } from "lucide-react"
 import type { SidebarData } from "@/components/layout/types"
 
@@ -29,6 +31,21 @@ export const sidebarData: SidebarData = {
           title: "Dashboard",
           url: "/admin/dashboard",
           icon: LayoutDashboardIcon,
+        },
+      ],
+    },
+    {
+      title: "Customers",
+      items: [
+        {
+          title: "Customers",
+          url: "/admin/customers",
+          icon: UsersIcon,
+        },
+        {
+          title: "Customer Groups",
+          url: "/admin/customer-groups",
+          icon: UsersRoundIcon,
         },
       ],
     },

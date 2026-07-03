@@ -7,6 +7,7 @@ import {
   EyeIcon,
   FolderInputIcon,
   FolderIcon,
+  GripVerticalIcon,
   ImageIcon,
   InfoIcon,
   MoreHorizontalIcon,
@@ -22,10 +23,14 @@ import {
   isMediaPreviewable,
 } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
-import {
-  MediaAiContextMenuSub,
+import { MediaAiContextMenuSub,
   MediaAiDropdownMenuSub,
 } from "@/components/tenant/admin/components/media/media-ai-features-menu"
+import {
+  MediaLibraryDraggable,
+  MediaLibraryDragHandle,
+  MediaLibraryFolderDropTarget,
+} from "@/components/tenant/admin/components/media/media-library-dnd"
 import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -44,6 +49,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+
+function runMenuAction(action: () => void) {
+  return (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+    event.preventDefault()
+    event.stopPropagation()
+    action()
+  }
+}
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`
@@ -71,6 +84,9 @@ interface MediaGridProps {
   processingItemId?: number | null
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
+  onMoveFolder?: (folder: MediaBrowserFolder) => void
+  onCopyFolder?: (folder: MediaBrowserFolder) => void
+  enableDrag?: boolean
 }
 
 function MediaFileActions({
@@ -135,13 +151,13 @@ function MediaFileActions({
           </DropdownMenuItem>
         ) : null}
         {onMoveItem ? (
-          <DropdownMenuItem onClick={() => onMoveItem(item.id)}>
+          <DropdownMenuItem onClick={runMenuAction(() => onMoveItem(item.id))}>
             <FolderInputIcon />
             Move
           </DropdownMenuItem>
         ) : null}
         {onCopyItem ? (
-          <DropdownMenuItem onClick={() => onCopyItem(item.id)}>
+          <DropdownMenuItem onClick={runMenuAction(() => onCopyItem(item.id))}>
             <CopyIcon />
             Copy
           </DropdownMenuItem>
@@ -208,13 +224,13 @@ function FileContextMenuItems({
         </ContextMenuItem>
       ) : null}
       {onMoveItem ? (
-        <ContextMenuItem onClick={() => onMoveItem(item.id)}>
+        <ContextMenuItem onClick={runMenuAction(() => onMoveItem(item.id))}>
           <FolderInputIcon />
           Move
         </ContextMenuItem>
       ) : null}
       {onCopyItem ? (
-        <ContextMenuItem onClick={() => onCopyItem(item.id)}>
+        <ContextMenuItem onClick={runMenuAction(() => onCopyItem(item.id))}>
           <CopyIcon />
           Copy
         </ContextMenuItem>
@@ -248,27 +264,47 @@ function FolderContextMenuItems({
   folder,
   onRenameFolder,
   onDeleteFolder,
+  onMoveFolder,
+  onCopyFolder,
 }: {
   folder: MediaBrowserFolder
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
+  onMoveFolder?: (folder: MediaBrowserFolder) => void
+  onCopyFolder?: (folder: MediaBrowserFolder) => void
 }) {
-  if (!onRenameFolder && !onDeleteFolder) return null
+  if (!onRenameFolder && !onDeleteFolder && !onMoveFolder && !onCopyFolder) {
+    return null
+  }
 
   return (
     <>
+      {onMoveFolder ? (
+        <ContextMenuItem onClick={runMenuAction(() => onMoveFolder(folder))}>
+          <FolderInputIcon />
+          Move
+        </ContextMenuItem>
+      ) : null}
+      {onCopyFolder ? (
+        <ContextMenuItem onClick={runMenuAction(() => onCopyFolder(folder))}>
+          <CopyIcon />
+          Copy
+        </ContextMenuItem>
+      ) : null}
       {onRenameFolder ? (
-        <ContextMenuItem onClick={() => onRenameFolder(folder)}>
+        <ContextMenuItem onClick={runMenuAction(() => onRenameFolder(folder))}>
           <PencilIcon />
           Rename
         </ContextMenuItem>
       ) : null}
       {onDeleteFolder ? (
         <>
-          {onRenameFolder ? <ContextMenuSeparator /> : null}
+          {onRenameFolder || onMoveFolder || onCopyFolder ? (
+            <ContextMenuSeparator />
+          ) : null}
           <ContextMenuItem
             variant="destructive"
-            onClick={() => onDeleteFolder(folder)}
+            onClick={runMenuAction(() => onDeleteFolder(folder))}
           >
             <Trash2Icon />
             Delete
@@ -297,8 +333,13 @@ export function MediaGrid({
   processingItemId,
   onRenameFolder,
   onDeleteFolder,
+  onMoveFolder,
+  onCopyFolder,
+  enableDrag = false,
 }: MediaGridProps) {
   const isEmpty = folders.length === 0 && items.length === 0
+  const hasFolderMenu =
+    onRenameFolder || onDeleteFolder || onMoveFolder || onCopyFolder
 
   if (isEmpty) {
     return (
@@ -318,13 +359,18 @@ export function MediaGrid({
   return (
     <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
       {folders.map((folder) => {
-        const folderTile = (
+        const folderButton = (
           <button
             type="button"
             data-media-folder
             className="group relative w-full overflow-hidden rounded-md border bg-card text-left transition-colors hover:border-primary/40"
             onClick={() => onOpenFolder?.(folder.id)}
           >
+            {enableDrag ? (
+              <MediaLibraryDragHandle className="absolute start-1 top-1 z-10 opacity-100">
+                <GripVerticalIcon className="size-3.5" />
+              </MediaLibraryDragHandle>
+            ) : null}
             <div className="relative aspect-square bg-amber-500/10">
               <div className="flex size-full items-center justify-center">
                 <FolderIcon className="size-8 text-amber-600 dark:text-amber-400" />
@@ -339,18 +385,42 @@ export function MediaGrid({
           </button>
         )
 
-        if (mode !== "manage" || (!onRenameFolder && !onDeleteFolder)) {
-          return <div key={`folder-${folder.id}`}>{folderTile}</div>
+        const folderTrigger = enableDrag ? (
+          <MediaLibraryDraggable kind="folder" id={folder.id}>
+            <MediaLibraryFolderDropTarget folderId={folder.id}>
+              <ContextMenuTrigger render={folderButton} />
+            </MediaLibraryFolderDropTarget>
+          </MediaLibraryDraggable>
+        ) : (
+          <ContextMenuTrigger render={folderButton} />
+        )
+
+        if (mode !== "manage" || !hasFolderMenu) {
+          return (
+            <div key={`folder-${folder.id}`}>
+              {enableDrag ? (
+                <MediaLibraryDraggable kind="folder" id={folder.id}>
+                  <MediaLibraryFolderDropTarget folderId={folder.id}>
+                    {folderButton}
+                  </MediaLibraryFolderDropTarget>
+                </MediaLibraryDraggable>
+              ) : (
+                folderButton
+              )}
+            </div>
+          )
         }
 
         return (
           <ContextMenu key={`folder-${folder.id}`}>
-            <ContextMenuTrigger render={folderTile} />
+            {folderTrigger}
             <ContextMenuContent>
               <FolderContextMenuItems
                 folder={folder}
                 onRenameFolder={onRenameFolder}
                 onDeleteFolder={onDeleteFolder}
+                onMoveFolder={onMoveFolder}
+                onCopyFolder={onCopyFolder}
               />
             </ContextMenuContent>
           </ContextMenu>
@@ -388,6 +458,13 @@ export function MediaGrid({
               }
             }}
           >
+            {enableDrag ? (
+              <div className="absolute start-1 top-1 z-10 flex items-center gap-0.5">
+                <MediaLibraryDragHandle className="static opacity-100">
+                  <GripVerticalIcon className="size-3.5" />
+                </MediaLibraryDragHandle>
+              </div>
+            ) : null}
             <div className="relative aspect-square bg-muted/40">
               {isImage ? (
                 <MediaThumbnail
@@ -404,13 +481,18 @@ export function MediaGrid({
 
               {mode === "manage" ? (
                 <>
-                  <div className="absolute start-1 top-1">
+                  <div
+                    className={cn(
+                      "absolute top-1 z-10 flex items-center gap-0.5",
+                      enableDrag ? "start-7" : "start-1"
+                    )}
+                  >
                     <Checkbox
                       checked={isSelected}
                       onCheckedChange={() => onToggleSelect?.(item.id)}
                       onClick={(event) => event.stopPropagation()}
                       aria-label={`Select ${item.title ?? item.name}`}
-                      className="size-4"
+                      className="size-4 bg-background/80"
                     />
                   </div>
                   <MediaFileActions
@@ -451,13 +533,31 @@ export function MediaGrid({
           </button>
         )
 
+        const fileTrigger = enableDrag ? (
+          <MediaLibraryDraggable kind="media" id={item.id}>
+            <ContextMenuTrigger render={tile} />
+          </MediaLibraryDraggable>
+        ) : (
+          <ContextMenuTrigger render={tile} />
+        )
+
         if (mode !== "manage") {
-          return <div key={item.id}>{tile}</div>
+          return (
+            <div key={item.id}>
+              {enableDrag ? (
+                <MediaLibraryDraggable kind="media" id={item.id}>
+                  {tile}
+                </MediaLibraryDraggable>
+              ) : (
+                tile
+              )}
+            </div>
+          )
         }
 
         return (
           <ContextMenu key={item.id}>
-            <ContextMenuTrigger render={tile} />
+            {fileTrigger}
             <ContextMenuContent>
               <FileContextMenuItems
                 item={item}

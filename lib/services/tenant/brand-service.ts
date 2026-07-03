@@ -41,7 +41,7 @@ export const getBrands = async (params?: {
 }): Promise<PaginatedResponse<Brand>> => {
   const response = await tenantApiClient.get<ApiResponse<Brand[]>>(
     "/brands",
-    params as Record<string, string | undefined>
+    params
   )
   return {
     data: response.data.map(normalizeBrand),

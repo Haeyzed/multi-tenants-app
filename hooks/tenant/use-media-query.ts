@@ -17,11 +17,13 @@ import {
   uploadMedia,
 } from "@/lib/services/tenant/media-service"
 import {
+  copyMediaFolderShallow,
   createMediaFolder,
   deleteManyMediaFolders,
   deleteMediaFolder,
   getMediaFolderTree,
   getMediaFolders,
+  moveMediaFolder,
   updateMediaFolder,
 } from "@/lib/services/tenant/media-folder-service"
 import type {
@@ -283,6 +285,43 @@ export const useUpdateMediaFolder = () => {
     }) => updateMediaFolder(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["media-folders"] })
+    },
+  })
+}
+
+export const useMoveMediaFolder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      id,
+      parentId,
+    }: {
+      id: number
+      parentId: number | null
+    }) => moveMediaFolder(id, parentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["media"] })
+      queryClient.invalidateQueries({ queryKey: ["media-folders"] })
+    },
+  })
+}
+
+export const useCopyMediaFolder = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      id,
+      name,
+      parentId,
+    }: {
+      id: number
+      name: string
+      parentId: number | null
+    }) => copyMediaFolderShallow(id, name, parentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["media"] })
+      queryClient.invalidateQueries({ queryKey: ["media-folders"] })
+      queryClient.invalidateQueries({ queryKey: ["media-statistics"] })
     },
   })
 }

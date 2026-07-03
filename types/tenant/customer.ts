@@ -1,14 +1,31 @@
 export interface Customer {
   id: number
-  user_id: number
+  user_id: number | null
   customer_group_id: number | null
   first_name: string
   last_name: string
   full_name: string
-  email: string
+  email: string | null
   phone: string | null
+  date_of_birth?: string | null
+  gender?: string | null
+  loyalty_points?: number
+  total_spent?: string
+  orders_count?: number
   is_active: boolean
+  group?: import("@/types/tenant/customer-group").CustomerGroup | null
   created_at: string
+}
+
+export interface CustomerOption {
+  label: string
+  value: number
+}
+
+export interface CustomerStatistics {
+  total: number
+  active: number
+  inactive: number
 }
 
 export interface CustomerProfile {

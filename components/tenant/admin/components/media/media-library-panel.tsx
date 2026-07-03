@@ -24,6 +24,11 @@ import { MediaPropertiesDialog } from "@/components/tenant/admin/components/medi
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import { MediaGrid } from "@/components/tenant/admin/components/media/media-grid"
 import { MediaList } from "@/components/tenant/admin/components/media/media-list"
+import {
+  MediaLibraryDndProvider,
+  MediaLibraryFolderDropTarget,
+  mediaDragId,
+} from "@/components/tenant/admin/components/media/media-library-dnd"
 import { MediaMoveDialog } from "@/components/tenant/admin/components/media/media-move-dialog"
 import {
   MediaUploadTrigger,
@@ -37,14 +42,24 @@ import { Spinner } from "@/components/ui/spinner"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
   useBulkUploadMedia,
+  useCopyMediaFolder,
+  useCopyMediaItem,
   useDeleteMedia,
   useDeleteMediaFolder,
   useGetMediaFolderTree,
   useGetMediaFolders,
   useGetMediaPaginated,
+  useMoveMediaFolder,
+  useMoveMediaItem,
   useRemoveMediaBackground,
 } from "@/hooks/tenant/use-media-query"
-import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
+import type {
+  MediaBrowserFolder,
+  MediaFolder,
+  MediaFolderTreeNode,
+  MediaItem,
+} from "@/types/tenant/media"
+import { isInvalidFolderDropTarget } from "@/lib/tenant/media-folder-tree-utils"
 import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
 import { useQueryClient } from "@tanstack/react-query"
 
@@ -173,6 +188,9 @@ export function MediaLibraryPanel({
   const [copyDialogOpen, setCopyDialogOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
   const [actionIds, setActionIds] = React.useState<number[]>([])
+  const [actionFolders, setActionFolders] = React.useState<MediaBrowserFolder[]>(
+    []
+  )
   const perPage = 24
 
   const treeQuery = useGetMediaFolderTree()
@@ -193,6 +211,10 @@ export function MediaLibraryPanel({
   const deleteMediaMutation = useDeleteMedia()
   const deleteFolderMutation = useDeleteMediaFolder()
   const removeBackgroundMutation = useRemoveMediaBackground()
+  const moveMediaItemMutation = useMoveMediaItem()
+  const copyMediaItemMutation = useCopyMediaItem()
+  const moveMediaFolderMutation = useMoveMediaFolder()
+  const copyMediaFolderMutation = useCopyMediaFolder()
 
   React.useEffect(() => {
     return () => {
@@ -270,10 +292,10 @@ export function MediaLibraryPanel({
     [folderId, uploadMutation]
   )
 
-  const items = mediaQuery.data?.data ?? []
+  const items: MediaItem[] = mediaQuery.data?.data ?? []
   const folders: MediaBrowserFolder[] = search
     ? []
-    : (foldersQuery.data ?? []).map((folder) => ({
+    : (foldersQuery.data ?? []).map((folder: MediaFolder) => ({
         id: folder.id,
         name: folder.name,
         parent_id: folder.parent_id,
@@ -296,13 +318,21 @@ export function MediaLibraryPanel({
     setSelectedIds([])
   }
 
-  function openMoveDialog(ids: number[]) {
-    setActionIds(ids)
+  function openMoveDialog(
+    mediaIds: number[],
+    foldersToMove: MediaBrowserFolder[] = []
+  ) {
+    setActionIds(mediaIds)
+    setActionFolders(foldersToMove)
     setMoveDialogOpen(true)
   }
 
-  function openCopyDialog(ids: number[]) {
-    setActionIds(ids)
+  function openCopyDialog(
+    mediaIds: number[],
+    foldersToCopy: MediaBrowserFolder[] = []
+  ) {
+    setActionIds(mediaIds)
+    setActionFolders(foldersToCopy)
     setCopyDialogOpen(true)
   }
 
@@ -360,6 +390,130 @@ export function MediaLibraryPanel({
     })
   }
 
+  function treeNodeToBrowserFolder(node: MediaFolderTreeNode): MediaBrowserFolder {
+    return {
+      id: node.id,
+      name: node.name,
+      parent_id: node.parent_id,
+      media_count: node.media_count,
+    }
+  }
+
+  const dragLabels = React.useMemo(() => {
+    const labels = new Map<string, string>()
+
+    folders.forEach((folder) => {
+      labels.set(mediaDragId("folder", folder.id), folder.name)
+    })
+
+    items.forEach((item) => {
+      labels.set(mediaDragId("media", item.id), item.title ?? item.name)
+    })
+
+    return labels
+  }, [folders, items])
+
+  const draggableIds = React.useMemo(
+    () => [
+      ...folders.map((folder) => mediaDragId("folder", folder.id)),
+      ...items.map((item) => mediaDragId("media", item.id)),
+    ],
+    [folders, items]
+  )
+
+  const handleLibraryDrop = React.useCallback(
+    async ({
+      payload,
+      targetFolderId,
+      copy,
+    }: {
+      payload: { kind: "media" | "folder"; id: number }
+      targetFolderId: number | null
+      copy: boolean
+    }) => {
+      const tree = treeQuery.data?.tree ?? []
+
+      if (payload.kind === "folder") {
+        if (isInvalidFolderDropTarget(payload.id, targetFolderId, tree)) {
+          toast.error("Cannot move a folder into itself or a subfolder")
+          return
+        }
+
+        const folder = folders.find((entry) => entry.id === payload.id)
+
+        if (!folder) {
+          return
+        }
+
+        if (!copy && folder.parent_id === targetFolderId) {
+          return
+        }
+
+        try {
+          if (copy) {
+            await copyMediaFolderMutation.mutateAsync({
+              id: folder.id,
+              name: folder.name,
+              parentId: targetFolderId,
+            })
+            toast.success("Folder copied successfully")
+          } else {
+            await moveMediaFolderMutation.mutateAsync({
+              id: folder.id,
+              parentId: targetFolderId,
+            })
+            toast.success("Folder moved successfully")
+          }
+        } catch (error) {
+          toast.error(
+            error instanceof Error ? error.message : "Unable to move folder"
+          )
+        }
+
+        return
+      }
+
+      const item = items.find((entry) => entry.id === payload.id)
+
+      if (!item) {
+        return
+      }
+
+      if (!copy && item.folder_id === targetFolderId) {
+        return
+      }
+
+      try {
+        if (copy) {
+          await copyMediaItemMutation.mutateAsync({
+            id: item.id,
+            folderId: targetFolderId,
+          })
+          toast.success("File copied successfully")
+        } else {
+          await moveMediaItemMutation.mutateAsync({
+            id: item.id,
+            folderId: targetFolderId,
+          })
+          toast.success("File moved successfully")
+        }
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Unable to move file"
+        )
+      }
+    },
+    [
+      copyMediaFolderMutation,
+      copyMediaItemMutation,
+      folders,
+      items,
+      moveMediaFolderMutation,
+      moveMediaItemMutation,
+      treeQuery.data?.tree,
+    ]
+  )
+
   const browserProps = {
     folders,
     items,
@@ -371,6 +525,13 @@ export function MediaLibraryPanel({
     onPick,
     onMoveItem: canManage ? (id: number) => openMoveDialog([id]) : undefined,
     onCopyItem: canManage ? (id: number) => openCopyDialog([id]) : undefined,
+    onMoveFolder: canManage
+      ? (folder: MediaBrowserFolder) => openMoveDialog([], [folder])
+      : undefined,
+    onCopyFolder: canManage
+      ? (folder: MediaBrowserFolder) => openCopyDialog([], [folder])
+      : undefined,
+    enableDrag: canManage && mode === "manage",
     onDeleteItem: canManage ? handleDeleteItem : undefined,
     onRenameFolder: canManage
       ? (folder: MediaBrowserFolder) => setFolderEditTarget(folder)
@@ -385,7 +546,17 @@ export function MediaLibraryPanel({
   }
 
   return (
-    <div className={className}>
+    <MediaLibraryDndProvider
+      enabled={canManage && mode === "manage"}
+      draggableIds={draggableIds}
+      strategy={viewMode === "list" ? "list" : "grid"}
+      onDrop={handleLibraryDrop}
+      renderOverlay={(payload) =>
+        dragLabels.get(mediaDragId(payload.kind, payload.id)) ??
+        (payload.kind === "folder" ? "Folder" : "File")
+      }
+    >
+      <div className={className}>
       <div className="flex flex-col gap-4 lg:flex-row">
         <aside className="w-full shrink-0 rounded-lg border bg-card p-3 lg:w-64">
           <div className="mb-3 flex items-center justify-between gap-2">
@@ -412,6 +583,30 @@ export function MediaLibraryPanel({
             <MediaFolderTree
               tree={treeQuery.data?.tree ?? []}
               selectedFolderId={folderId}
+              enableDropTargets={canManage && mode === "manage"}
+              onRenameFolder={
+                canManage
+                  ? (node) => setFolderEditTarget(treeNodeToBrowserFolder(node))
+                  : undefined
+              }
+              onDeleteFolder={
+                canManage
+                  ? (node) =>
+                      setFolderDeleteTarget(treeNodeToBrowserFolder(node))
+                  : undefined
+              }
+              onMoveFolder={
+                canManage
+                  ? (node) =>
+                      openMoveDialog([], [treeNodeToBrowserFolder(node)])
+                  : undefined
+              }
+              onCopyFolder={
+                canManage
+                  ? (node) =>
+                      openCopyDialog([], [treeNodeToBrowserFolder(node)])
+                  : undefined
+              }
               onSelectFolder={(nextFolderId) => {
                 setFolderId(nextFolderId)
                 setPage(1)
@@ -428,20 +623,29 @@ export function MediaLibraryPanel({
                 {index > 0 ? (
                   <ChevronRightIcon className="size-3.5 shrink-0" />
                 ) : null}
-                <button
-                  type="button"
-                  className="hover:text-foreground"
-                  onClick={() => {
-                    setFolderId(crumb.id)
-                    setPage(1)
-                    setSelectedIds([])
-                  }}
-                >
-                  {crumb.name}
-                </button>
+                <MediaLibraryFolderDropTarget folderId={crumb.id}>
+                  <button
+                    type="button"
+                    className="rounded px-1 hover:text-foreground"
+                    onClick={() => {
+                      setFolderId(crumb.id)
+                      setPage(1)
+                      setSelectedIds([])
+                    }}
+                  >
+                    {crumb.name}
+                  </button>
+                </MediaLibraryFolderDropTarget>
               </React.Fragment>
             ))}
           </div>
+
+          {canManage && mode === "manage" ? (
+            <p className="mb-2 text-xs text-muted-foreground">
+              Drag files or folders onto a folder to move. Hold Alt or Ctrl while
+              dropping to copy.
+            </p>
+          ) : null}
 
           <MediaUploadZone
             accept={accept}
@@ -571,11 +775,13 @@ export function MediaLibraryPanel({
       <MediaMoveDialog
         open={moveDialogOpen}
         onOpenChange={setMoveDialogOpen}
-        ids={actionIds}
+        mediaIds={actionIds}
+        folders={actionFolders}
         mode="move"
         onSuccess={() => {
           setSelectedIds([])
           setActionIds([])
+          setActionFolders([])
           setMoveDialogOpen(false)
         }}
       />
@@ -583,11 +789,13 @@ export function MediaLibraryPanel({
       <MediaMoveDialog
         open={copyDialogOpen}
         onOpenChange={setCopyDialogOpen}
-        ids={actionIds}
+        mediaIds={actionIds}
+        folders={actionFolders}
         mode="copy"
         onSuccess={() => {
           setSelectedIds([])
           setActionIds([])
+          setActionFolders([])
           setCopyDialogOpen(false)
         }}
       />
@@ -602,5 +810,6 @@ export function MediaLibraryPanel({
         }}
       />
     </div>
+    </MediaLibraryDndProvider>
   )
 }

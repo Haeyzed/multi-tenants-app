@@ -8,9 +8,12 @@ import { MediaFolderFormDialog } from "@/components/tenant/admin/components/medi
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import {
   useCopyMedia,
+  useCopyMediaFolder,
   useGetMediaFolderTree,
   useMoveMedia,
+  useMoveMediaFolder,
 } from "@/hooks/tenant/use-media-query"
+import type { MediaBrowserFolder } from "@/types/tenant/media"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import {
@@ -25,7 +28,8 @@ import {
 interface MediaMoveDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  ids: number[]
+  mediaIds?: number[]
+  folders?: MediaBrowserFolder[]
   mode: "move" | "copy"
   onSuccess?: () => void
 }
@@ -33,7 +37,8 @@ interface MediaMoveDialogProps {
 export function MediaMoveDialog({
   open,
   onOpenChange,
-  ids,
+  mediaIds = [],
+  folders = [],
   mode,
   onSuccess,
 }: MediaMoveDialogProps) {
@@ -41,8 +46,16 @@ export function MediaMoveDialog({
   const [folderDialogOpen, setFolderDialogOpen] = React.useState(false)
   const moveMedia = useMoveMedia()
   const copyMedia = useCopyMedia()
+  const moveMediaFolder = useMoveMediaFolder()
+  const copyMediaFolder = useCopyMediaFolder()
   const treeQuery = useGetMediaFolderTree(open)
-  const mutation = mode === "move" ? moveMedia : copyMedia
+
+  const totalItems = mediaIds.length + folders.length
+  const isPending =
+    moveMedia.isPending ||
+    copyMedia.isPending ||
+    moveMediaFolder.isPending ||
+    copyMediaFolder.isPending
 
   React.useEffect(() => {
     if (open) {
@@ -53,35 +66,67 @@ export function MediaMoveDialog({
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
 
-    mutation.mutate(
-      { ids, folderId: targetFolderId },
-      {
-        onSuccess: () => {
-          toast.success(
-            mode === "move"
-              ? "Files moved successfully"
-              : "Files copied successfully"
-          )
-          onSuccess?.()
-          onOpenChange(false)
-        },
-        onError: (error) => {
-          toast.error(error.message || "Unable to complete this action")
-        },
+    try {
+      if (mode === "move") {
+        if (mediaIds.length > 0) {
+          await moveMedia.mutateAsync({ ids: mediaIds, folderId: targetFolderId })
+        }
+
+        for (const folder of folders) {
+          await moveMediaFolder.mutateAsync({
+            id: folder.id,
+            parentId: targetFolderId,
+          })
+        }
+      } else {
+        if (mediaIds.length > 0) {
+          await copyMedia.mutateAsync({ ids: mediaIds, folderId: targetFolderId })
+        }
+
+        for (const folder of folders) {
+          await copyMediaFolder.mutateAsync({
+            id: folder.id,
+            name: folder.name,
+            parentId: targetFolderId,
+          })
+        }
       }
-    )
+
+      toast.success(
+        mode === "move"
+          ? "Moved successfully"
+          : "Copied successfully"
+      )
+      onSuccess?.()
+      onOpenChange(false)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Unable to complete this action"
+      )
+    }
   }
+
+  const title =
+    mode === "move"
+      ? folders.length > 0 && mediaIds.length === 0
+        ? "Move folders"
+        : folders.length > 0
+          ? "Move items"
+          : "Move files"
+      : folders.length > 0 && mediaIds.length === 0
+        ? "Copy folders"
+        : folders.length > 0
+          ? "Copy items"
+          : "Copy files"
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent className="sm:max-w-md">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>
-            {mode === "move" ? "Move files" : "Copy files"}
-          </ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Choose a destination folder for {ids.length} selected file
-            {ids.length === 1 ? "" : "s"}.
+            Choose a destination folder for {totalItems} selected item
+            {totalItems === 1 ? "" : "s"}.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
@@ -106,6 +151,7 @@ export function MediaMoveDialog({
                 tree={treeQuery.data?.tree ?? []}
                 selectedFolderId={targetFolderId}
                 onSelectFolder={setTargetFolderId}
+                enableDropTargets
               />
             </div>
           )}
@@ -123,20 +169,20 @@ export function MediaMoveDialog({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={mutation.isPending}
+            disabled={isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" form="media-move-form" disabled={mutation.isPending}>
-            {mutation.isPending ? (
+          <Button type="submit" form="media-move-form" disabled={isPending}>
+            {isPending ? (
               <>
                 <Spinner />
                 Working...
               </>
             ) : mode === "move" ? (
-              "Move files"
+              "Move"
             ) : (
-              "Copy files"
+              "Copy"
             )}
           </Button>
         </ResponsiveDialogFooter>

@@ -22,7 +22,7 @@ const FILTER_COUNT = 2
 export function CategoriesTable() {
   const [name] = useQueryState("name", parseAsString.withDefault(""))
   const [visibility] = useQueryState(
-    "status",
+    "is_visible",
     parseAsArrayOf(parseAsString).withDefault([])
   )
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))

@@ -8,7 +8,9 @@ import {
   EyeIcon,
   FolderInputIcon,
   FolderIcon,
+  GripVerticalIcon,
   InfoIcon,
+  MoreHorizontalIcon,
   PencilIcon,
   Trash2Icon,
 } from "lucide-react"
@@ -17,9 +19,18 @@ import { cn } from "@/lib/utils"
 import { downloadMediaItem } from "@/lib/tenant/media-download"
 import { isMediaImage, isMediaPreviewable } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
-import { MediaAiContextMenuSub } from "@/components/tenant/admin/components/media/media-ai-features-menu"
+import {
+  MediaAiContextMenuSub,
+  MediaAiDropdownMenuSub,
+} from "@/components/tenant/admin/components/media/media-ai-features-menu"
+import {
+  MediaLibraryDraggable,
+  MediaLibraryDragHandle,
+  MediaLibraryFolderDropTarget,
+} from "@/components/tenant/admin/components/media/media-library-dnd"
 import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   ContextMenu,
@@ -29,20 +40,29 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
 import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+function runMenuAction(action: () => void) {
+  return (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+    event.preventDefault()
+    event.stopPropagation()
+    action()
+  }
+}
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
+
+const listRowClassName =
+  "group flex w-full items-center gap-2 rounded-lg border border-border px-3 py-2.5 text-sm transition-colors hover:bg-muted/50"
 
 interface MediaListProps {
   folders: MediaBrowserFolder[]
@@ -62,6 +82,9 @@ interface MediaListProps {
   processingItemId?: number | null
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
+  onMoveFolder?: (folder: MediaBrowserFolder) => void
+  onCopyFolder?: (folder: MediaBrowserFolder) => void
+  enableDrag?: boolean
 }
 
 function FileContextMenuItems({
@@ -88,25 +111,25 @@ function FileContextMenuItems({
   return (
     <>
       {canPreview && onPreviewItem ? (
-        <ContextMenuItem onClick={() => onPreviewItem(item)}>
+        <ContextMenuItem onClick={runMenuAction(() => onPreviewItem(item))}>
           <EyeIcon />
           Open
         </ContextMenuItem>
       ) : null}
       {onViewProperties ? (
-        <ContextMenuItem onClick={() => onViewProperties(item)}>
+        <ContextMenuItem onClick={runMenuAction(() => onViewProperties(item))}>
           <InfoIcon />
           Properties
         </ContextMenuItem>
       ) : null}
       {onMoveItem ? (
-        <ContextMenuItem onClick={() => onMoveItem(item.id)}>
+        <ContextMenuItem onClick={runMenuAction(() => onMoveItem(item.id))}>
           <FolderInputIcon />
           Move
         </ContextMenuItem>
       ) : null}
       {onCopyItem ? (
-        <ContextMenuItem onClick={() => onCopyItem(item.id)}>
+        <ContextMenuItem onClick={runMenuAction(() => onCopyItem(item.id))}>
           <CopyIcon />
           Copy
         </ContextMenuItem>
@@ -116,7 +139,7 @@ function FileContextMenuItems({
         onRemoveBackground={onRemoveBackground}
         processingItemId={processingItemId}
       />
-      <ContextMenuItem onClick={() => downloadMediaItem(item)}>
+      <ContextMenuItem onClick={runMenuAction(() => downloadMediaItem(item))}>
         <DownloadIcon />
         Download
       </ContextMenuItem>
@@ -125,7 +148,7 @@ function FileContextMenuItems({
           <ContextMenuSeparator />
           <ContextMenuItem
             variant="destructive"
-            onClick={() => onDeleteItem(item.id)}
+            onClick={runMenuAction(() => onDeleteItem(item.id))}
           >
             <Trash2Icon />
             Delete
@@ -140,27 +163,47 @@ function FolderContextMenuItems({
   folder,
   onRenameFolder,
   onDeleteFolder,
+  onMoveFolder,
+  onCopyFolder,
 }: {
   folder: MediaBrowserFolder
   onRenameFolder?: (folder: MediaBrowserFolder) => void
   onDeleteFolder?: (folder: MediaBrowserFolder) => void
+  onMoveFolder?: (folder: MediaBrowserFolder) => void
+  onCopyFolder?: (folder: MediaBrowserFolder) => void
 }) {
-  if (!onRenameFolder && !onDeleteFolder) return null
+  if (!onRenameFolder && !onDeleteFolder && !onMoveFolder && !onCopyFolder) {
+    return null
+  }
 
   return (
     <>
+      {onMoveFolder ? (
+        <ContextMenuItem onClick={runMenuAction(() => onMoveFolder(folder))}>
+          <FolderInputIcon />
+          Move
+        </ContextMenuItem>
+      ) : null}
+      {onCopyFolder ? (
+        <ContextMenuItem onClick={runMenuAction(() => onCopyFolder(folder))}>
+          <CopyIcon />
+          Copy
+        </ContextMenuItem>
+      ) : null}
       {onRenameFolder ? (
-        <ContextMenuItem onClick={() => onRenameFolder(folder)}>
+        <ContextMenuItem onClick={runMenuAction(() => onRenameFolder(folder))}>
           <PencilIcon />
           Rename
         </ContextMenuItem>
       ) : null}
       {onDeleteFolder ? (
         <>
-          {onRenameFolder ? <ContextMenuSeparator /> : null}
+          {onRenameFolder || onMoveFolder || onCopyFolder ? (
+            <ContextMenuSeparator />
+          ) : null}
           <ContextMenuItem
             variant="destructive"
-            onClick={() => onDeleteFolder(folder)}
+            onClick={runMenuAction(() => onDeleteFolder(folder))}
           >
             <Trash2Icon />
             Delete
@@ -168,6 +211,163 @@ function FolderContextMenuItems({
         </>
       ) : null}
     </>
+  )
+}
+
+function MediaFileRowActions({
+  item,
+  onMoveItem,
+  onCopyItem,
+  onDeleteItem,
+  onPreviewItem,
+  onViewProperties,
+  onRemoveBackground,
+  processingItemId,
+}: {
+  item: MediaItem
+  onMoveItem?: (id: number) => void
+  onCopyItem?: (id: number) => void
+  onDeleteItem?: (id: number) => void
+  onPreviewItem?: (item: MediaItem) => void
+  onViewProperties?: (item: MediaItem) => void
+  onRemoveBackground?: (item: MediaItem) => void
+  processingItemId?: number | null
+}) {
+  const canPreview = isMediaPreviewable(item)
+
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="size-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:opacity-100"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <MoreHorizontalIcon className="size-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        }
+      />
+      <DropdownMenuContent align="end" className="w-40">
+        {canPreview && onPreviewItem ? (
+          <DropdownMenuItem onClick={() => onPreviewItem(item)}>
+            <EyeIcon />
+            Open
+          </DropdownMenuItem>
+        ) : null}
+        {onViewProperties ? (
+          <DropdownMenuItem onClick={() => onViewProperties(item)}>
+            <InfoIcon />
+            Properties
+          </DropdownMenuItem>
+        ) : null}
+        {onMoveItem ? (
+          <DropdownMenuItem onClick={runMenuAction(() => onMoveItem(item.id))}>
+            <FolderInputIcon />
+            Move
+          </DropdownMenuItem>
+        ) : null}
+        {onCopyItem ? (
+          <DropdownMenuItem onClick={runMenuAction(() => onCopyItem(item.id))}>
+            <CopyIcon />
+            Copy
+          </DropdownMenuItem>
+        ) : null}
+        <MediaAiDropdownMenuSub
+          item={item}
+          onRemoveBackground={onRemoveBackground}
+          processingItemId={processingItemId}
+        />
+        <DropdownMenuItem onClick={() => downloadMediaItem(item)}>
+          <DownloadIcon />
+          Download
+        </DropdownMenuItem>
+        {onDeleteItem ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDeleteItem(item.id)}
+            >
+              <Trash2Icon />
+              Delete
+            </DropdownMenuItem>
+          </>
+        ) : null}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+function MediaFolderRowActions({
+  folder,
+  onRenameFolder,
+  onDeleteFolder,
+  onMoveFolder,
+  onCopyFolder,
+}: {
+  folder: MediaBrowserFolder
+  onRenameFolder?: (folder: MediaBrowserFolder) => void
+  onDeleteFolder?: (folder: MediaBrowserFolder) => void
+  onMoveFolder?: (folder: MediaBrowserFolder) => void
+  onCopyFolder?: (folder: MediaBrowserFolder) => void
+}) {
+  if (!onRenameFolder && !onDeleteFolder && !onMoveFolder && !onCopyFolder) {
+    return null
+  }
+
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            className="size-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:opacity-100"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <MoreHorizontalIcon className="size-4" />
+            <span className="sr-only">Open menu</span>
+          </Button>
+        }
+      />
+      <DropdownMenuContent align="end" className="w-40">
+        {onMoveFolder ? (
+          <DropdownMenuItem onClick={runMenuAction(() => onMoveFolder(folder))}>
+            <FolderInputIcon />
+            Move
+          </DropdownMenuItem>
+        ) : null}
+        {onCopyFolder ? (
+          <DropdownMenuItem onClick={runMenuAction(() => onCopyFolder(folder))}>
+            <CopyIcon />
+            Copy
+          </DropdownMenuItem>
+        ) : null}
+        {onRenameFolder ? (
+          <DropdownMenuItem onClick={runMenuAction(() => onRenameFolder(folder))}>
+            <PencilIcon />
+            Rename
+          </DropdownMenuItem>
+        ) : null}
+        {onDeleteFolder ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onDeleteFolder(folder)}
+            >
+              <Trash2Icon />
+              Delete
+            </DropdownMenuItem>
+          </>
+        ) : null}
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
@@ -189,12 +389,20 @@ export function MediaList({
   processingItemId,
   onRenameFolder,
   onDeleteFolder,
+  onMoveFolder,
+  onCopyFolder,
+  enableDrag = false,
 }: MediaListProps) {
   const isEmpty = folders.length === 0 && items.length === 0
+  const hasFolderMenu =
+    onRenameFolder || onDeleteFolder || onMoveFolder || onCopyFolder
 
   if (isEmpty) {
     return (
-      <div className="flex min-h-40 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+      <div
+        data-media-empty
+        className="flex min-h-40 flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground"
+      >
         <FolderIcon className="mb-3 size-8 text-muted-foreground/70" />
         <p className="font-medium text-foreground">This folder is empty</p>
       </div>
@@ -202,37 +410,78 @@ export function MediaList({
   }
 
   return (
-    <ItemGroup className="gap-1">
+    <div className="flex flex-col gap-1">
       {folders.map((folder) => {
-        const row = (
-          <Item
-            size="sm"
-            variant="outline"
-            className="cursor-pointer hover:bg-muted/50"
+        const folderRow = (
+          <div
+            data-media-folder
+            className={cn(listRowClassName, "cursor-pointer")}
             onClick={() => onOpenFolder?.(folder.id)}
           >
-            <ItemMedia variant="icon">
-              <FolderIcon className="text-amber-600 dark:text-amber-400" />
-            </ItemMedia>
-            <ItemContent>
-              <ItemTitle>{folder.name}</ItemTitle>
-              <ItemDescription>{folder.media_count ?? 0} files</ItemDescription>
-            </ItemContent>
-          </Item>
+            <div className="flex shrink-0 items-center gap-0.5">
+              {enableDrag ? (
+                <MediaLibraryDragHandle className="static opacity-100">
+                  <GripVerticalIcon className="size-4" />
+                </MediaLibraryDragHandle>
+              ) : null}
+            </div>
+            <div className="flex size-8 shrink-0 items-center justify-center">
+              <FolderIcon className="size-4 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">{folder.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {folder.media_count ?? 0} files
+              </p>
+            </div>
+            {mode === "manage" && hasFolderMenu ? (
+              <MediaFolderRowActions
+                folder={folder}
+                onRenameFolder={onRenameFolder}
+                onDeleteFolder={onDeleteFolder}
+                onMoveFolder={onMoveFolder}
+                onCopyFolder={onCopyFolder}
+              />
+            ) : null}
+          </div>
         )
 
-        if (mode !== "manage" || (!onRenameFolder && !onDeleteFolder)) {
-          return <div key={`folder-${folder.id}`}>{row}</div>
+        const folderTrigger = enableDrag ? (
+          <MediaLibraryDraggable kind="folder" id={folder.id}>
+            <MediaLibraryFolderDropTarget folderId={folder.id}>
+              <ContextMenuTrigger render={folderRow} />
+            </MediaLibraryFolderDropTarget>
+          </MediaLibraryDraggable>
+        ) : (
+          <ContextMenuTrigger render={folderRow} />
+        )
+
+        if (mode !== "manage" || !hasFolderMenu) {
+          return (
+            <div key={`folder-${folder.id}`}>
+              {enableDrag ? (
+                <MediaLibraryDraggable kind="folder" id={folder.id}>
+                  <MediaLibraryFolderDropTarget folderId={folder.id}>
+                    {folderRow}
+                  </MediaLibraryFolderDropTarget>
+                </MediaLibraryDraggable>
+              ) : (
+                folderRow
+              )}
+            </div>
+          )
         }
 
         return (
           <ContextMenu key={`folder-${folder.id}`}>
-            <ContextMenuTrigger render={row} />
+            {folderTrigger}
             <ContextMenuContent>
               <FolderContextMenuItems
                 folder={folder}
                 onRenameFolder={onRenameFolder}
                 onDeleteFolder={onDeleteFolder}
+                onMoveFolder={onMoveFolder}
+                onCopyFolder={onCopyFolder}
               />
             </ContextMenuContent>
           </ContextMenu>
@@ -246,11 +495,11 @@ export function MediaList({
             ? pickerValue === item.id
             : selectedIds.includes(item.id)
 
-        const row = (
-          <Item
-            size="sm"
-            variant="outline"
+        const fileRow = (
+          <div
+            data-media-item
             className={cn(
+              listRowClassName,
               "cursor-pointer",
               isSelected && "border-primary bg-primary/5"
             )}
@@ -268,18 +517,23 @@ export function MediaList({
               }
             }}
           >
-            {mode === "manage" ? (
-              <ItemActions>
+            <div className="flex shrink-0 items-center gap-0.5">
+              {enableDrag ? (
+                <MediaLibraryDragHandle className="static opacity-100">
+                  <GripVerticalIcon className="size-4" />
+                </MediaLibraryDragHandle>
+              ) : null}
+              {mode === "manage" ? (
                 <Checkbox
                   checked={isSelected}
                   onCheckedChange={() => onToggleSelect?.(item.id)}
                   onClick={(event) => event.stopPropagation()}
                   aria-label={`Select ${item.title ?? item.name}`}
                 />
-              </ItemActions>
-            ) : null}
+              ) : null}
+            </div>
 
-            <ItemMedia variant={isImage ? "image" : "icon"}>
+            <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-muted/40">
               {isImage ? (
                 <MediaThumbnail
                   media={item}
@@ -290,33 +544,62 @@ export function MediaList({
               ) : (
                 <MediaFileIcon item={item} size="sm" />
               )}
-            </ItemMedia>
+            </div>
 
-            <ItemContent>
-              <ItemTitle>{item.title ?? item.name}</ItemTitle>
-              <ItemDescription>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">{item.title ?? item.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
                 {formatFileSize(item.size)}
                 {item.created_at
                   ? ` · ${formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}`
                   : ""}
-              </ItemDescription>
-            </ItemContent>
+              </p>
+            </div>
+
+            {mode === "manage" ? (
+              <MediaFileRowActions
+                item={item}
+                onMoveItem={onMoveItem}
+                onCopyItem={onCopyItem}
+                onDeleteItem={onDeleteItem}
+                onPreviewItem={onPreviewItem}
+                onViewProperties={onViewProperties}
+                onRemoveBackground={onRemoveBackground}
+                processingItemId={processingItemId}
+              />
+            ) : null}
 
             {mode === "picker" && isSelected ? (
-              <ItemActions>
-                <CheckIcon className="size-4 text-primary" />
-              </ItemActions>
+              <CheckIcon className="size-4 shrink-0 text-primary" />
             ) : null}
-          </Item>
+          </div>
+        )
+
+        const fileTrigger = enableDrag ? (
+          <MediaLibraryDraggable kind="media" id={item.id}>
+            <ContextMenuTrigger render={fileRow} />
+          </MediaLibraryDraggable>
+        ) : (
+          <ContextMenuTrigger render={fileRow} />
         )
 
         if (mode !== "manage") {
-          return <div key={item.id}>{row}</div>
+          return (
+            <div key={item.id}>
+              {enableDrag ? (
+                <MediaLibraryDraggable kind="media" id={item.id}>
+                  {fileRow}
+                </MediaLibraryDraggable>
+              ) : (
+                fileRow
+              )}
+            </div>
+          )
         }
 
         return (
           <ContextMenu key={item.id}>
-            <ContextMenuTrigger render={row} />
+            {fileTrigger}
             <ContextMenuContent>
               <FileContextMenuItems
                 item={item}
@@ -332,6 +615,6 @@ export function MediaList({
           </ContextMenu>
         )
       })}
-    </ItemGroup>
+    </div>
   )
 }

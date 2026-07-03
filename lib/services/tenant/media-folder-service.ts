@@ -4,6 +4,7 @@ import {
   MediaFolderListParams,
   MediaFolderTreeNode,
 } from "@/types/tenant/media"
+import { copyMedia, getMediaPaginated } from "./media-service"
 import { tenantApiClient } from "./api-client"
 
 interface ApiResponse<T> {
@@ -68,4 +69,34 @@ export const deleteMediaFolder = async (id: number): Promise<void> => {
 
 export const deleteManyMediaFolders = async (ids: number[]): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>("/media-folders/bulk", { ids })
+}
+
+export const moveMediaFolder = async (
+  id: number,
+  parentId: number | null
+): Promise<MediaFolder> => updateMediaFolder(id, { parent_id: parentId })
+
+export const copyMediaFolderShallow = async (
+  folderId: number,
+  folderName: string,
+  targetParentId: number | null
+): Promise<MediaFolder> => {
+  const newFolder = await createMediaFolder({
+    name: `${folderName} (copy)`,
+    parent_id: targetParentId,
+  })
+
+  const media = await getMediaPaginated({
+    folder_id: folderId,
+    per_page: 500,
+  })
+
+  if (media.data.length > 0) {
+    await copyMedia(
+      media.data.map((item) => item.id),
+      newFolder.id
+    )
+  }
+
+  return newFolder
 }

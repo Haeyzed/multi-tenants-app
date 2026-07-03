@@ -5,9 +5,10 @@ import * as React from "react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useMediaLibraryDnd } from "@/components/tenant/admin/components/media/media-library-dnd"
 
 const INTERACTIVE_SELECTOR =
-  "[data-media-item], button, a, input, textarea, select, [role=checkbox]"
+  "[data-media-item], [data-media-folder], [data-media-empty], [data-media-drop-target], [data-slot=context-menu-item], [data-slot=context-menu-content], [data-slot=context-menu-trigger], [data-slot=context-menu-sub-trigger], [data-slot=sortable-item-handle], button, a, input, textarea, select, [role=checkbox]"
 
 interface MediaUploadContextValue {
   openFilePicker: () => void
@@ -93,6 +94,8 @@ export function MediaUploadZone({
   const inputRef = React.useRef<HTMLInputElement>(null)
   const dragDepthRef = React.useRef(0)
   const [dragOver, setDragOver] = React.useState(false)
+  const libraryDnd = useMediaLibraryDnd()
+  const isLibraryDragging = libraryDnd?.isDragging ?? false
 
   const openFilePicker = React.useCallback(() => {
     if (disabled || uploadPending) {
@@ -124,7 +127,7 @@ export function MediaUploadZone({
 
   const handleDragEnter = React.useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      if (disabled) {
+      if (disabled || isLibraryDragging) {
         return
       }
 
@@ -132,12 +135,12 @@ export function MediaUploadZone({
       dragDepthRef.current += 1
       setDragOver(true)
     },
-    [disabled]
+    [disabled, isLibraryDragging]
   )
 
   const handleDragLeave = React.useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      if (disabled) {
+      if (disabled || isLibraryDragging) {
         return
       }
 
@@ -148,23 +151,23 @@ export function MediaUploadZone({
         setDragOver(false)
       }
     },
-    [disabled]
+    [disabled, isLibraryDragging]
   )
 
   const handleDragOver = React.useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      if (disabled) {
+      if (disabled || isLibraryDragging) {
         return
       }
 
       event.preventDefault()
     },
-    [disabled]
+    [disabled, isLibraryDragging]
   )
 
   const handleDrop = React.useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
-      if (disabled) {
+      if (disabled || isLibraryDragging) {
         return
       }
 
@@ -173,7 +176,7 @@ export function MediaUploadZone({
       setDragOver(false)
       processFiles(Array.from(event.dataTransfer.files))
     },
-    [disabled, processFiles]
+    [disabled, isLibraryDragging, processFiles]
   )
 
   const handleDropzoneClick = React.useCallback(

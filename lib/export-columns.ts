@@ -66,3 +66,31 @@ export const CATEGORY_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "icon", label: "Icon" },
   { key: "created_at", label: "Created At" },
 ]
+
+export const CUSTOMER_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "first_name", label: "First Name" },
+  { key: "last_name", label: "Last Name" },
+  { key: "email", label: "Email" },
+  { key: "phone", label: "Phone" },
+  { key: "customer_group_id", label: "Customer Group ID" },
+  { key: "customer_group_name", label: "Customer Group" },
+  { key: "date_of_birth", label: "Date of Birth" },
+  { key: "gender", label: "Gender" },
+  { key: "loyalty_points", label: "Loyalty Points" },
+  { key: "total_spent", label: "Total Spent" },
+  { key: "orders_count", label: "Orders Count" },
+  { key: "is_active", label: "Active" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const CUSTOMER_GROUP_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "description", label: "Description" },
+  { key: "discount_percent", label: "Discount %" },
+  { key: "is_active", label: "Active" },
+  { key: "customers_count", label: "Customers Count" },
+  { key: "created_at", label: "Created At" },
+]

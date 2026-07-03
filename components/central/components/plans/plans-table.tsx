@@ -22,7 +22,7 @@ const FILTER_COUNT = 2
 export function PlansTable() {
   const [name] = useQueryState("name", parseAsString.withDefault(""))
   const [isActive] = useQueryState(
-    "status",
+    "is_active",
     parseAsArrayOf(parseAsString).withDefault([])
   )
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))

@@ -41,11 +41,38 @@ class TenantApiClient {
     return this.token
   }
 
+  private buildQueryString(
+    params?: Record<
+      string,
+      string | number | boolean | string[] | number[] | undefined
+    >
+  ): string {
+    if (!params) return ""
+
+    const searchParams = new URLSearchParams()
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined) continue
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          searchParams.append(`${key}[]`, String(item))
+        }
+        continue
+      }
+      searchParams.append(key, String(value))
+    }
+
+    const query = searchParams.toString()
+    return query ? `?${query}` : ""
+  }
+
   private async request<T>(
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     path: string,
     body?: unknown,
-    params?: Record<string, string | number | boolean | undefined>
+    params?: Record<
+      string,
+      string | number | boolean | string[] | number[] | undefined
+    >
   ): Promise<T> {
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -56,16 +83,7 @@ class TenantApiClient {
       headers["Authorization"] = `Bearer ${this.token}`
     }
 
-    let url = `${resolveTenantApiBaseUrl()}${path}`
-    if (params) {
-      const filteredParams = Object.fromEntries(
-        Object.entries(params)
-          .filter(([, value]) => value !== undefined)
-          .map(([key, value]) => [key, String(value)])
-      ) as Record<string, string>
-      const query = new URLSearchParams(filteredParams).toString()
-      if (query) url += `?${query}`
-    }
+    const url = `${resolveTenantApiBaseUrl()}${path}${this.buildQueryString(params)}`
 
     const response = await fetch(url, {
       method,
@@ -89,7 +107,10 @@ class TenantApiClient {
 
   public get<T>(
     path: string,
-    params?: Record<string, string | number | boolean | undefined>
+    params?: Record<
+      string,
+      string | number | boolean | string[] | number[] | undefined
+    >
   ) {
     return this.request<T>("GET", path, undefined, params)
   }
@@ -163,7 +184,10 @@ class TenantApiClient {
 
   public async getFileDownload(
     path: string,
-    params?: Record<string, string | number | boolean | undefined>,
+    params?: Record<
+      string,
+      string | number | boolean | string[] | number[] | undefined
+    >,
     defaultFilename = "download.xlsx"
   ): Promise<string> {
     const headers: HeadersInit = {
@@ -175,16 +199,7 @@ class TenantApiClient {
       headers["Authorization"] = `Bearer ${this.token}`
     }
 
-    let url = `${resolveTenantApiBaseUrl()}${path}`
-    if (params) {
-      const filteredParams = Object.fromEntries(
-        Object.entries(params)
-          .filter(([, value]) => value !== undefined)
-          .map(([key, value]) => [key, String(value)])
-      ) as Record<string, string>
-      const query = new URLSearchParams(filteredParams).toString()
-      if (query) url += `?${query}`
-    }
+    const url = `${resolveTenantApiBaseUrl()}${path}${this.buildQueryString(params)}`
 
     const response = await fetch(url, { method: "GET", headers })
 

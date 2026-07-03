@@ -11,34 +11,34 @@ import { DataTable } from "@/components/data-table/data-table"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { useDataTable } from "@/hooks/use-data-table"
-import { useGetBrands } from "@/hooks/tenant/use-brand-query"
+import { useGetCustomerGroups } from "@/hooks/tenant/use-customer-group-query"
 import { useQueryErrorToast } from "@/hooks/use-query-error-toast"
-import { BrandsBulkActions } from "./brands-bulk-actions"
-import { columns } from "./brands-columns"
+import { CustomerGroupsBulkActions } from "./customer-groups-bulk-actions"
+import { columns } from "./customer-groups-columns"
 
-const COLUMN_COUNT = 9
+const COLUMN_COUNT = 8
 const FILTER_COUNT = 2
 
-export function BrandsTable() {
+export function CustomerGroupsTable() {
   const [name] = useQueryState("name", parseAsString.withDefault(""))
-  const [visibility] = useQueryState(
-    "is_visible",
+  const [isActive] = useQueryState(
+    "is_active",
     parseAsArrayOf(parseAsString).withDefault([])
   )
   const [page] = useQueryState("page", parseAsInteger.withDefault(1))
   const [perPage] = useQueryState("per_page", parseAsInteger.withDefault(15))
 
-  const { data, isLoading, error } = useGetBrands({
+  const { data, isLoading, error } = useGetCustomerGroups({
     search: name || undefined,
-    is_visible:
-      visibility.length > 0
-        ? (visibility as ("visible" | "hidden")[])
+    is_active:
+      isActive.length > 0
+        ? (isActive as ("active" | "inactive")[])
         : undefined,
     per_page: perPage,
     page,
   })
 
-  useQueryErrorToast(error, "Failed to load brands.")
+  useQueryErrorToast(error, "Failed to load customer groups.")
 
   const tableData = data?.data || []
 
@@ -59,14 +59,16 @@ export function BrandsTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "10rem", "8rem", "12rem", "8rem", "8rem", "3rem"]}
       />
     )
   }
 
   return (
     <div className="data-table-container space-y-4">
-      <DataTable table={table} actionBar={<BrandsBulkActions table={table} />}>
+      <DataTable
+        table={table}
+        actionBar={<CustomerGroupsBulkActions table={table} />}
+      >
         <DataTableToolbar table={table} />
       </DataTable>
     </div>
