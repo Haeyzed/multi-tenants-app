@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { format } from "date-fns"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -16,26 +17,6 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
-import {
-  useCreateTenant,
-  useUpdateTenant,
-} from "@/hooks/central/use-tenant-query"
-import { type Tenant } from "@/types/central/tenant"
-import {
-  tenantSchema,
-  updateTenantSchema,
-  type StoreTenantFormValues,
-  type UpdateTenantFormValues,
-} from "@/schemas/central/tenant-schema"
-import { useGetPlanOptions } from "@/hooks/central/use-plan-query"
-import {
   Combobox,
   ComboboxContent,
   ComboboxEmpty,
@@ -43,16 +24,30 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { PlanOption } from "@/types/central/plan"
+import { DatePicker } from "@/components/ui/date-picker"
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { PhoneInput } from "@/components/ui/phone-input"
 import { Spinner } from "@/components/ui/spinner"
-import { handleFormApiError } from "@/lib/form-api-errors"
 import {
   InputGroup,
-  InputGroupInput,
   InputGroupAddon,
+  InputGroupInput,
   InputGroupText,
 } from "@/components/ui/input-group"
+import { handleFormApiError } from "@/lib/form-api-errors"
+import {
+  useCreateTenant,
+  useUpdateTenant,
+} from "@/hooks/central/use-tenant-query"
+import { useGetPlanOptions } from "@/hooks/central/use-plan-query"
+import { type PlanOption } from "@/types/central/plan"
+import { type Tenant, type TenantStatus } from "@/types/central/tenant"
+import {
+  tenantSchema,
+  updateTenantSchema,
+  type StoreTenantFormValues,
+  type UpdateTenantFormValues,
+} from "@/schemas/central/tenant-schema"
 
 type TenantsMutateDialogProps = {
   open: boolean
@@ -60,74 +55,120 @@ type TenantsMutateDialogProps = {
   currentRow?: Tenant
 }
 
+type StatusOption = { label: string; value: TenantStatus }
+
+const statusOptions: StatusOption[] = [
+  { label: "Pending", value: "pending" },
+  { label: "Active", value: "active" },
+  { label: "Suspended", value: "suspended" },
+]
+
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
   return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
+function parseDateString(value?: string | null): Date | undefined {
+  if (!value) return undefined
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? undefined : date
+}
+
 export function TenantsMutateDialog({
-                                      open,
-                                      onOpenChange,
-                                      currentRow,
-                                    }: TenantsMutateDialogProps) {
+  open,
+  onOpenChange,
+  currentRow,
+}: TenantsMutateDialogProps) {
   const isUpdate = !!currentRow
   const createTenant = useCreateTenant()
   const updateTenant = useUpdateTenant()
-  const { data: planOptions, isLoading: isLoadingPlans } = useGetPlanOptions()
+  const { data: planOptions = [] } = useGetPlanOptions()
   const isSubmitting = createTenant.isPending || updateTenant.isPending
-
   const schema = isUpdate ? updateTenantSchema : tenantSchema
 
   const form = useForm<StoreTenantFormValues | UpdateTenantFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: currentRow
-      ? {
+    defaultValues: {
+      name: "",
+      slug: "",
+      email: "",
+      phone: "",
+      plan_id: null,
+      trial_ends_at: null,
+      subdomain: "",
+      status: "pending",
+      owner: { name: "", email: "", phone: "" },
+    },
+  })
+
+  React.useEffect(() => {
+    if (!open) return
+
+    if (currentRow) {
+      form.reset({
         name: currentRow.name,
         email: currentRow.email || "",
         phone: currentRow.phone || "",
-        plan_id: currentRow.plan_id ?? undefined,
-        trial_ends_at: currentRow.trial_ends_at || "",
-      }
-      : {
+        plan_id: currentRow.plan_id,
+        trial_ends_at: currentRow.trial_ends_at,
+        status: currentRow.status,
+      })
+    } else {
+      form.reset({
         name: "",
         slug: "",
         email: "",
         phone: "",
-        plan_id: undefined,
-        trial_ends_at: "",
+        plan_id: null,
+        trial_ends_at: null,
         subdomain: "",
+        status: "pending",
         owner: { name: "", email: "", phone: "" },
-      },
-  })
+      })
+    }
+  }, [open, currentRow, form])
 
-  const planIdValue = form.watch("plan_id")
-  const selectedPlan = React.useMemo(
-    () => planOptions?.find((p) => p.value === planIdValue) ?? null,
-    [planOptions, planIdValue]
-  )
-
-  // Watch the name field to automatically generate the slug
   const nameValue = form.watch("name")
 
   React.useEffect(() => {
-    if (!isUpdate && nameValue) {
-      // Convert name to a URL-friendly slug
-      const generatedSlug = nameValue
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-") // Replace non-alphanumeric chars with hyphens
-        .replace(/(^-|-$)+/g, "") // Remove leading or trailing hyphens
+    if (isUpdate || !nameValue) return
 
-      form.setValue("slug", generatedSlug, {
-        shouldValidate: true,
-        shouldDirty: true,
-      })
-    }
+    const generatedSlug = nameValue
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "")
+
+    form.setValue("slug", generatedSlug, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
   }, [nameValue, isUpdate, form])
 
-  const onSubmit = (data: StoreTenantFormValues | UpdateTenantFormValues) => {
+  const planId = form.watch("plan_id")
+  const selectedPlan =
+    planOptions.find((plan) => plan.value === planId) ?? null
+
+  const status = form.watch("status")
+  const selectedStatus =
+    statusOptions.find((item) => item.value === status) ?? statusOptions[0]
+
+  const trialEndsAt = form.watch("trial_ends_at")
+  const selectedTrialEndsAt = parseDateString(trialEndsAt)
+
+  const onSubmit = (
+    data: StoreTenantFormValues | UpdateTenantFormValues
+  ) => {
+    const payload = {
+      ...data,
+      email: data.email || null,
+      phone: data.phone || null,
+      plan_id: data.plan_id ?? null,
+      trial_ends_at: data.trial_ends_at || null,
+    }
+
     if (isUpdate && currentRow) {
       updateTenant.mutate(
-        { id: currentRow.id, tenant: data as UpdateTenantFormValues },
+        { id: currentRow.id, tenant: payload as UpdateTenantFormValues },
         {
           onSuccess: () => {
             toast.success("Tenant updated successfully")
@@ -144,14 +185,18 @@ export function TenantsMutateDialog({
         }
       )
     } else {
-      createTenant.mutate(data as StoreTenantFormValues, {
+      createTenant.mutate(payload as StoreTenantFormValues, {
         onSuccess: () => {
           toast.success("Tenant created successfully")
           onOpenChange(false)
           form.reset()
         },
         onError: (error) => {
-          handleFormApiError(error, form.setError, "Failed to create tenant")
+          handleFormApiError(
+            error,
+            form.setError,
+            "Failed to create tenant"
+          )
         },
       })
     }
@@ -177,6 +222,7 @@ export function TenantsMutateDialog({
             Click save when you&apos;re done.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
+
         <form
           id="tenants-form"
           onSubmit={form.handleSubmit(onSubmit)}
@@ -196,7 +242,10 @@ export function TenantsMutateDialog({
               <FieldContent>
                 <Input placeholder="acme-inc" {...form.register("slug")} />
                 <FieldError
-                  message={(form.formState.errors as any).slug?.message}
+                  message={
+                    (form.formState.errors as { slug?: { message?: string } })
+                      .slug?.message
+                  }
                 />
               </FieldContent>
             </Field>
@@ -207,6 +256,7 @@ export function TenantsMutateDialog({
               <FieldLabel>Email</FieldLabel>
               <FieldContent>
                 <Input
+                  type="email"
                   placeholder="contact@acme.inc"
                   {...form.register("email")}
                 />
@@ -238,7 +288,7 @@ export function TenantsMutateDialog({
               <FieldLabel>Plan</FieldLabel>
               <FieldContent>
                 <Combobox
-                  items={planOptions || []}
+                  items={planOptions}
                   itemToStringValue={(plan: PlanOption) => plan.label}
                   value={selectedPlan}
                   onValueChange={(item) => {
@@ -260,23 +310,20 @@ export function TenantsMutateDialog({
                 <FieldError message={form.formState.errors.plan_id?.message} />
               </FieldContent>
             </Field>
+
             {isUpdate && (
               <Field>
                 <FieldLabel>Trial Ends At</FieldLabel>
                 <FieldContent>
-                  <Controller
-                    control={form.control}
-                    name="trial_ends_at"
-                    render={({ field }) => (
-                      <Input
-                        type="datetime-local"
-                        value={field.value ? field.value.substring(0, 16) : ""}
-                        onChange={(e) => {
-                          const val = e.target.value
-                          field.onChange(val ? new Date(val).toISOString() : null)
-                        }}
-                      />
-                    )}
+                  <DatePicker
+                    selected={selectedTrialEndsAt}
+                    onSelect={(date) => {
+                      form.setValue(
+                        "trial_ends_at",
+                        date ? date.toISOString() : null
+                      )
+                    }}
+                    placeholder="Pick trial end date"
                   />
                   <FieldError
                     message={form.formState.errors.trial_ends_at?.message}
@@ -301,7 +348,13 @@ export function TenantsMutateDialog({
                     </InputGroupAddon>
                   </InputGroup>
                   <FieldError
-                    message={(form.formState.errors as any).subdomain?.message}
+                    message={
+                      (
+                        form.formState.errors as {
+                          subdomain?: { message?: string }
+                        }
+                      ).subdomain?.message
+                    }
                   />
                 </FieldContent>
               </Field>
@@ -320,7 +373,11 @@ export function TenantsMutateDialog({
                     />
                     <FieldError
                       message={
-                        (form.formState.errors as any).owner?.name?.message
+                        (
+                          form.formState.errors as {
+                            owner?: { name?: { message?: string } }
+                          }
+                        ).owner?.name?.message
                       }
                     />
                   </FieldContent>
@@ -331,12 +388,17 @@ export function TenantsMutateDialog({
                     <FieldLabel>Owner Email *</FieldLabel>
                     <FieldContent>
                       <Input
+                        type="email"
                         placeholder="john.doe@acme.inc"
                         {...form.register("owner.email")}
                       />
                       <FieldError
                         message={
-                          (form.formState.errors as any).owner?.email?.message
+                          (
+                            form.formState.errors as {
+                              owner?: { email?: { message?: string } }
+                            }
+                          ).owner?.email?.message
                         }
                       />
                     </FieldContent>
@@ -358,7 +420,11 @@ export function TenantsMutateDialog({
                       />
                       <FieldError
                         message={
-                          (form.formState.errors as any).owner?.phone?.message
+                          (
+                            form.formState.errors as {
+                              owner?: { phone?: { message?: string } }
+                            }
+                          ).owner?.phone?.message
                         }
                       />
                     </FieldContent>
@@ -372,28 +438,33 @@ export function TenantsMutateDialog({
             <Field>
               <FieldLabel>Status</FieldLabel>
               <FieldContent>
-                <Select
-                  onValueChange={(value) =>
-                    form.setValue(
-                      "status",
-                      value as "pending" | "active" | "suspended"
-                    )
-                  }
-                  defaultValue={currentRow?.status}
+                <Combobox
+                  items={statusOptions}
+                  itemToStringValue={(item) => item.label}
+                  value={selectedStatus}
+                  onValueChange={(item) => {
+                    if (!item) return
+                    form.setValue("status", item.value)
+                  }}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <ComboboxInput placeholder="Select status..." />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No statuses found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(item) => (
+                        <ComboboxItem key={item.value} value={item}>
+                          {item.label}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+                <FieldError message={form.formState.errors.status?.message} />
               </FieldContent>
             </Field>
           )}
         </form>
+
         <ResponsiveDialogFooter>
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}

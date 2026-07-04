@@ -1,4 +1,5 @@
-import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react"
+import Link from "next/link"
+import { Edit, MoreHorizontal, Trash2 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,9 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Guard } from "@/components/central/components/auth/guard"
-import { type Plan } from "@/types/central/plan"
-import { usePlans } from "./plans-provider"
+import { TenantAdminAuthGuard } from "@/components/tenant/admin/components/auth-guard"
+import { type Product } from "@/types/tenant/product"
+import { useProducts } from "./products-provider"
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
@@ -19,8 +20,8 @@ type DataTableRowActionsProps<TData> = {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const plan = row.original as Plan
-  const { setOpen, setCurrentRow } = usePlans()
+  const product = row.original as Product
+  const { setOpen, setCurrentRow } = useProducts()
 
   return (
     <DropdownMenu modal={false}>
@@ -36,41 +37,27 @@ export function DataTableRowActions<TData>({
         }
       />
       <DropdownMenuContent align="end" className="w-40">
-        <Guard permissions="plans.view">
+        <TenantAdminAuthGuard permissions="products.update">
           <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(plan)
-              setOpen("view")
-            }}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
-        </Guard>
-        <Guard permissions="plans.update">
-          <DropdownMenuItem
-            onClick={() => {
-              setCurrentRow(plan)
-              setOpen("update")
-            }}
+            render={<Link href={`/admin/products/${product.id}/edit`} />}
           >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-        </Guard>
+        </TenantAdminAuthGuard>
         <DropdownMenuSeparator />
-        <Guard permissions="plans.delete">
+        <TenantAdminAuthGuard permissions="products.delete">
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
-              setCurrentRow(plan)
+              setCurrentRow(product)
               setOpen("delete")
             }}
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
           </DropdownMenuItem>
-        </Guard>
+        </TenantAdminAuthGuard>
       </DropdownMenuContent>
     </DropdownMenu>
   )

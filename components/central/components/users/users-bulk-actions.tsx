@@ -17,7 +17,9 @@ type UsersBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function UsersBulkActions<TData>({ table }: UsersBulkActionsProps<TData>) {
+export function UsersBulkActions<TData>({
+  table,
+}: UsersBulkActionsProps<TData>) {
   const { setOpen, setExportSelection, setDeleteManySelection } = useUsers()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 

@@ -11,6 +11,7 @@ import {
 type UsersDialogType =
   | "create"
   | "update"
+  | "view"
   | "delete"
   | "import"
   | "export"
@@ -59,9 +60,11 @@ export function UsersProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useUsers = () => {
-  const context = React.useContext(UsersContext)
-  if (!context) {
+  const usersContext = React.useContext(UsersContext)
+
+  if (!usersContext) {
     throw new Error("useUsers has to be used within <UsersProvider>")
   }
-  return context
+
+  return usersContext
 }

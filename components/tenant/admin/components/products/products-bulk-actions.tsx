@@ -10,17 +10,17 @@ import {
   ActionBarSelection,
   ActionBarClose,
 } from "@/components/ui/action-bar"
-import { type Plan } from "@/types/central/plan"
-import { usePlans } from "./plans-provider"
+import { type Product } from "@/types/tenant/product"
+import { useProducts } from "./products-provider"
 
-type PlansBulkActionsProps<TData> = {
+type ProductsBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function PlansBulkActions<TData>({
+export function ProductsBulkActions<TData>({
   table,
-}: PlansBulkActionsProps<TData>) {
-  const { setOpen, setExportSelection, setDeleteManySelection } = usePlans()
+}: ProductsBulkActionsProps<TData>) {
+  const { setOpen, setExportSelection, setDeleteManySelection } = useProducts()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const onOpenChange = React.useCallback(
@@ -33,7 +33,7 @@ export function PlansBulkActions<TData>({
   )
 
   const handleExport = () => {
-    const ids = selectedRows.map((row) => (row.original as Plan).id)
+    const ids = selectedRows.map((row) => (row.original as Product).id)
     setExportSelection({
       ids,
       onComplete: () => table.resetRowSelection(),
@@ -42,7 +42,7 @@ export function PlansBulkActions<TData>({
   }
 
   const handleDeleteMany = () => {
-    const ids = selectedRows.map((row) => (row.original as Plan).id)
+    const ids = selectedRows.map((row) => (row.original as Product).id)
     setDeleteManySelection({
       ids,
       onComplete: () => table.resetRowSelection(),

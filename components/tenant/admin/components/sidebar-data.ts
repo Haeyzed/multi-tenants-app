@@ -2,6 +2,7 @@ import {
   GalleryVerticalEndIcon,
   ImageIcon,
   LayoutDashboardIcon,
+  PackageIcon,
   TagIcon,
   TagsIcon,
   UsersIcon,
@@ -52,6 +53,11 @@ export const sidebarData: SidebarData = {
     {
       title: "Catalog",
       items: [
+        {
+          title: "Products",
+          url: "/admin/products",
+          icon: PackageIcon,
+        },
         {
           title: "Brands",
           url: "/admin/brands",

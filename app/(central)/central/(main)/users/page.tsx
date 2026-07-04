@@ -6,21 +6,24 @@ import { UsersTable } from "@/components/central/components/users/users-table"
 import { UsersDialogs } from "@/components/central/components/users/users-dialogs"
 import { UserStatistics } from "@/components/central/components/users/user-statistics"
 import { PageHeader } from "@/components/layout/page-header"
+import { Guard } from "@/components/central/components/auth/guard"
 
 export default function UsersPage() {
   return (
-    <UsersProvider>
-      <div className="flex flex-1 flex-col gap-4 sm:gap-6">
-        <PageHeader
-          title="Users"
-          description="Manage central platform administrator accounts."
-        >
-          <UsersPrimaryButtons />
-        </PageHeader>
-        <UserStatistics />
-        <UsersTable />
-        <UsersDialogs />
-      </div>
-    </UsersProvider>
+    <Guard permissions="users.view">
+      <UsersProvider>
+        <div className="flex flex-1 flex-col gap-4 sm:gap-6">
+          <PageHeader
+            title="Users"
+            description="Manage central platform administrator accounts."
+          >
+            <UsersPrimaryButtons />
+          </PageHeader>
+          <UserStatistics />
+          <UsersTable />
+          <UsersDialogs />
+        </div>
+      </UsersProvider>
+    </Guard>
   )
 }

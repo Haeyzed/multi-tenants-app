@@ -94,3 +94,22 @@ export const CUSTOMER_GROUP_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "customers_count", label: "Customers Count" },
   { key: "created_at", label: "Created At" },
 ]
+
+export const PRODUCT_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "sku", label: "SKU" },
+  { key: "barcode", label: "Barcode" },
+  { key: "price", label: "Price" },
+  { key: "compare_at_price", label: "Compare At Price" },
+  { key: "sale_price", label: "Sale Price" },
+  { key: "cost_price", label: "Cost Price" },
+  { key: "status", label: "Status" },
+  { key: "is_featured", label: "Featured" },
+  { key: "product_type", label: "Type" },
+  { key: "category", label: "Category" },
+  { key: "brand", label: "Brand" },
+  { key: "quantity", label: "Quantity" },
+  { key: "created_at", label: "Created At" },
+]

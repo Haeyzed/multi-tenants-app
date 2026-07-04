@@ -11,6 +11,7 @@ import {
 type PlansDialogType =
   | "create"
   | "update"
+  | "view"
   | "delete"
   | "import"
   | "export"

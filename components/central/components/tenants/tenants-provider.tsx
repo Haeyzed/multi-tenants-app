@@ -11,11 +11,11 @@ import {
 type TenantsDialogType =
   | "create"
   | "update"
+  | "view"
   | "delete"
   | "import"
   | "export"
   | "deleteMany"
-  | "view"
   | "add-domain"
   | "activate"
   | "suspend"

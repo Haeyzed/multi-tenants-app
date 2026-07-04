@@ -41,3 +41,12 @@ export type CustomerGroupStatistics = {
   active: number
   inactive: number
 }
+
+export type ProductStatistics = {
+  total: number
+  draft: number
+  active: number
+  archived: number
+  featured: number
+  low_stock: number
+}

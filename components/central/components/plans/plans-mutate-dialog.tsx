@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Plus, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -28,7 +29,6 @@ import {
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { handleFormApiError } from "@/lib/form-api-errors"
-import { X, Plus } from "lucide-react"
 import { useCreatePlan, useUpdatePlan } from "@/hooks/central/use-plan-query"
 import { type Plan } from "@/types/central/plan"
 import {
@@ -66,6 +66,25 @@ function normalizeLimits(limits: Plan["limits"]): string[] {
   return []
 }
 
+const emptyDefaults: StorePlanFormValues = {
+  slug: "",
+  name: "",
+  description: "",
+  price: 0,
+  currency: "USD",
+  interval: "monthly",
+  stripe_price_id: null,
+  paddle_price_id: null,
+  paystack_plan_code: null,
+  paypal_plan_id: null,
+  flutterwave_plan_id: null,
+  is_active: true,
+  is_featured: false,
+  sort_order: 0,
+  features: [],
+  limits: [],
+}
+
 export function PlansMutateDialog({
   open,
   onOpenChange,
@@ -75,60 +94,56 @@ export function PlansMutateDialog({
   const createPlan = useCreatePlan()
   const updatePlan = useUpdatePlan()
   const isSubmitting = createPlan.isPending || updatePlan.isPending
+  const schema = isUpdate ? updatePlanSchema : storePlanSchema
 
   const [featureInput, setFeatureInput] = React.useState("")
   const [limitInput, setLimitInput] = React.useState("")
 
-  const schema = isUpdate ? updatePlanSchema : storePlanSchema
-
   const form = useForm<StorePlanFormValues | UpdatePlanFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: currentRow
-      ? {
-          name: currentRow.name,
-          description: currentRow.description || "",
-          price: parseFloat(currentRow.price),
-          currency: currentRow.currency,
-          interval: currentRow.interval as "monthly" | "yearly",
-          stripe_price_id: currentRow.stripe_price_id,
-          paddle_price_id: currentRow.paddle_price_id,
-          paystack_plan_code: currentRow.paystack_plan_code,
-          paypal_plan_id: currentRow.paypal_plan_id,
-          flutterwave_plan_id: currentRow.flutterwave_plan_id,
-          limits: normalizeLimits(currentRow.limits),
-          is_active: currentRow.is_active,
-          is_featured: currentRow.is_featured,
-          sort_order: currentRow.sort_order,
-          features: currentRow.features || [],
-        }
-      : {
-          slug: "",
-          name: "",
-          description: "",
-          price: 0,
-          currency: "USD",
-          interval: "monthly",
-          stripe_price_id: null,
-          paddle_price_id: null,
-          paystack_plan_code: null,
-          paypal_plan_id: null,
-          flutterwave_plan_id: null,
-          is_active: true,
-          is_featured: false,
-          sort_order: 0,
-          features: [],
-          limits: [],
-        },
+    defaultValues: emptyDefaults,
   })
 
+  React.useEffect(() => {
+    if (!open) return
+
+    if (currentRow) {
+      form.reset({
+        name: currentRow.name,
+        description: currentRow.description || "",
+        price: parseFloat(currentRow.price),
+        currency: currentRow.currency,
+        interval: currentRow.interval as "monthly" | "yearly",
+        stripe_price_id: currentRow.stripe_price_id,
+        paddle_price_id: currentRow.paddle_price_id,
+        paystack_plan_code: currentRow.paystack_plan_code,
+        paypal_plan_id: currentRow.paypal_plan_id,
+        flutterwave_plan_id: currentRow.flutterwave_plan_id,
+        limits: normalizeLimits(currentRow.limits),
+        is_active: currentRow.is_active,
+        is_featured: currentRow.is_featured,
+        sort_order: currentRow.sort_order,
+        features: currentRow.features || [],
+      })
+    } else {
+      form.reset(emptyDefaults)
+    }
+
+    setFeatureInput("")
+    setLimitInput("")
+  }, [open, currentRow, form])
+
   const features = form.watch("features") || []
-  const limits = form.watch("limits") || []
+  const limits = (form.watch("limits") || []) as string[]
+  const interval = form.watch("interval")
+  const selectedInterval =
+    intervalOptions.find((item) => item.value === interval) ??
+    intervalOptions[0]
 
   const addFeature = () => {
-    if (featureInput.trim()) {
-      form.setValue("features", [...features, featureInput.trim()])
-      setFeatureInput("")
-    }
+    if (!featureInput.trim()) return
+    form.setValue("features", [...features, featureInput.trim()])
+    setFeatureInput("")
   }
 
   const removeFeature = (index: number) => {
@@ -139,23 +154,27 @@ export function PlansMutateDialog({
   }
 
   const addLimit = () => {
-    if (limitInput.trim()) {
-      form.setValue("limits", [...(limits as string[]), limitInput.trim()])
-      setLimitInput("")
-    }
+    if (!limitInput.trim()) return
+    form.setValue("limits", [...limits, limitInput.trim()])
+    setLimitInput("")
   }
 
   const removeLimit = (index: number) => {
     form.setValue(
       "limits",
-      (limits as string[]).filter((_, i) => i !== index)
+      limits.filter((_, i) => i !== index)
     )
   }
 
   const onSubmit = (data: StorePlanFormValues | UpdatePlanFormValues) => {
+    const payload = {
+      ...data,
+      description: data.description || null,
+    }
+
     if (isUpdate && currentRow) {
       updatePlan.mutate(
-        { id: currentRow.id, plan: data as UpdatePlanFormValues },
+        { id: currentRow.id, plan: payload as UpdatePlanFormValues },
         {
           onSuccess: () => {
             toast.success("Plan updated successfully")
@@ -168,7 +187,7 @@ export function PlansMutateDialog({
         }
       )
     } else {
-      createPlan.mutate(data as StorePlanFormValues, {
+      createPlan.mutate(payload as StorePlanFormValues, {
         onSuccess: () => {
           toast.success("Plan created successfully")
           onOpenChange(false)
@@ -205,126 +224,121 @@ export function PlansMutateDialog({
         <form
           id="plans-form"
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6"
+          className="space-y-4"
         >
-          {/* General Information Section */}
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Field>
-                <FieldLabel>Name *</FieldLabel>
-                <FieldContent>
-                  <Input placeholder="Pro Plan" {...form.register("name")} />
-                  <FieldError message={form.formState.errors.name?.message} />
-                </FieldContent>
-              </Field>
-
-              {!isUpdate && (
-                <Field>
-                  <FieldLabel>Slug *</FieldLabel>
-                  <FieldContent>
-                    <Input placeholder="pro-plan" {...form.register("slug")} />
-                    <FieldError
-                      message={(form.formState.errors as any).slug?.message}
-                    />
-                  </FieldContent>
-                </Field>
-              )}
-            </div>
-
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Field>
-              <FieldLabel>Description</FieldLabel>
+              <FieldLabel>Name *</FieldLabel>
               <FieldContent>
-                <Textarea
-                  placeholder="A plan for professionals..."
-                  {...form.register("description")}
-                />
-                <FieldError
-                  message={form.formState.errors.description?.message}
-                />
+                <Input placeholder="Pro Plan" {...form.register("name")} />
+                <FieldError message={form.formState.errors.name?.message} />
               </FieldContent>
             </Field>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div className="md:col-span-2">
-                <Field>
-                  <FieldLabel>Price *</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      placeholder="99.99"
-                      {...form.register("price", { valueAsNumber: true })}
-                    />
-                    <FieldError
-                      message={form.formState.errors.price?.message}
-                    />
-                  </FieldContent>
-                </Field>
-              </div>
+            {!isUpdate && (
               <Field>
-                <FieldLabel>Currency *</FieldLabel>
+                <FieldLabel>Slug *</FieldLabel>
                 <FieldContent>
-                  <Input
-                    placeholder="USD"
-                    maxLength={3}
-                    {...form.register("currency")}
-                  />
+                  <Input placeholder="pro-plan" {...form.register("slug")} />
                   <FieldError
-                    message={form.formState.errors.currency?.message}
+                    message={
+                      (
+                        form.formState.errors as {
+                          slug?: { message?: string }
+                        }
+                      ).slug?.message
+                    }
                   />
                 </FieldContent>
               </Field>
+            )}
+          </div>
+
+          <Field>
+            <FieldLabel>Description</FieldLabel>
+            <FieldContent>
+              <Textarea
+                placeholder="A plan for professionals..."
+                {...form.register("description")}
+              />
+              <FieldError
+                message={form.formState.errors.description?.message}
+              />
+            </FieldContent>
+          </Field>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div className="md:col-span-2">
               <Field>
-                <FieldLabel>Interval *</FieldLabel>
+                <FieldLabel>Price *</FieldLabel>
                 <FieldContent>
-                  <Combobox
-                    items={intervalOptions}
-                    itemToStringValue={(item) => item.label}
-                    value={
-                      intervalOptions.find(
-                        (item) => item.value === form.watch("interval")
-                      ) ?? null
-                    }
-                    onValueChange={(item) => {
-                      if (item) {
-                        form.setValue("interval", item.value)
-                      }
-                    }}
-                  >
-                    <ComboboxInput placeholder="Select interval..." />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No intervals found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item) => (
-                          <ComboboxItem key={item.value} value={item}>
-                            {item.label}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
-                  <FieldError
-                    message={form.formState.errors.interval?.message}
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="99.99"
+                    {...form.register("price", { valueAsNumber: true })}
                   />
+                  <FieldError message={form.formState.errors.price?.message} />
                 </FieldContent>
               </Field>
             </div>
-
             <Field>
-              <FieldLabel>Sort Order</FieldLabel>
+              <FieldLabel>Currency *</FieldLabel>
               <FieldContent>
                 <Input
-                  type="number"
-                  {...form.register("sort_order", { valueAsNumber: true })}
+                  placeholder="USD"
+                  maxLength={3}
+                  {...form.register("currency")}
                 />
                 <FieldError
-                  message={form.formState.errors.sort_order?.message}
+                  message={form.formState.errors.currency?.message}
+                />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Interval *</FieldLabel>
+              <FieldContent>
+                <Combobox
+                  items={intervalOptions}
+                  itemToStringValue={(item) => item.label}
+                  value={selectedInterval}
+                  onValueChange={(item) => {
+                    if (!item) return
+                    form.setValue("interval", item.value)
+                  }}
+                >
+                  <ComboboxInput placeholder="Select interval..." />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No intervals found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(item) => (
+                        <ComboboxItem key={item.value} value={item}>
+                          {item.label}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+                <FieldError
+                  message={form.formState.errors.interval?.message}
                 />
               </FieldContent>
             </Field>
           </div>
 
-          {/* Configuration: Features & Limits */}
+          <Field>
+            <FieldLabel>Sort Order</FieldLabel>
+            <FieldContent>
+              <Input
+                type="number"
+                {...form.register("sort_order", { valueAsNumber: true })}
+              />
+              <FieldError
+                message={form.formState.errors.sort_order?.message}
+              />
+            </FieldContent>
+          </Field>
+
           <div className="grid grid-cols-1 gap-4 rounded-lg border p-4 md:grid-cols-2">
             <Field>
               <FieldLabel>Features</FieldLabel>
@@ -334,9 +348,12 @@ export function PlansMutateDialog({
                     placeholder="Add a feature..."
                     value={featureInput}
                     onChange={(e) => setFeatureInput(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && (e.preventDefault(), addFeature())
-                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        addFeature()
+                      }
+                    }}
                   />
                   <Button type="button" size="sm" onClick={addFeature}>
                     <Plus className="size-4" />
@@ -345,7 +362,7 @@ export function PlansMutateDialog({
                 <div className="mt-2 flex flex-wrap gap-2">
                   {features.map((feature, index) => (
                     <span
-                      key={index}
+                      key={`${feature}-${index}`}
                       className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-1 text-sm text-primary"
                     >
                       {feature}
@@ -370,18 +387,21 @@ export function PlansMutateDialog({
                     placeholder="Add a limit..."
                     value={limitInput}
                     onChange={(e) => setLimitInput(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && (e.preventDefault(), addLimit())
-                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        addLimit()
+                      }
+                    }}
                   />
                   <Button type="button" size="sm" onClick={addLimit}>
                     <Plus className="size-4" />
                   </Button>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {(limits as string[]).map((limit, index) => (
+                  {limits.map((limit, index) => (
                     <span
-                      key={index}
+                      key={`${limit}-${index}`}
                       className="inline-flex items-center gap-1 rounded-md bg-secondary px-2 py-1 text-sm text-secondary-foreground"
                     >
                       {limit}
@@ -395,19 +415,10 @@ export function PlansMutateDialog({
                     </span>
                   ))}
                 </div>
-                {currentRow &&
-                  !Array.isArray(currentRow.limits) &&
-                  currentRow.limits && (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      Original limits were object-based and converted to strings
-                      for editing.
-                    </p>
-                  )}
               </FieldContent>
             </Field>
           </div>
 
-          {/* Payment Gateway Information Section */}
           <div className="space-y-4 rounded-lg border p-4">
             <h3 className="text-sm font-semibold tracking-wide text-muted-foreground uppercase">
               Payment Gateways
@@ -461,8 +472,7 @@ export function PlansMutateDialog({
             </div>
           </div>
 
-          {/* Status Settings */}
-          <div className="flex items-center gap-6 p-2">
+          <div className="flex items-center gap-6">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="is_active"

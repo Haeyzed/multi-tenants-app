@@ -18,6 +18,7 @@ import { exportPlans } from "@/lib/services/central/plan-service"
 import { PLAN_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { ModuleExportDialog } from "@/components/central/components/shared/module-export-dialog"
 import { PlansMutateDialog } from "./plans-mutate-dialog"
+import { PlansViewDialog } from "./plans-view-dialog"
 import { PlansImportDialog } from "./plans-import-dialog"
 import { PlansMultiDeleteDialog } from "./plans-multi-delete-dialog"
 import { usePlans } from "./plans-provider"
@@ -110,6 +111,20 @@ export function PlansDialogs() {
 
       {currentRow && (
         <>
+          <PlansViewDialog
+            key={`plan-view-${currentRow.id}`}
+            open={open === "view"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            plan={currentRow}
+          />
+
           <PlansMutateDialog
             key={`plan-update-${currentRow.id}`}
             open={open === "update"}

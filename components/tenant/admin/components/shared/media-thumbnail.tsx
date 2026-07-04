@@ -46,14 +46,16 @@ export function MediaThumbnail({
 
   if (cover) {
     const image = (
-      <Image
-        src={src}
-        alt={alt ?? media.name ?? "Media"}
-        fill
-        unoptimized
-        className="object-cover"
-        sizes="160px"
-      />
+      <div className="relative size-full">
+        <Image
+          src={src}
+          alt={alt ?? media.name ?? "Media"}
+          fill
+          unoptimized
+          className="object-cover"
+          sizes="160px"
+        />
+      </div>
     )
 
     if (!zoomable) {

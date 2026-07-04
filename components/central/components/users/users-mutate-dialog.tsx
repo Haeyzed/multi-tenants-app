@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
@@ -16,6 +16,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { PasswordInput } from "@/components/ui/password-input"
+import { PhoneInput } from "@/components/ui/phone-input"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { handleFormApiError } from "@/lib/form-api-errors"
@@ -48,20 +50,10 @@ export function UsersMutateDialog({
   const createUser = useCreateUser()
   const updateUser = useUpdateUser()
   const isSubmitting = createUser.isPending || updateUser.isPending
+  const schema = isUpdate ? updateUserSchema : storeUserSchema
 
-  const createForm = useForm<StoreUserFormValues>({
-    resolver: zodResolver(storeUserSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      password: "",
-      is_active: true,
-    },
-  })
-
-  const updateForm = useForm<UpdateUserFormValues>({
-    resolver: zodResolver(updateUserSchema),
+  const form = useForm<StoreUserFormValues | UpdateUserFormValues>({
+    resolver: zodResolver(schema),
     defaultValues: {
       name: "",
       email: "",
@@ -72,16 +64,18 @@ export function UsersMutateDialog({
   })
 
   React.useEffect(() => {
+    if (!open) return
+
     if (currentRow) {
-      updateForm.reset({
+      form.reset({
         name: currentRow.name,
         email: currentRow.email,
-        phone: currentRow.phone,
+        phone: currentRow.phone || "",
         password: "",
         is_active: currentRow.is_active,
       })
     } else {
-      createForm.reset({
+      form.reset({
         name: "",
         email: "",
         phone: "",
@@ -89,174 +83,154 @@ export function UsersMutateDialog({
         is_active: true,
       })
     }
-  }, [currentRow, createForm, updateForm])
+  }, [open, currentRow, form])
 
-  const onCreateSubmit = (data: StoreUserFormValues) => {
-    createUser.mutate(data, {
-      onSuccess: () => {
-        toast.success("User created successfully")
-        onOpenChange(false)
-        createForm.reset()
-      },
-      onError: (error) =>
-        handleFormApiError(error, createForm.setError, "Failed to create user"),
-    })
-  }
+  const onSubmit = (data: StoreUserFormValues | UpdateUserFormValues) => {
+    const payload = {
+      ...data,
+      phone: data.phone || null,
+    }
 
-  const onUpdateSubmit = (data: UpdateUserFormValues) => {
-    if (!currentRow) return
-
-    const payload = { ...data }
-    if (!payload.password) delete payload.password
-
-    updateUser.mutate(
-      { id: currentRow.id, user: payload },
-      {
-        onSuccess: () => {
-          toast.success("User updated successfully")
-          onOpenChange(false)
-          updateForm.reset()
-        },
-        onError: (error) =>
-          handleFormApiError(error, updateForm.setError, "Failed to update user"),
+    if (isUpdate && currentRow) {
+      const updatePayload = { ...payload } as UpdateUserFormValues
+      if (!updatePayload.password) {
+        delete updatePayload.password
       }
-    )
-  }
 
-  const formId = isUpdate ? "users-update-form" : "users-create-form"
+      updateUser.mutate(
+        { id: currentRow.id, user: updatePayload },
+        {
+          onSuccess: () => {
+            toast.success("User updated successfully")
+            onOpenChange(false)
+            form.reset()
+          },
+          onError: (error) => {
+            handleFormApiError(error, form.setError, "Failed to update user")
+          },
+        }
+      )
+    } else {
+      createUser.mutate(payload as StoreUserFormValues, {
+        onSuccess: () => {
+          toast.success("User created successfully")
+          onOpenChange(false)
+          form.reset()
+        },
+        onError: (error) => {
+          handleFormApiError(error, form.setError, "Failed to create user")
+        },
+      })
+    }
+  }
 
   return (
     <ResponsiveDialog
       open={open}
       onOpenChange={(val) => {
         onOpenChange(val)
-        if (!val) {
-          createForm.reset()
-          updateForm.reset()
-        }
+        if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent>
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {isUpdate ? "Update" : "Create"} User
           </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
             {isUpdate
-              ? "Update the user account details."
-              : "Add a new central platform user."}
+              ? "Update the user by providing necessary info."
+              : "Add a new user by providing necessary info."}{" "}
+            Click save when you&apos;re done.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        {isUpdate ? (
-          <form
-            id={formId}
-            onSubmit={updateForm.handleSubmit(onUpdateSubmit)}
-            className="space-y-4"
-          >
-            <Field>
-              <FieldLabel>Name *</FieldLabel>
-              <FieldContent>
-                <Input placeholder="John Doe" {...updateForm.register("name")} />
-                <FieldError message={updateForm.formState.errors.name?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Email *</FieldLabel>
-              <FieldContent>
-                <Input placeholder="john@example.com" {...updateForm.register("email")} />
-                <FieldError message={updateForm.formState.errors.email?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Phone</FieldLabel>
-              <FieldContent>
-                <Input placeholder="+1234567890" {...updateForm.register("phone")} />
-                <FieldError message={updateForm.formState.errors.phone?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>New Password</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="password"
-                  placeholder="Leave blank to keep current"
-                  {...updateForm.register("password")}
-                />
-                <FieldError message={updateForm.formState.errors.password?.message} />
-              </FieldContent>
-            </Field>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="is_active"
-                checked={updateForm.watch("is_active")}
-                onCheckedChange={(checked) =>
-                  updateForm.setValue("is_active", !!checked)
-                }
+        <form
+          id="users-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
+          <Field>
+            <FieldLabel>Name *</FieldLabel>
+            <FieldContent>
+              <Input placeholder="John Doe" {...form.register("name")} />
+              <FieldError message={form.formState.errors.name?.message} />
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Email *</FieldLabel>
+            <FieldContent>
+              <Input
+                type="email"
+                placeholder="john@example.com"
+                {...form.register("email")}
               />
-              <label htmlFor="is_active" className="text-sm font-medium">
-                Active
-              </label>
-            </div>
-          </form>
-        ) : (
-          <form
-            id={formId}
-            onSubmit={createForm.handleSubmit(onCreateSubmit)}
-            className="space-y-4"
-          >
-            <Field>
-              <FieldLabel>Name *</FieldLabel>
-              <FieldContent>
-                <Input placeholder="John Doe" {...createForm.register("name")} />
-                <FieldError message={createForm.formState.errors.name?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Email *</FieldLabel>
-              <FieldContent>
-                <Input placeholder="john@example.com" {...createForm.register("email")} />
-                <FieldError message={createForm.formState.errors.email?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Phone</FieldLabel>
-              <FieldContent>
-                <Input placeholder="+1234567890" {...createForm.register("phone")} />
-                <FieldError message={createForm.formState.errors.phone?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Password *</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="password"
-                  placeholder="Minimum 8 characters"
-                  {...createForm.register("password")}
-                />
-                <FieldError message={createForm.formState.errors.password?.message} />
-              </FieldContent>
-            </Field>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="is_active"
-                checked={createForm.watch("is_active")}
-                onCheckedChange={(checked) =>
-                  createForm.setValue("is_active", !!checked)
-                }
+              <FieldError message={form.formState.errors.email?.message} />
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Phone</FieldLabel>
+            <FieldContent>
+              <Controller
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <PhoneInput
+                    placeholder="Enter phone number"
+                    defaultCountry="NG"
+                    value={field.value ?? undefined}
+                    onChange={field.onChange}
+                  />
+                )}
               />
-              <label htmlFor="is_active" className="text-sm font-medium">
-                Active
-              </label>
-            </div>
-          </form>
-        )}
+              <FieldError message={form.formState.errors.phone?.message} />
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>
+              {isUpdate ? "New Password" : "Password *"}
+            </FieldLabel>
+            <FieldContent>
+              <PasswordInput
+                placeholder={
+                  isUpdate
+                    ? "Leave blank to keep current"
+                    : "Minimum 8 characters"
+                }
+                {...form.register("password")}
+              />
+              <FieldError message={form.formState.errors.password?.message} />
+            </FieldContent>
+          </Field>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_active"
+              checked={form.watch("is_active")}
+              onCheckedChange={(checked) =>
+                form.setValue("is_active", !!checked)
+              }
+            />
+            <label htmlFor="is_active" className="text-sm font-medium">
+              Active
+            </label>
+          </div>
+        </form>
 
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose render={<Button variant="outline">Close</Button>} />
-          <Button type="submit" form={formId} disabled={isSubmitting}>
+          <ResponsiveDialogClose
+            render={<Button variant="outline">Close</Button>}
+          />
+          <Button type="submit" form="users-form" disabled={isSubmitting}>
             {isSubmitting && <Spinner />}
-            {isSubmitting ? "Saving..." : isUpdate ? "Update User" : "Create User"}
+            {isSubmitting
+              ? "Saving..."
+              : isUpdate
+                ? "Update User"
+                : "Create User"}
           </Button>
         </ResponsiveDialogFooter>
       </ResponsiveDialogContent>

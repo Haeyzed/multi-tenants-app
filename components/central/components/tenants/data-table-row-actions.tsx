@@ -1,11 +1,11 @@
 import {
-  MoreHorizontal,
-  Trash2,
+  Edit,
   Eye,
   Globe,
-  PlayCircle,
+  MoreHorizontal,
   PauseCircle,
-  Edit,
+  PlayCircle,
+  Trash2,
 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Guard } from "@/components/central/components/auth/guard"
@@ -26,8 +25,8 @@ type DataTableRowActionsProps<TData> = {
 }
 
 export function DataTableRowActions<TData>({
-                                             row,
-                                           }: DataTableRowActionsProps<TData>) {
+  row,
+}: DataTableRowActionsProps<TData>) {
   const tenant = row.original as Tenant
   const { setOpen, setCurrentRow } = useTenants()
 
@@ -45,16 +44,17 @@ export function DataTableRowActions<TData>({
         }
       />
       <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem
-          onClick={() => {
-            setCurrentRow(tenant)
-            setOpen("view")
-          }}
-        >
-          <Eye className="mr-2 h-4 w-4" />
-          View Details
-        </DropdownMenuItem>
-
+        <Guard permissions="tenants.view">
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(tenant)
+              setOpen("view")
+            }}
+          >
+            <Eye className="mr-2 h-4 w-4" />
+            View
+          </DropdownMenuItem>
+        </Guard>
         <Guard permissions="tenants.update">
           <DropdownMenuItem
             onClick={() => {
@@ -66,7 +66,6 @@ export function DataTableRowActions<TData>({
             Edit
           </DropdownMenuItem>
         </Guard>
-
         <Guard permissions="domains.create">
           <DropdownMenuItem
             onClick={() => {
@@ -78,9 +77,7 @@ export function DataTableRowActions<TData>({
             Manage Domains
           </DropdownMenuItem>
         </Guard>
-
         <DropdownMenuSeparator />
-
         <Guard permissions="tenants.update">
           {tenant.status === "active" ? (
             <DropdownMenuItem
@@ -89,7 +86,7 @@ export function DataTableRowActions<TData>({
                 setOpen("suspend")
               }}
             >
-              <PauseCircle className="text-warning mr-2 h-4 w-4" />
+              <PauseCircle className="mr-2 h-4 w-4" />
               Suspend
             </DropdownMenuItem>
           ) : (
@@ -99,14 +96,12 @@ export function DataTableRowActions<TData>({
                 setOpen("activate")
               }}
             >
-              <PlayCircle className="text-success mr-2 h-4 w-4" />
+              <PlayCircle className="mr-2 h-4 w-4" />
               Activate
             </DropdownMenuItem>
           )}
         </Guard>
-
         <DropdownMenuSeparator />
-
         <Guard permissions="tenants.delete">
           <DropdownMenuItem
             variant="destructive"

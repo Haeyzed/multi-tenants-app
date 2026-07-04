@@ -18,6 +18,7 @@ import { exportUsers } from "@/lib/services/central/user-service"
 import { USER_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { ModuleExportDialog } from "@/components/central/components/shared/module-export-dialog"
 import { UsersMutateDialog } from "./users-mutate-dialog"
+import { UsersViewDialog } from "./users-view-dialog"
 import { UsersImportDialog } from "./users-import-dialog"
 import { UsersMultiDeleteDialog } from "./users-multi-delete-dialog"
 import { useUsers } from "./users-provider"
@@ -110,6 +111,20 @@ export function UsersDialogs() {
 
       {currentRow && (
         <>
+          <UsersViewDialog
+            key={`user-view-${currentRow.id}`}
+            open={open === "view"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            user={currentRow}
+          />
+
           <UsersMutateDialog
             key={`user-update-${currentRow.id}`}
             open={open === "update"}
