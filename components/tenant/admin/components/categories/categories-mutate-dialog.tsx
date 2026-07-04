@@ -30,7 +30,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { handleFormApiError } from "@/lib/form-api-errors"
 import {
   useCreateCategory,
-  useGetCategoryOptions,
+  useGetCategoryTreeSelect,
   useUpdateCategory,
 } from "@/hooks/tenant/use-category-query"
 import { MediaPickerField } from "@/components/tenant/admin/components/media/media-picker-field"
@@ -65,7 +65,7 @@ export function CategoriesMutateDialog({
   const isUpdate = !!currentRow
   const createCategory = useCreateCategory()
   const updateCategory = useUpdateCategory()
-  const { data: categoryOptions = [] } = useGetCategoryOptions()
+  const { data: categoryOptions = [] } = useGetCategoryTreeSelect()
   const isSubmitting = createCategory.isPending || updateCategory.isPending
 
   const schema = isUpdate ? updateCategorySchema : storeCategorySchema
@@ -83,13 +83,16 @@ export function CategoriesMutateDialog({
     defaultValues: {
       name: "",
       description: "",
+      summary: "",
       parent_id: null,
       is_visible: true,
+      is_featured: false,
       sort_order: 0,
       image_media_id: null,
       banner_media_id: null,
+      icon_media_id: null,
       color: "",
-      icon: "",
+      icon_class: "",
       meta_title: "",
       meta_description: "",
     },
@@ -107,6 +110,10 @@ export function CategoriesMutateDialog({
   const [bannerPreviewTitle, setBannerPreviewTitle] = React.useState<
     string | null
   >(null)
+  const [iconPreviewUrl, setIconPreviewUrl] = React.useState<string | null>(null)
+  const [iconPreviewTitle, setIconPreviewTitle] = React.useState<string | null>(
+    null
+  )
 
   React.useEffect(() => {
     if (!open) return
@@ -115,13 +122,16 @@ export function CategoriesMutateDialog({
       form.reset({
         name: currentRow.name,
         description: currentRow.description || "",
+        summary: currentRow.summary || "",
         parent_id: currentRow.parent_id,
         is_visible: currentRow.is_visible,
+        is_featured: currentRow.is_featured,
         sort_order: currentRow.sort_order,
         image_media_id: currentRow.image?.id ?? null,
         banner_media_id: currentRow.banner?.id ?? null,
-        color: "",
-        icon: "",
+        icon_media_id: currentRow.icon?.id ?? null,
+        color: currentRow.color || "",
+        icon_class: currentRow.icon_class || "",
         meta_title: currentRow.meta_title || "",
         meta_description: currentRow.meta_description || "",
       })
@@ -133,17 +143,24 @@ export function CategoriesMutateDialog({
         currentRow.banner?.url ? resolveTenantMediaUrl(currentRow.banner) : null
       )
       setBannerPreviewTitle(currentRow.banner?.name ?? currentRow.name)
+      setIconPreviewUrl(
+        currentRow.icon?.url ? resolveTenantMediaUrl(currentRow.icon) : null
+      )
+      setIconPreviewTitle(currentRow.icon?.name ?? currentRow.name)
     } else {
       form.reset({
         name: "",
         description: "",
+        summary: "",
         parent_id: null,
         is_visible: true,
+        is_featured: false,
         sort_order: 0,
         image_media_id: null,
         banner_media_id: null,
+        icon_media_id: null,
         color: "",
-        icon: "",
+        icon_class: "",
         meta_title: "",
         meta_description: "",
       })
@@ -151,6 +168,8 @@ export function CategoriesMutateDialog({
       setImagePreviewTitle(null)
       setBannerPreviewUrl(null)
       setBannerPreviewTitle(null)
+      setIconPreviewUrl(null)
+      setIconPreviewTitle(null)
     }
   }, [open, currentRow, form])
 
@@ -164,11 +183,13 @@ export function CategoriesMutateDialog({
     const payload = {
       ...data,
       description: data.description || null,
+      summary: data.summary || null,
       meta_title: data.meta_title || null,
       meta_description: data.meta_description || null,
       color: data.color || null,
-      icon: data.icon || null,
+      icon_class: data.icon_class || null,
       parent_id: data.parent_id || null,
+      is_featured: data.is_featured ?? false,
     }
 
     if (isUpdate && currentRow) {
@@ -261,6 +282,13 @@ export function CategoriesMutateDialog({
           </Field>
 
           <Field>
+            <FieldLabel>Summary</FieldLabel>
+            <FieldContent>
+              <Input placeholder="Short summary" {...form.register("summary")} />
+            </FieldContent>
+          </Field>
+
+          <Field>
             <FieldLabel>Description</FieldLabel>
             <FieldContent>
               <Textarea
@@ -297,7 +325,20 @@ export function CategoriesMutateDialog({
             accept="image/*"
           />
 
-          {(imagePreviewUrl || bannerPreviewUrl) && isUpdate ? (
+          <MediaPickerField
+            label="Icon image"
+            value={form.watch("icon_media_id") ?? null}
+            previewUrl={iconPreviewUrl}
+            previewTitle={iconPreviewTitle}
+            onChange={(mediaId, media) => {
+              form.setValue("icon_media_id", mediaId)
+              setIconPreviewUrl(media?.url ? resolveTenantMediaUrl(media) : null)
+              setIconPreviewTitle(media?.title ?? media?.name ?? null)
+            }}
+            accept="image/*"
+          />
+
+          {(imagePreviewUrl || bannerPreviewUrl || iconPreviewUrl) && isUpdate ? (
             <div className="flex flex-wrap gap-4 rounded-lg border p-3">
               {imagePreviewUrl ? (
                 <div className="space-y-1">
@@ -315,6 +356,16 @@ export function CategoriesMutateDialog({
                   <MediaThumbnail
                     media={{ url: bannerPreviewUrl, name: bannerPreviewTitle }}
                     alt={bannerPreviewTitle ?? "Category banner"}
+                    size="md"
+                  />
+                </div>
+              ) : null}
+              {iconPreviewUrl ? (
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">Icon preview</p>
+                  <MediaThumbnail
+                    media={{ url: iconPreviewUrl, name: iconPreviewTitle }}
+                    alt={iconPreviewTitle ?? "Category icon"}
                     size="md"
                   />
                 </div>
@@ -358,24 +409,38 @@ export function CategoriesMutateDialog({
               </FieldContent>
             </Field>
             <Field>
-              <FieldLabel>Icon</FieldLabel>
+              <FieldLabel>Icon class</FieldLabel>
               <FieldContent>
-                <Input placeholder="icon-name" {...form.register("icon")} />
+                <Input placeholder="lucide-tag" {...form.register("icon_class")} />
               </FieldContent>
             </Field>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="is_visible"
-              checked={form.watch("is_visible")}
-              onCheckedChange={(checked) =>
-                form.setValue("is_visible", !!checked)
-              }
-            />
-            <label htmlFor="is_visible" className="text-sm font-medium">
-              Visible
-            </label>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_visible"
+                checked={form.watch("is_visible")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_visible", !!checked)
+                }
+              />
+              <label htmlFor="is_visible" className="text-sm font-medium">
+                Visible
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_featured"
+                checked={form.watch("is_featured")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_featured", !!checked)
+                }
+              />
+              <label htmlFor="is_featured" className="text-sm font-medium">
+                Featured
+              </label>
+            </div>
           </div>
         </form>
 

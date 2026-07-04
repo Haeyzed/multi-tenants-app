@@ -22,6 +22,11 @@ function getCategoryViewFields(category: Category): ModuleViewField[] {
     { label: "Slug", value: category.slug },
     { label: "Parent", value: category.parent?.name ?? "Root" },
     {
+      label: "Summary",
+      value: category.summary || "—",
+      className: "sm:col-span-2",
+    },
+    {
       label: "Description",
       value: category.description || "—",
       className: "sm:col-span-2",
@@ -30,7 +35,16 @@ function getCategoryViewFields(category: Category): ModuleViewField[] {
       label: "Visibility",
       value: <ModuleViewVisibility isVisible={category.is_visible} />,
     },
+    {
+      label: "Featured",
+      value: category.is_featured ? "Yes" : "No",
+    },
+    { label: "Depth", value: String(category.depth ?? 0) },
+    { label: "Path", value: category.path || "—" },
+    { label: "Products", value: String(category.products_count ?? 0) },
     { label: "Sort order", value: String(category.sort_order ?? 0) },
+    { label: "Color", value: category.color || "—" },
+    { label: "Icon class", value: category.icon_class || "—" },
     { label: "Meta title", value: category.meta_title || "—" },
     {
       label: "Meta description",
@@ -53,6 +67,14 @@ function getCategoryViewFields(category: Category): ModuleViewField[] {
           alt={`${category.name} banner`}
           size="md"
         />
+      ) : (
+        "—"
+      ),
+    },
+    {
+      label: "Icon",
+      value: category.icon?.url ? (
+        <MediaThumbnail media={category.icon} alt={`${category.name} icon`} size="md" />
       ) : (
         "—"
       ),

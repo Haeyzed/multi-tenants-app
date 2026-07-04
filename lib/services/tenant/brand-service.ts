@@ -1,6 +1,6 @@
-import { Brand, BrandOption, TenantMedia } from "@/types/tenant/brand"
+import { Brand, BrandOption } from "@/types/tenant/brand"
 import { ExportParams, BrandStatistics } from "@/types/tenant/export"
-import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
+import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -20,22 +20,18 @@ interface ApiResponse<T> {
   }
 }
 
-function normalizeMedia(media?: TenantMedia | null): TenantMedia | null | undefined {
-  if (!media) return media
-  return { ...media, url: resolveTenantMediaUrl(media) }
-}
-
 function normalizeBrand(brand: Brand): Brand {
   return {
     ...brand,
-    logo: normalizeMedia(brand.logo) ?? null,
-    banner: normalizeMedia(brand.banner) ?? null,
+    logo: normalizeEmbeddedMedia(brand.logo),
+    banner: normalizeEmbeddedMedia(brand.banner),
   }
 }
 
 export const getBrands = async (params?: {
   search?: string
   is_visible?: ("visible" | "hidden")[]
+  is_featured?: boolean
   per_page?: number
   page?: number
 }): Promise<PaginatedResponse<Brand>> => {
@@ -56,6 +52,13 @@ export const getBrands = async (params?: {
 
 export const getBrand = async (id: number): Promise<Brand> => {
   const response = await tenantApiClient.get<ApiResponse<Brand>>(`/brands/${id}`)
+  return normalizeBrand(response.data)
+}
+
+export const getBrandBySlug = async (slug: string): Promise<Brand> => {
+  const response = await tenantApiClient.get<ApiResponse<Brand>>(
+    `/brands/slug/${slug}`
+  )
   return normalizeBrand(response.data)
 }
 
@@ -82,6 +85,24 @@ export const updateBrand = async (
 
 export const deleteBrand = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/brands/${id}`)
+}
+
+export const toggleBrandVisibility = async (id: number): Promise<Brand> => {
+  const response = await tenantApiClient.post<ApiResponse<Brand>>(
+    `/brands/${id}/toggle-visibility`
+  )
+  return normalizeBrand(response.data)
+}
+
+export const toggleBrandFeatured = async (id: number): Promise<Brand> => {
+  const response = await tenantApiClient.post<ApiResponse<Brand>>(
+    `/brands/${id}/toggle-featured`
+  )
+  return normalizeBrand(response.data)
+}
+
+export const reorderBrands = async (ids: number[]): Promise<void> => {
+  await tenantApiClient.put<ApiResponse<void>>("/brands/reorder", { ids })
 }
 
 export const getBrandOptions = async (): Promise<BrandOption[]> => {

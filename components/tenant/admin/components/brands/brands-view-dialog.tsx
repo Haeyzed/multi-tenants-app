@@ -21,15 +21,26 @@ function getBrandViewFields(brand: Brand): ModuleViewField[] {
     { label: "Name", value: brand.name },
     { label: "Slug", value: brand.slug },
     {
+      label: "Summary",
+      value: brand.summary || "—",
+      className: "sm:col-span-2",
+    },
+    {
       label: "Description",
       value: brand.description || "—",
       className: "sm:col-span-2",
     },
     { label: "Website", value: brand.website_url || "—" },
+    { label: "Country of origin", value: brand.country_of_origin || "—" },
     {
       label: "Visibility",
       value: <ModuleViewVisibility isVisible={brand.is_visible} />,
     },
+    {
+      label: "Featured",
+      value: brand.is_featured ? "Yes" : "No",
+    },
+    { label: "Products", value: String(brand.products_count ?? 0) },
     { label: "Sort order", value: String(brand.sort_order ?? 0) },
     { label: "Meta title", value: brand.meta_title || "—" },
     {

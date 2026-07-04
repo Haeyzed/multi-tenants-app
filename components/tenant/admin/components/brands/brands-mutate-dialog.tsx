@@ -60,12 +60,15 @@ export function BrandsMutateDialog({
     defaultValues: {
       name: "",
       description: "",
+      summary: "",
       is_visible: true,
+      is_featured: false,
       logo_media_id: null,
       banner_media_id: null,
       meta_title: "",
       meta_description: "",
       website_url: "",
+      country_of_origin: "",
       sort_order: 0,
     },
   })
@@ -89,12 +92,15 @@ export function BrandsMutateDialog({
       form.reset({
         name: currentRow.name,
         description: currentRow.description || "",
+        summary: currentRow.summary || "",
         is_visible: currentRow.is_visible,
+        is_featured: currentRow.is_featured,
         logo_media_id: currentRow.logo?.id ?? null,
         banner_media_id: currentRow.banner?.id ?? null,
         meta_title: currentRow.meta_title || "",
         meta_description: currentRow.meta_description || "",
         website_url: currentRow.website_url || "",
+        country_of_origin: currentRow.country_of_origin || "",
         sort_order: currentRow.sort_order ?? 0,
       })
       setLogoPreviewUrl(
@@ -109,12 +115,15 @@ export function BrandsMutateDialog({
       form.reset({
         name: "",
         description: "",
+        summary: "",
         is_visible: true,
+        is_featured: false,
         logo_media_id: null,
         banner_media_id: null,
         meta_title: "",
         meta_description: "",
         website_url: "",
+        country_of_origin: "",
         sort_order: 0,
       })
       setLogoPreviewUrl(null)
@@ -129,8 +138,11 @@ export function BrandsMutateDialog({
       ...data,
       website_url: data.website_url || null,
       description: data.description || null,
+      summary: data.summary || null,
+      country_of_origin: data.country_of_origin || null,
       meta_title: data.meta_title || null,
       meta_description: data.meta_description || null,
+      is_featured: data.is_featured ?? false,
     }
 
     if (isUpdate && currentRow) {
@@ -192,6 +204,13 @@ export function BrandsMutateDialog({
             <FieldContent>
               <Input placeholder="Brand name" {...form.register("name")} />
               <FieldError message={form.formState.errors.name?.message} />
+            </FieldContent>
+          </Field>
+
+          <Field>
+            <FieldLabel>Summary</FieldLabel>
+            <FieldContent>
+              <Input placeholder="Short summary" {...form.register("summary")} />
             </FieldContent>
           </Field>
 
@@ -274,6 +293,15 @@ export function BrandsMutateDialog({
                 <FieldError message={form.formState.errors.website_url?.message} />
               </FieldContent>
             </Field>
+            <Field>
+              <FieldLabel>Country of origin</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="United States"
+                  {...form.register("country_of_origin")}
+                />
+              </FieldContent>
+            </Field>
           </div>
 
           <Field>
@@ -296,17 +324,31 @@ export function BrandsMutateDialog({
             </FieldContent>
           </Field>
 
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="is_visible"
-              checked={form.watch("is_visible")}
-              onCheckedChange={(checked) =>
-                form.setValue("is_visible", !!checked)
-              }
-            />
-            <label htmlFor="is_visible" className="text-sm font-medium">
-              Visible
-            </label>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_visible"
+                checked={form.watch("is_visible")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_visible", !!checked)
+                }
+              />
+              <label htmlFor="is_visible" className="text-sm font-medium">
+                Visible
+              </label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_featured"
+                checked={form.watch("is_featured")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_featured", !!checked)
+                }
+              />
+              <label htmlFor="is_featured" className="text-sm font-medium">
+                Featured
+              </label>
+            </div>
           </div>
         </form>
 

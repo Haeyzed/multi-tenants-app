@@ -43,6 +43,7 @@ export interface MediaItem {
   path?: string | null
   url: string
   uploaded_by: string | null
+  collection?: string | null
   created_at: string | null
   updated_at: string | null
   folder?: MediaFolder | null

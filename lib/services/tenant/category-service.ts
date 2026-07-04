@@ -1,6 +1,10 @@
-import { Category, CategoryOption, TenantMedia } from "@/types/tenant/category"
+import {
+  Category,
+  CategoryOption,
+  CategoryTreeNode,
+} from "@/types/tenant/category"
 import { ExportParams, CategoryStatistics } from "@/types/tenant/export"
-import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
+import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -20,28 +24,27 @@ interface ApiResponse<T> {
   }
 }
 
-function normalizeMedia(media?: TenantMedia | null): TenantMedia | null | undefined {
-  if (!media) return media
-  return { ...media, url: resolveTenantMediaUrl(media) }
-}
-
 function normalizeCategory(category: Category): Category {
   return {
     ...category,
-    image: normalizeMedia(category.image) ?? null,
-    banner: normalizeMedia(category.banner) ?? null,
+    image: normalizeEmbeddedMedia(category.image),
+    banner: normalizeEmbeddedMedia(category.banner),
+    icon: normalizeEmbeddedMedia(category.icon),
+    parent: category.parent ? normalizeCategory(category.parent) : category.parent,
   }
 }
 
 export const getCategories = async (params?: {
   search?: string
   is_visible?: ("visible" | "hidden")[]
+  is_featured?: boolean
+  parent_id?: number
   per_page?: number
   page?: number
 }): Promise<PaginatedResponse<Category>> => {
   const response = await tenantApiClient.get<ApiResponse<Category[]>>(
     "/categories",
-    params as Record<string, string | undefined>
+    params as Record<string, string | number | boolean | undefined>
   )
   return {
     data: response.data.map(normalizeCategory),
@@ -59,6 +62,31 @@ export const getCategory = async (id: number): Promise<Category> => {
     `/categories/${id}`
   )
   return normalizeCategory(response.data)
+}
+
+export const getCategoryBySlug = async (slug: string): Promise<Category> => {
+  const response = await tenantApiClient.get<ApiResponse<Category>>(
+    `/categories/slug/${slug}`
+  )
+  return normalizeCategory(response.data)
+}
+
+export const getCategoryTree = async (): Promise<CategoryTreeNode[]> => {
+  const response = await tenantApiClient.get<
+    ApiResponse<{ tree: CategoryTreeNode[] }>
+  >("/categories/tree")
+  return response.data.tree
+}
+
+export const getCategoryTreeSelect = async (): Promise<CategoryOption[]> => {
+  const response = await tenantApiClient.get<ApiResponse<Record<string, string>>>(
+    "/categories/tree-select"
+  )
+
+  return Object.entries(response.data).map(([id, label]) => ({
+    value: Number(id),
+    label,
+  }))
 }
 
 export const createCategory = async (
@@ -84,6 +112,24 @@ export const updateCategory = async (
 
 export const deleteCategory = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/categories/${id}`)
+}
+
+export const toggleCategoryVisibility = async (id: number): Promise<Category> => {
+  const response = await tenantApiClient.post<ApiResponse<Category>>(
+    `/categories/${id}/toggle-visibility`
+  )
+  return normalizeCategory(response.data)
+}
+
+export const toggleCategoryFeatured = async (id: number): Promise<Category> => {
+  const response = await tenantApiClient.post<ApiResponse<Category>>(
+    `/categories/${id}/toggle-featured`
+  )
+  return normalizeCategory(response.data)
+}
+
+export const reorderCategories = async (ids: number[]): Promise<void> => {
+  await tenantApiClient.put<ApiResponse<void>>("/categories/reorder", { ids })
 }
 
 export const getCategoryOptions = async (): Promise<CategoryOption[]> => {

@@ -8,6 +8,8 @@ import {
   getBrands,
   getBrandStatistics,
   importBrands,
+  toggleBrandFeatured,
+  toggleBrandVisibility,
   updateBrand,
 } from "@/lib/services/tenant/brand-service"
 import { type ExportParams } from "@/types/tenant/export"
@@ -97,6 +99,28 @@ export const useImportBrands = () => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (file: File) => importBrands(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["brands"] })
+      queryClient.invalidateQueries({ queryKey: ["brand-statistics"] })
+    },
+  })
+}
+
+export const useToggleBrandVisibility = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => toggleBrandVisibility(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["brands"] })
+      queryClient.invalidateQueries({ queryKey: ["brand-statistics"] })
+    },
+  })
+}
+
+export const useToggleBrandFeatured = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => toggleBrandFeatured(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["brands"] })
       queryClient.invalidateQueries({ queryKey: ["brand-statistics"] })

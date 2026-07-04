@@ -5,9 +5,12 @@ import {
   deleteCategory,
   exportCategories,
   getCategoryOptions,
+  getCategoryTreeSelect,
   getCategories,
   getCategoryStatistics,
   importCategories,
+  toggleCategoryFeatured,
+  toggleCategoryVisibility,
   updateCategory,
 } from "@/lib/services/tenant/category-service"
 import { type ExportParams } from "@/types/tenant/export"
@@ -43,6 +46,7 @@ export const useCreateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
       queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
 }
@@ -61,6 +65,7 @@ export const useUpdateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
       queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
 }
@@ -73,6 +78,7 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
       queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
 }
@@ -84,6 +90,13 @@ export const useGetCategoryOptions = () => {
   })
 }
 
+export const useGetCategoryTreeSelect = () => {
+  return useQuery({
+    queryKey: ["categoryTreeSelect"],
+    queryFn: () => getCategoryTreeSelect(),
+  })
+}
+
 export const useDeleteManyCategories = () => {
   const queryClient = useQueryClient()
   return useMutation({
@@ -92,6 +105,7 @@ export const useDeleteManyCategories = () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
       queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
 }
@@ -110,6 +124,29 @@ export const useImportCategories = () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
       queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
+    },
+  })
+}
+
+export const useToggleCategoryVisibility = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => toggleCategoryVisibility(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
+    },
+  })
+}
+
+export const useToggleCategoryFeatured = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => toggleCategoryFeatured(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["categories"] })
+      queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
     },
   })
 }
