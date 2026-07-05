@@ -13,18 +13,20 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
-import { useDeleteTaxZone } from "@/hooks/tenant/use-tax-zone-query"
-import { exportTaxZones } from "@/lib/services/tenant/tax-zone-service"
-import { TAX_ZONE_EXPORT_COLUMNS } from "@/lib/export-columns"
+import { useDeleteWarehouse } from "@/hooks/tenant/use-warehouse-query"
+import { exportWarehouses } from "@/lib/services/tenant/warehouse-service"
+import { WAREHOUSE_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { TaxZonesMutateDialog } from "./tax-zones-mutate-dialog"
-import { TaxZonesViewDialog } from "./tax-zones-view-dialog"
-import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
-import { TaxZonesImportDialog } from "./tax-zones-import-dialog"
-import { TaxZonesMultiDeleteDialog } from "./tax-zones-multi-delete-dialog"
-import { useTaxZones } from "./tax-zones-provider"
+import { WarehousesMutateDialog } from "./warehouses-mutate-dialog"
+import { WarehousesViewDialog } from "./warehouses-view-dialog"
+import { WarehouseMapDialog } from "./warehouse-map-dialog"
+import { WarehousesImportDialog } from "./warehouses-import-dialog"
+import { WarehousesMultiDeleteDialog } from "./warehouses-multi-delete-dialog"
+import { WarehousesManageZonesDialog } from "./warehouses-manage-zones-dialog"
+import { WarehousesManageLocationsDialog } from "./warehouses-manage-locations-dialog"
+import { useWarehouses } from "./warehouses-provider"
 
-export function TaxZonesDialogs() {
+export function WarehousesDialogs() {
   const {
     open,
     setOpen,
@@ -34,16 +36,16 @@ export function TaxZonesDialogs() {
     setExportSelection,
     deleteManySelection,
     setDeleteManySelection,
-  } = useTaxZones()
-  const deleteTaxZone = useDeleteTaxZone()
+  } = useWarehouses()
+  const deleteWarehouse = useDeleteWarehouse()
   const [isDeleting, setIsDeleting] = React.useState(false)
 
   const handleDelete = React.useCallback(() => {
     if (!currentRow) return
     setIsDeleting(true)
-    deleteTaxZone.mutate(currentRow.id, {
+    deleteWarehouse.mutate(currentRow.id, {
       onSuccess: () => {
-        toast.success(`Tax zone "${currentRow.name}" deleted successfully`)
+        toast.success(`Warehouse "${currentRow.name}" deleted successfully`)
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -51,24 +53,24 @@ export function TaxZonesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tax zone")
+        toast.error(error.message || "Failed to delete warehouse")
         setIsDeleting(false)
       },
     })
-  }, [currentRow, deleteTaxZone, setOpen, setCurrentRow])
+  }, [currentRow, deleteWarehouse, setOpen, setCurrentRow])
 
   return (
     <>
-      <TaxZonesMutateDialog
-        key="tax-zone-create"
+      <WarehousesMutateDialog
+        key="warehouse-create"
         open={open === "create"}
         onOpenChange={(val) => {
           if (!val) setOpen(null)
         }}
       />
 
-      <TaxZonesImportDialog
-        key="tax-zones-import"
+      <WarehousesImportDialog
+        key="warehouses-import"
         open={open === "import"}
         onOpenChange={(val) => {
           if (!val) setOpen(null)
@@ -76,7 +78,7 @@ export function TaxZonesDialogs() {
       />
 
       <TenantModuleExportDialog
-        key="tax-zones-export"
+        key="warehouses-export"
         open={open === "export"}
         onOpenChange={(val) => {
           if (!val) {
@@ -84,18 +86,18 @@ export function TaxZonesDialogs() {
             setExportSelection(null)
           }
         }}
-        resourceLabel="Tax Zones"
-        columnOptions={TAX_ZONE_EXPORT_COLUMNS}
+        resourceLabel="Warehouses"
+        columnOptions={WAREHOUSE_EXPORT_COLUMNS}
         selectedIds={exportSelection?.ids ?? []}
-        onExport={exportTaxZones}
+        onExport={exportWarehouses}
         onComplete={() => {
           exportSelection?.onComplete?.()
           setExportSelection(null)
         }}
       />
 
-      <TaxZonesMultiDeleteDialog
-        key="tax-zones-delete-many"
+      <WarehousesMultiDeleteDialog
+        key="warehouses-delete-many"
         open={open === "deleteMany"}
         onOpenChange={(val) => {
           if (!val) {
@@ -112,8 +114,8 @@ export function TaxZonesDialogs() {
 
       {currentRow && (
         <>
-          <TaxZonesViewDialog
-            key={`tax-zone-view-${currentRow.id}`}
+          <WarehousesViewDialog
+            key={`warehouse-view-${currentRow.id}`}
             open={open === "view"}
             onOpenChange={(val) => {
               if (!val) {
@@ -123,13 +125,16 @@ export function TaxZonesDialogs() {
                 }, 500)
               }
             }}
-            taxZone={currentRow}
+            warehouse={currentRow}
             onViewMap={() => setOpen("viewMap")}
           />
 
-          {currentRow.latitude && currentRow.longitude ? (
-            <TaxZoneMapDialog
-              key={`tax-zone-map-${currentRow.id}`}
+          {currentRow.latitude !== null &&
+          currentRow.longitude !== null &&
+          !Number.isNaN(Number(currentRow.latitude)) &&
+          !Number.isNaN(Number(currentRow.longitude)) ? (
+            <WarehouseMapDialog
+              key={`warehouse-map-${currentRow.id}`}
               open={open === "viewMap"}
               onOpenChange={(val) => {
                 if (!val) {
@@ -141,15 +146,12 @@ export function TaxZonesDialogs() {
               }}
               latitude={Number(currentRow.latitude)}
               longitude={Number(currentRow.longitude)}
-              radiusKm={
-                currentRow.radius_km ? Number(currentRow.radius_km) : null
-              }
               title={`Map: ${currentRow.name}`}
             />
           ) : null}
 
-          <TaxZonesMutateDialog
-            key={`tax-zone-update-${currentRow.id}`}
+          <WarehousesMutateDialog
+            key={`warehouse-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {
               if (!val) {
@@ -160,6 +162,34 @@ export function TaxZonesDialogs() {
               }
             }}
             currentRow={currentRow}
+          />
+
+          <WarehousesManageZonesDialog
+            key={`warehouse-zones-${currentRow.id}`}
+            open={open === "manageZones"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            warehouse={currentRow}
+          />
+
+          <WarehousesManageLocationsDialog
+            key={`warehouse-locations-${currentRow.id}`}
+            open={open === "manageLocations"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            warehouse={currentRow}
           />
 
           <ResponsiveDialog
@@ -175,7 +205,7 @@ export function TaxZonesDialogs() {
           >
             <ResponsiveDialogContent>
               <ResponsiveDialogHeader>
-                <ResponsiveDialogTitle>Delete tax zone?</ResponsiveDialogTitle>
+                <ResponsiveDialogTitle>Delete warehouse?</ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to delete &quot;{currentRow.name}&quot;. This
                   action cannot be undone.

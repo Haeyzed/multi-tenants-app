@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { Button } from "@/components/ui/button";
+"use client"
+
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -8,60 +8,49 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
   ResponsiveDialogClose,
-} from "@/components/ui/responsive-dialog";
-import MapProvider from "@/lib/mapbox/provider";
-import MapStyles from "@/components/map/map-styles";
-import MapControls from "@/components/map/map-controls";
-import MapSearch from "@/components/map/map-search";
+} from "@/components/ui/responsive-dialog"
+import { Button } from "@/components/ui/button"
+import { TaxZoneMapPreview } from "./tax-zone-map-preview"
 
-interface TaxZoneMapDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  coordinates?: { longitude: number; latitude: number };
+type TaxZoneMapDialogProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  latitude: number
+  longitude: number
+  radiusKm?: number | null
+  title?: string
+  description?: string
 }
 
 export function TaxZoneMapDialog({
   open,
   onOpenChange,
-  coordinates = { longitude: -122.4194, latitude: 37.7749 },
+  latitude,
+  longitude,
+  radiusKm,
+  title = "Zone Map",
+  description = "Geographic location for this tax zone.",
 }: TaxZoneMapDialogProps) {
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="sm:max-w-4xl">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Tax Zone Map</ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
-            Viewing the tax zone area.
-          </ResponsiveDialogDescription>
+          <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
+          <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <div
-          id="map-container"
-          ref={mapContainerRef}
-          className="relative h-[400px] w-full"
+
+        <TaxZoneMapPreview
+          latitude={latitude}
+          longitude={longitude}
+          radiusKm={radiusKm}
         />
-        <MapProvider
-          mapContainerRef={mapContainerRef}
-          initialViewState={{
-            longitude: coordinates.longitude,
-            latitude: coordinates.latitude,
-            zoom: 10,
-          }}
-        >
-          <MapSearch />
-          <MapControls />
-          <MapStyles />
-        </MapProvider>
+
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose render={
-            <Button type="button" variant="outline">
-              Close
-            </Button>
-          }>
-          </ResponsiveDialogClose>
+          <ResponsiveDialogClose
+            render={<Button variant="outline">Close</Button>}
+          />
         </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
     </ResponsiveDialog>
-  );
+  )
 }

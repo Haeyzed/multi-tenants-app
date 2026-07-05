@@ -23,6 +23,21 @@ export type BrandStatistics = {
   hidden: number
 }
 
+export type SupplierStatistics = {
+  total: number
+  active: number
+  inactive: number
+  with_products: number
+}
+
+export type WarehouseStatistics = {
+  total: number
+  active: number
+  inactive: number
+  primary: number
+  with_inventory: number
+}
+
 export type CategoryStatistics = {
   total: number
   visible: number
@@ -42,6 +57,20 @@ export type TaxZoneStatistics = {
   active: number
   inactive: number
   default: number
+}
+
+export type TaxRateStatistics = {
+  total: number
+  active: number
+  inactive: number
+  compound: number
+}
+
+export type TaxRuleStatistics = {
+  total: number
+  active: number
+  inactive: number
+  override: number
 }
 
 export type CustomerStatistics = {

@@ -7,8 +7,10 @@ import {
   SettingsIcon,
   TagIcon,
   TagsIcon,
+  TruckIcon,
   UsersIcon,
   UsersRoundIcon,
+  WarehouseIcon,
 } from "lucide-react"
 import type { SidebarData } from "@/components/layout/types"
 
@@ -66,6 +68,16 @@ export const sidebarData: SidebarData = {
           icon: TagIcon,
         },
         {
+          title: "Suppliers",
+          url: "/admin/suppliers",
+          icon: TruckIcon,
+        },
+        {
+          title: "Warehouses",
+          url: "/admin/warehouses",
+          icon: WarehouseIcon,
+        },
+        {
           title: "Categories",
           url: "/admin/categories",
           icon: TagsIcon,
@@ -92,6 +104,16 @@ export const sidebarData: SidebarData = {
             {
               title: "Tax Zones",
               url: "/admin/settings/tax/zones",
+              icon: SettingsIcon,
+            },
+            {
+              title: "Tax Rates",
+              url: "/admin/settings/tax/rates",
+              icon: SettingsIcon,
+            },
+            {
+              title: "Tax Rules",
+              url: "/admin/settings/tax/rules",
               icon: SettingsIcon,
             },
           ],

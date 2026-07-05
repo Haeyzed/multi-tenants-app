@@ -2,24 +2,22 @@
 
 import React, { useState } from "react"
 import useDialogState from "@/hooks/use-dialog-state"
-import { type TaxZone } from "@/types/tenant/tax-zone"
+import { type TaxRule } from "@/types/tenant/tax-rule"
 import { type BulkDeleteSelection, type ExportSelection } from "@/types/tenant/export"
 
-type TaxZonesDialogType =
+type TaxRulesDialogType =
   | "create"
   | "update"
   | "view"
-  | "viewMap"
   | "delete"
-  | "import"
   | "export"
   | "deleteMany"
 
-type TaxZonesContextType = {
-  open: TaxZonesDialogType | null
-  setOpen: (str: TaxZonesDialogType | null) => void
-  currentRow: TaxZone | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<TaxZone | null>>
+type TaxRulesContextType = {
+  open: TaxRulesDialogType | null
+  setOpen: (str: TaxRulesDialogType | null) => void
+  currentRow: TaxRule | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<TaxRule | null>>
   exportSelection: ExportSelection | null
   setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
   deleteManySelection: BulkDeleteSelection | null
@@ -28,11 +26,11 @@ type TaxZonesContextType = {
   >
 }
 
-const TaxZonesContext = React.createContext<TaxZonesContextType | null>(null)
+const TaxRulesContext = React.createContext<TaxRulesContextType | null>(null)
 
-export function TaxZonesProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<TaxZonesDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<TaxZone | null>(null)
+export function TaxRulesProvider({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useDialogState<TaxRulesDialogType>(null)
+  const [currentRow, setCurrentRow] = useState<TaxRule | null>(null)
   const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
     null
   )
@@ -40,7 +38,7 @@ export function TaxZonesProvider({ children }: { children: React.ReactNode }) {
     useState<BulkDeleteSelection | null>(null)
 
   return (
-    <TaxZonesContext
+    <TaxRulesContext
       value={{
         open,
         setOpen,
@@ -53,15 +51,15 @@ export function TaxZonesProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </TaxZonesContext>
+    </TaxRulesContext>
   )
 }
 
-export const useTaxZones = () => {
-  const context = React.useContext(TaxZonesContext)
+export const useTaxRules = () => {
+  const context = React.useContext(TaxRulesContext)
 
   if (!context) {
-    throw new Error("useTaxZones has to be used within <TaxZonesProvider>")
+    throw new Error("useTaxRules has to be used within <TaxRulesProvider>")
   }
 
   return context

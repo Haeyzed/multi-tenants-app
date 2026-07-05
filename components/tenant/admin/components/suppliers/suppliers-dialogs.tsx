@@ -13,18 +13,20 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
-import { useDeleteTaxZone } from "@/hooks/tenant/use-tax-zone-query"
-import { exportTaxZones } from "@/lib/services/tenant/tax-zone-service"
-import { TAX_ZONE_EXPORT_COLUMNS } from "@/lib/export-columns"
+import { useDeleteSupplier } from "@/hooks/tenant/use-supplier-query"
+import { exportSuppliers } from "@/lib/services/tenant/supplier-service"
+import { SUPPLIER_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { TaxZonesMutateDialog } from "./tax-zones-mutate-dialog"
-import { TaxZonesViewDialog } from "./tax-zones-view-dialog"
-import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
-import { TaxZonesImportDialog } from "./tax-zones-import-dialog"
-import { TaxZonesMultiDeleteDialog } from "./tax-zones-multi-delete-dialog"
-import { useTaxZones } from "./tax-zones-provider"
+import { SuppliersMutateDialog } from "./suppliers-mutate-dialog"
+import { SuppliersViewDialog } from "./suppliers-view-dialog"
+import { SuppliersImportDialog } from "./suppliers-import-dialog"
+import { SuppliersMultiDeleteDialog } from "./suppliers-multi-delete-dialog"
+import { SuppliersManageContactsDialog } from "./suppliers-manage-contacts-dialog"
+import { SuppliersManageAddressesDialog } from "./suppliers-manage-addresses-dialog"
+import { SuppliersManageBankAccountsDialog } from "./suppliers-manage-bank-accounts-dialog"
+import { useSuppliers } from "./suppliers-provider"
 
-export function TaxZonesDialogs() {
+export function SuppliersDialogs() {
   const {
     open,
     setOpen,
@@ -34,16 +36,16 @@ export function TaxZonesDialogs() {
     setExportSelection,
     deleteManySelection,
     setDeleteManySelection,
-  } = useTaxZones()
-  const deleteTaxZone = useDeleteTaxZone()
+  } = useSuppliers()
+  const deleteSupplier = useDeleteSupplier()
   const [isDeleting, setIsDeleting] = React.useState(false)
 
   const handleDelete = React.useCallback(() => {
     if (!currentRow) return
     setIsDeleting(true)
-    deleteTaxZone.mutate(currentRow.id, {
+    deleteSupplier.mutate(currentRow.id, {
       onSuccess: () => {
-        toast.success(`Tax zone "${currentRow.name}" deleted successfully`)
+        toast.success(`Supplier "${currentRow.name}" deleted successfully`)
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -51,24 +53,24 @@ export function TaxZonesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tax zone")
+        toast.error(error.message || "Failed to delete supplier")
         setIsDeleting(false)
       },
     })
-  }, [currentRow, deleteTaxZone, setOpen, setCurrentRow])
+  }, [currentRow, deleteSupplier, setOpen, setCurrentRow])
 
   return (
     <>
-      <TaxZonesMutateDialog
-        key="tax-zone-create"
+      <SuppliersMutateDialog
+        key="supplier-create"
         open={open === "create"}
         onOpenChange={(val) => {
           if (!val) setOpen(null)
         }}
       />
 
-      <TaxZonesImportDialog
-        key="tax-zones-import"
+      <SuppliersImportDialog
+        key="suppliers-import"
         open={open === "import"}
         onOpenChange={(val) => {
           if (!val) setOpen(null)
@@ -76,7 +78,7 @@ export function TaxZonesDialogs() {
       />
 
       <TenantModuleExportDialog
-        key="tax-zones-export"
+        key="suppliers-export"
         open={open === "export"}
         onOpenChange={(val) => {
           if (!val) {
@@ -84,18 +86,18 @@ export function TaxZonesDialogs() {
             setExportSelection(null)
           }
         }}
-        resourceLabel="Tax Zones"
-        columnOptions={TAX_ZONE_EXPORT_COLUMNS}
+        resourceLabel="Suppliers"
+        columnOptions={SUPPLIER_EXPORT_COLUMNS}
         selectedIds={exportSelection?.ids ?? []}
-        onExport={exportTaxZones}
+        onExport={exportSuppliers}
         onComplete={() => {
           exportSelection?.onComplete?.()
           setExportSelection(null)
         }}
       />
 
-      <TaxZonesMultiDeleteDialog
-        key="tax-zones-delete-many"
+      <SuppliersMultiDeleteDialog
+        key="suppliers-delete-many"
         open={open === "deleteMany"}
         onOpenChange={(val) => {
           if (!val) {
@@ -112,8 +114,8 @@ export function TaxZonesDialogs() {
 
       {currentRow && (
         <>
-          <TaxZonesViewDialog
-            key={`tax-zone-view-${currentRow.id}`}
+          <SuppliersViewDialog
+            key={`supplier-view-${currentRow.id}`}
             open={open === "view"}
             onOpenChange={(val) => {
               if (!val) {
@@ -123,33 +125,11 @@ export function TaxZonesDialogs() {
                 }, 500)
               }
             }}
-            taxZone={currentRow}
-            onViewMap={() => setOpen("viewMap")}
+            supplier={currentRow}
           />
 
-          {currentRow.latitude && currentRow.longitude ? (
-            <TaxZoneMapDialog
-              key={`tax-zone-map-${currentRow.id}`}
-              open={open === "viewMap"}
-              onOpenChange={(val) => {
-                if (!val) {
-                  setOpen(null)
-                  setTimeout(() => {
-                    setCurrentRow(null)
-                  }, 500)
-                }
-              }}
-              latitude={Number(currentRow.latitude)}
-              longitude={Number(currentRow.longitude)}
-              radiusKm={
-                currentRow.radius_km ? Number(currentRow.radius_km) : null
-              }
-              title={`Map: ${currentRow.name}`}
-            />
-          ) : null}
-
-          <TaxZonesMutateDialog
-            key={`tax-zone-update-${currentRow.id}`}
+          <SuppliersMutateDialog
+            key={`supplier-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {
               if (!val) {
@@ -160,6 +140,48 @@ export function TaxZonesDialogs() {
               }
             }}
             currentRow={currentRow}
+          />
+
+          <SuppliersManageContactsDialog
+            key={`supplier-contacts-${currentRow.id}`}
+            open={open === "manageContacts"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            supplier={currentRow}
+          />
+
+          <SuppliersManageAddressesDialog
+            key={`supplier-addresses-${currentRow.id}`}
+            open={open === "manageAddresses"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            supplier={currentRow}
+          />
+
+          <SuppliersManageBankAccountsDialog
+            key={`supplier-bank-accounts-${currentRow.id}`}
+            open={open === "manageBankAccounts"}
+            onOpenChange={(val) => {
+              if (!val) {
+                setOpen(null)
+                setTimeout(() => {
+                  setCurrentRow(null)
+                }, 500)
+              }
+            }}
+            supplier={currentRow}
           />
 
           <ResponsiveDialog
@@ -175,7 +197,7 @@ export function TaxZonesDialogs() {
           >
             <ResponsiveDialogContent>
               <ResponsiveDialogHeader>
-                <ResponsiveDialogTitle>Delete tax zone?</ResponsiveDialogTitle>
+                <ResponsiveDialogTitle>Delete supplier?</ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to delete &quot;{currentRow.name}&quot;. This
                   action cannot be undone.

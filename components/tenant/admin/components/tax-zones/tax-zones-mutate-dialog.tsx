@@ -24,12 +24,14 @@ import {
   useUpdateTaxZone,
 } from "@/hooks/tenant/use-tax-zone-query"
 import { type TaxZone } from "@/types/tenant/tax-zone"
+import { MapPin } from "lucide-react"
 import {
   storeTaxZoneSchema,
   updateTaxZoneSchema,
   type StoreTaxZoneFormValues,
   type UpdateTaxZoneFormValues,
 } from "@/schemas/tenant/tax-zone-schema"
+import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
 
 type TaxZonesMutateDialogProps = {
   open: boolean
@@ -57,6 +59,7 @@ export function TaxZonesMutateDialog({
   const createTaxZone = useCreateTaxZone()
   const updateTaxZone = useUpdateTaxZone()
   const isSubmitting = createTaxZone.isPending || updateTaxZone.isPending
+  const [mapOpen, setMapOpen] = React.useState(false)
 
   const schema = isUpdate ? updateTaxZoneSchema : storeTaxZoneSchema
 
@@ -114,6 +117,14 @@ export function TaxZonesMutateDialog({
     }
   }, [open, currentRow, form])
 
+  const latitude = form.watch("latitude")
+  const longitude = form.watch("longitude")
+  const hasMapCoordinates =
+    typeof latitude === "number" &&
+    !Number.isNaN(latitude) &&
+    typeof longitude === "number" &&
+    !Number.isNaN(longitude)
+
   const onSubmit = (data: StoreTaxZoneFormValues | UpdateTaxZoneFormValues) => {
     const payload = {
       ...data,
@@ -158,13 +169,14 @@ export function TaxZonesMutateDialog({
   }
 
   return (
-    <ResponsiveDialog
-      open={open}
-      onOpenChange={(val) => {
-        onOpenChange(val)
-        if (!val) form.reset()
-      }}
-    >
+    <>
+      <ResponsiveDialog
+        open={open}
+        onOpenChange={(val) => {
+          onOpenChange(val)
+          if (!val) form.reset()
+        }}
+      >
       <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
@@ -279,6 +291,18 @@ export function TaxZonesMutateDialog({
             </Field>
           </div>
 
+          {hasMapCoordinates ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setMapOpen(true)}
+            >
+              <MapPin className="mr-2 h-4 w-4" />
+              View on Map
+            </Button>
+          ) : null}
+
           <Field>
             <FieldLabel>Sort Order</FieldLabel>
             <FieldContent>
@@ -331,6 +355,18 @@ export function TaxZonesMutateDialog({
           </Button>
         </ResponsiveDialogFooter>
       </ResponsiveDialogContent>
-    </ResponsiveDialog>
+      </ResponsiveDialog>
+
+      {hasMapCoordinates ? (
+        <TaxZoneMapDialog
+          open={mapOpen}
+          onOpenChange={setMapOpen}
+          latitude={latitude}
+          longitude={longitude}
+          radiusKm={form.watch("radius_km")}
+          title={isUpdate ? `Map: ${currentRow?.name}` : "Tax Zone Map"}
+        />
+      ) : null}
+    </>
   )
 }

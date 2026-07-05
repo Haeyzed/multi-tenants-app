@@ -2,10 +2,10 @@
 
 import React, { useState } from "react"
 import useDialogState from "@/hooks/use-dialog-state"
-import { type TaxZone } from "@/types/tenant/tax-zone"
+import { type Warehouse } from "@/types/tenant/warehouse"
 import { type BulkDeleteSelection, type ExportSelection } from "@/types/tenant/export"
 
-type TaxZonesDialogType =
+type WarehousesDialogType =
   | "create"
   | "update"
   | "view"
@@ -14,12 +14,14 @@ type TaxZonesDialogType =
   | "import"
   | "export"
   | "deleteMany"
+  | "manageZones"
+  | "manageLocations"
 
-type TaxZonesContextType = {
-  open: TaxZonesDialogType | null
-  setOpen: (str: TaxZonesDialogType | null) => void
-  currentRow: TaxZone | null
-  setCurrentRow: React.Dispatch<React.SetStateAction<TaxZone | null>>
+type WarehousesContextType = {
+  open: WarehousesDialogType | null
+  setOpen: (str: WarehousesDialogType | null) => void
+  currentRow: Warehouse | null
+  setCurrentRow: React.Dispatch<React.SetStateAction<Warehouse | null>>
   exportSelection: ExportSelection | null
   setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
   deleteManySelection: BulkDeleteSelection | null
@@ -28,11 +30,11 @@ type TaxZonesContextType = {
   >
 }
 
-const TaxZonesContext = React.createContext<TaxZonesContextType | null>(null)
+const WarehousesContext = React.createContext<WarehousesContextType | null>(null)
 
-export function TaxZonesProvider({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useDialogState<TaxZonesDialogType>(null)
-  const [currentRow, setCurrentRow] = useState<TaxZone | null>(null)
+export function WarehousesProvider({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useDialogState<WarehousesDialogType>(null)
+  const [currentRow, setCurrentRow] = useState<Warehouse | null>(null)
   const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
     null
   )
@@ -40,7 +42,7 @@ export function TaxZonesProvider({ children }: { children: React.ReactNode }) {
     useState<BulkDeleteSelection | null>(null)
 
   return (
-    <TaxZonesContext
+    <WarehousesContext
       value={{
         open,
         setOpen,
@@ -53,15 +55,15 @@ export function TaxZonesProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </TaxZonesContext>
+    </WarehousesContext>
   )
 }
 
-export const useTaxZones = () => {
-  const context = React.useContext(TaxZonesContext)
+export const useWarehouses = () => {
+  const context = React.useContext(WarehousesContext)
 
   if (!context) {
-    throw new Error("useTaxZones has to be used within <TaxZonesProvider>")
+    throw new Error("useWarehouses has to be used within <WarehousesProvider>")
   }
 
   return context

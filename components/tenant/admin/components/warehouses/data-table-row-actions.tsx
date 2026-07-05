@@ -1,4 +1,14 @@
-import { Edit, Eye, MapPin, MoreHorizontal, Star, Trash2, ToggleLeft, ToggleRight } from "lucide-react"
+import {
+  Edit,
+  Eye,
+  LayoutGrid,
+  MapPin,
+  MoreHorizontal,
+  Star,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+} from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -10,12 +20,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { TenantAdminAuthGuard } from "@/components/tenant/admin/components/auth-guard"
-import { type TaxZone } from "@/types/tenant/tax-zone"
+import { type Warehouse } from "@/types/tenant/warehouse"
 import {
-  useSetDefaultTaxZone,
-  useToggleTaxZoneActive,
-} from "@/hooks/tenant/use-tax-zone-query"
-import { useTaxZones } from "./tax-zones-provider"
+  useSetWarehousePrimary,
+  useToggleWarehouseActive,
+} from "@/hooks/tenant/use-warehouse-query"
+import { useWarehouses } from "./warehouses-provider"
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
@@ -24,16 +34,16 @@ type DataTableRowActionsProps<TData> = {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const taxZone = row.original as TaxZone
-  const { setOpen, setCurrentRow } = useTaxZones()
-  const toggleActive = useToggleTaxZoneActive()
-  const setDefault = useSetDefaultTaxZone()
+  const warehouse = row.original as Warehouse
+  const { setOpen, setCurrentRow } = useWarehouses()
+  const toggleActive = useToggleWarehouseActive()
+  const setPrimary = useSetWarehousePrimary()
 
   const hasMapCoordinates =
-    taxZone.latitude &&
-    taxZone.longitude &&
-    !Number.isNaN(Number(taxZone.latitude)) &&
-    !Number.isNaN(Number(taxZone.longitude))
+    warehouse.latitude !== null &&
+    warehouse.longitude !== null &&
+    !Number.isNaN(Number(warehouse.latitude)) &&
+    !Number.isNaN(Number(warehouse.longitude))
 
   return (
     <DropdownMenu modal={false}>
@@ -48,11 +58,11 @@ export function DataTableRowActions<TData>({
           </Button>
         }
       />
-      <DropdownMenuContent align="end" className="w-44">
-        <TenantAdminAuthGuard permissions="tax.view">
+      <DropdownMenuContent align="end" className="w-52">
+        <TenantAdminAuthGuard permissions="warehouses.view">
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(warehouse)
               setOpen("view")
             }}
           >
@@ -62,7 +72,7 @@ export function DataTableRowActions<TData>({
           {hasMapCoordinates ? (
             <DropdownMenuItem
               onClick={() => {
-                setCurrentRow(taxZone)
+                setCurrentRow(warehouse)
                 setOpen("viewMap")
               }}
             >
@@ -71,26 +81,42 @@ export function DataTableRowActions<TData>({
             </DropdownMenuItem>
           ) : null}
         </TenantAdminAuthGuard>
-        <TenantAdminAuthGuard permissions="tax.update">
+        <TenantAdminAuthGuard permissions="warehouses.update">
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(warehouse)
               setOpen("update")
             }}
           >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-        </TenantAdminAuthGuard>
-        <TenantAdminAuthGuard permissions="tax.update">
           <DropdownMenuItem
             onClick={() => {
-              toggleActive.mutate(taxZone.id, {
+              setCurrentRow(warehouse)
+              setOpen("manageZones")
+            }}
+          >
+            <LayoutGrid className="mr-2 h-4 w-4" />
+            Manage Zones
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(warehouse)
+              setOpen("manageLocations")
+            }}
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            Manage Locations
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              toggleActive.mutate(warehouse.id, {
                 onSuccess: (updated) => {
                   toast.success(
                     updated.is_active
-                      ? "Tax zone is now active"
-                      : "Tax zone is now inactive"
+                      ? "Warehouse is now active"
+                      : "Warehouse is now inactive"
                   )
                 },
                 onError: (error) => {
@@ -99,37 +125,37 @@ export function DataTableRowActions<TData>({
               })
             }}
           >
-            {taxZone.is_active ? (
+            {warehouse.is_active ? (
               <ToggleRight className="mr-2 h-4 w-4" />
             ) : (
               <ToggleLeft className="mr-2 h-4 w-4" />
             )}
-            {taxZone.is_active ? "Deactivate" : "Activate"}
+            {warehouse.is_active ? "Deactivate" : "Activate"}
           </DropdownMenuItem>
-          {!taxZone.is_default ? (
+          {!warehouse.is_primary ? (
             <DropdownMenuItem
               onClick={() => {
-                setDefault.mutate(taxZone.id, {
+                setPrimary.mutate(warehouse.id, {
                   onSuccess: () => {
-                    toast.success("Default tax zone updated")
+                    toast.success(`"${warehouse.name}" set as primary warehouse`)
                   },
                   onError: (error) => {
-                    toast.error(error.message || "Failed to set default")
+                    toast.error(error.message || "Failed to set primary warehouse")
                   },
                 })
               }}
             >
               <Star className="mr-2 h-4 w-4" />
-              Set as default
+              Set Primary
             </DropdownMenuItem>
           ) : null}
         </TenantAdminAuthGuard>
         <DropdownMenuSeparator />
-        <TenantAdminAuthGuard permissions="tax.delete">
+        <TenantAdminAuthGuard permissions="warehouses.delete">
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(warehouse)
               setOpen("delete")
             }}
           >

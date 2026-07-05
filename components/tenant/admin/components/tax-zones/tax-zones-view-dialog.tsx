@@ -1,19 +1,20 @@
 "use client"
 
 import { format } from "date-fns"
+import { MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import {
   ModuleViewDialog,
   type ModuleViewField,
 } from "@/components/tenant/admin/components/shared/module-view-dialog"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { useTaxZones } from "./tax-zones-provider"
 import { type TaxZone } from "@/types/tenant/tax-zone"
 
 type TaxZonesViewDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   taxZone: TaxZone
+  onViewMap?: () => void
 }
 
 function getTaxZoneViewFields(taxZone: TaxZone): ModuleViewField[] {
@@ -57,8 +58,15 @@ export function TaxZonesViewDialog({
   open,
   onOpenChange,
   taxZone,
+  onViewMap,
 }: TaxZonesViewDialogProps) {
-  const { setOpen } = useTaxZones()
+  const latitude = taxZone.latitude ? Number(taxZone.latitude) : null
+  const longitude = taxZone.longitude ? Number(taxZone.longitude) : null
+  const hasMapCoordinates =
+    latitude !== null &&
+    !Number.isNaN(latitude) &&
+    longitude !== null &&
+    !Number.isNaN(longitude)
 
   return (
     <ModuleViewDialog
@@ -68,9 +76,12 @@ export function TaxZonesViewDialog({
       description={`Viewing tax zone #${taxZone.id}`}
       fields={getTaxZoneViewFields(taxZone)}
       footer={
-        <Button variant="outline" onClick={() => setOpen("map")}>
-          View on Map
-        </Button>
+        hasMapCoordinates && onViewMap ? (
+          <Button type="button" variant="outline" onClick={onViewMap}>
+            <MapPin className="mr-2 h-4 w-4" />
+            View on Map
+          </Button>
+        ) : undefined
       }
     />
   )

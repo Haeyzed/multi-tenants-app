@@ -95,6 +95,34 @@ export const TAX_ZONE_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "created_at", label: "Created At" },
 ]
 
+export const TAX_RATE_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "tax_class", label: "Tax Class" },
+  { key: "tax_zone", label: "Tax Zone" },
+  { key: "rate", label: "Rate (%)" },
+  { key: "priority", label: "Priority" },
+  { key: "is_compound", label: "Compound" },
+  { key: "applies_to_shipping", label: "Applies to Shipping" },
+  { key: "effective_from", label: "Effective From" },
+  { key: "effective_to", label: "Effective To" },
+  { key: "is_active", label: "Active" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const TAX_RULE_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "tax_rate", label: "Tax Rate" },
+  { key: "applicable_type", label: "Applicable Type" },
+  { key: "applicable_id", label: "Applicable ID" },
+  { key: "rule_type", label: "Rule Type" },
+  { key: "adjustment_rate", label: "Adjustment Rate" },
+  { key: "effective_from", label: "Effective From" },
+  { key: "effective_to", label: "Effective To" },
+  { key: "is_active", label: "Active" },
+  { key: "created_at", label: "Created At" },
+]
+
 export const CUSTOMER_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "id", label: "ID" },
   { key: "first_name", label: "First Name" },
@@ -139,5 +167,43 @@ export const PRODUCT_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "category", label: "Category" },
   { key: "brand", label: "Brand" },
   { key: "quantity", label: "Quantity" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const SUPPLIER_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "code", label: "Code" },
+  { key: "slug", label: "Slug" },
+  { key: "description", label: "Description" },
+  { key: "contact_name", label: "Contact Name" },
+  { key: "contact_email", label: "Contact Email" },
+  { key: "contact_phone", label: "Contact Phone" },
+  { key: "website_url", label: "Website URL" },
+  { key: "tax_id", label: "Tax ID" },
+  { key: "registration_number", label: "Registration Number" },
+  { key: "is_active", label: "Active" },
+  { key: "products_count", label: "Products Count" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const WAREHOUSE_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "code", label: "Code" },
+  { key: "description", label: "Description" },
+  { key: "address_line_1", label: "Address Line 1" },
+  { key: "city", label: "City" },
+  { key: "state", label: "State" },
+  { key: "postal_code", label: "Postal Code" },
+  { key: "country", label: "Country" },
+  { key: "phone", label: "Phone" },
+  { key: "email", label: "Email" },
+  { key: "manager_name", label: "Manager Name" },
+  { key: "latitude", label: "Latitude" },
+  { key: "longitude", label: "Longitude" },
+  { key: "is_active", label: "Active" },
+  { key: "is_primary", label: "Primary" },
+  { key: "sort_order", label: "Sort Order" },
   { key: "created_at", label: "Created At" },
 ]

@@ -1,4 +1,14 @@
-import { Edit, Eye, MapPin, MoreHorizontal, Star, Trash2, ToggleLeft, ToggleRight } from "lucide-react"
+import {
+  CreditCard,
+  Edit,
+  Eye,
+  MapPin,
+  MoreHorizontal,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+  Users,
+} from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -10,12 +20,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { TenantAdminAuthGuard } from "@/components/tenant/admin/components/auth-guard"
-import { type TaxZone } from "@/types/tenant/tax-zone"
-import {
-  useSetDefaultTaxZone,
-  useToggleTaxZoneActive,
-} from "@/hooks/tenant/use-tax-zone-query"
-import { useTaxZones } from "./tax-zones-provider"
+import { type Supplier } from "@/types/tenant/supplier"
+import { useToggleSupplierActive } from "@/hooks/tenant/use-supplier-query"
+import { useSuppliers } from "./suppliers-provider"
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
@@ -24,16 +31,9 @@ type DataTableRowActionsProps<TData> = {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const taxZone = row.original as TaxZone
-  const { setOpen, setCurrentRow } = useTaxZones()
-  const toggleActive = useToggleTaxZoneActive()
-  const setDefault = useSetDefaultTaxZone()
-
-  const hasMapCoordinates =
-    taxZone.latitude &&
-    taxZone.longitude &&
-    !Number.isNaN(Number(taxZone.latitude)) &&
-    !Number.isNaN(Number(taxZone.longitude))
+  const supplier = row.original as Supplier
+  const { setOpen, setCurrentRow } = useSuppliers()
+  const toggleActive = useToggleSupplierActive()
 
   return (
     <DropdownMenu modal={false}>
@@ -48,49 +48,63 @@ export function DataTableRowActions<TData>({
           </Button>
         }
       />
-      <DropdownMenuContent align="end" className="w-44">
-        <TenantAdminAuthGuard permissions="tax.view">
+      <DropdownMenuContent align="end" className="w-52">
+        <TenantAdminAuthGuard permissions="suppliers.view">
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(supplier)
               setOpen("view")
             }}
           >
             <Eye className="mr-2 h-4 w-4" />
             View
           </DropdownMenuItem>
-          {hasMapCoordinates ? (
-            <DropdownMenuItem
-              onClick={() => {
-                setCurrentRow(taxZone)
-                setOpen("viewMap")
-              }}
-            >
-              <MapPin className="mr-2 h-4 w-4" />
-              View Map
-            </DropdownMenuItem>
-          ) : null}
         </TenantAdminAuthGuard>
-        <TenantAdminAuthGuard permissions="tax.update">
+        <TenantAdminAuthGuard permissions="suppliers.update">
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(supplier)
               setOpen("update")
             }}
           >
             <Edit className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>
-        </TenantAdminAuthGuard>
-        <TenantAdminAuthGuard permissions="tax.update">
           <DropdownMenuItem
             onClick={() => {
-              toggleActive.mutate(taxZone.id, {
+              setCurrentRow(supplier)
+              setOpen("manageContacts")
+            }}
+          >
+            <Users className="mr-2 h-4 w-4" />
+            Manage Contacts
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(supplier)
+              setOpen("manageAddresses")
+            }}
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            Manage Addresses
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setCurrentRow(supplier)
+              setOpen("manageBankAccounts")
+            }}
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Manage Bank Accounts
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              toggleActive.mutate(supplier.id, {
                 onSuccess: (updated) => {
                   toast.success(
                     updated.is_active
-                      ? "Tax zone is now active"
-                      : "Tax zone is now inactive"
+                      ? "Supplier is now active"
+                      : "Supplier is now inactive"
                   )
                 },
                 onError: (error) => {
@@ -99,37 +113,20 @@ export function DataTableRowActions<TData>({
               })
             }}
           >
-            {taxZone.is_active ? (
+            {supplier.is_active ? (
               <ToggleRight className="mr-2 h-4 w-4" />
             ) : (
               <ToggleLeft className="mr-2 h-4 w-4" />
             )}
-            {taxZone.is_active ? "Deactivate" : "Activate"}
+            {supplier.is_active ? "Deactivate" : "Activate"}
           </DropdownMenuItem>
-          {!taxZone.is_default ? (
-            <DropdownMenuItem
-              onClick={() => {
-                setDefault.mutate(taxZone.id, {
-                  onSuccess: () => {
-                    toast.success("Default tax zone updated")
-                  },
-                  onError: (error) => {
-                    toast.error(error.message || "Failed to set default")
-                  },
-                })
-              }}
-            >
-              <Star className="mr-2 h-4 w-4" />
-              Set as default
-            </DropdownMenuItem>
-          ) : null}
         </TenantAdminAuthGuard>
         <DropdownMenuSeparator />
-        <TenantAdminAuthGuard permissions="tax.delete">
+        <TenantAdminAuthGuard permissions="suppliers.delete">
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(supplier)
               setOpen("delete")
             }}
           >

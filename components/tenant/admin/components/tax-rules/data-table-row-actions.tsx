@@ -1,4 +1,4 @@
-import { Edit, Eye, MapPin, MoreHorizontal, Star, Trash2, ToggleLeft, ToggleRight } from "lucide-react"
+import { Edit, Eye, MoreHorizontal, Trash2, ToggleLeft, ToggleRight } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -10,12 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { TenantAdminAuthGuard } from "@/components/tenant/admin/components/auth-guard"
-import { type TaxZone } from "@/types/tenant/tax-zone"
-import {
-  useSetDefaultTaxZone,
-  useToggleTaxZoneActive,
-} from "@/hooks/tenant/use-tax-zone-query"
-import { useTaxZones } from "./tax-zones-provider"
+import { type TaxRule } from "@/types/tenant/tax-rule"
+import { useToggleTaxRuleActive } from "@/hooks/tenant/use-tax-rule-query"
+import { useTaxRules } from "./tax-rules-provider"
 
 type DataTableRowActionsProps<TData> = {
   row: Row<TData>
@@ -24,16 +21,9 @@ type DataTableRowActionsProps<TData> = {
 export function DataTableRowActions<TData>({
   row,
 }: DataTableRowActionsProps<TData>) {
-  const taxZone = row.original as TaxZone
-  const { setOpen, setCurrentRow } = useTaxZones()
-  const toggleActive = useToggleTaxZoneActive()
-  const setDefault = useSetDefaultTaxZone()
-
-  const hasMapCoordinates =
-    taxZone.latitude &&
-    taxZone.longitude &&
-    !Number.isNaN(Number(taxZone.latitude)) &&
-    !Number.isNaN(Number(taxZone.longitude))
+  const taxRule = row.original as TaxRule
+  const { setOpen, setCurrentRow } = useTaxRules()
+  const toggleActive = useToggleTaxRuleActive()
 
   return (
     <DropdownMenu modal={false}>
@@ -52,29 +42,18 @@ export function DataTableRowActions<TData>({
         <TenantAdminAuthGuard permissions="tax.view">
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(taxRule)
               setOpen("view")
             }}
           >
             <Eye className="mr-2 h-4 w-4" />
             View
           </DropdownMenuItem>
-          {hasMapCoordinates ? (
-            <DropdownMenuItem
-              onClick={() => {
-                setCurrentRow(taxZone)
-                setOpen("viewMap")
-              }}
-            >
-              <MapPin className="mr-2 h-4 w-4" />
-              View Map
-            </DropdownMenuItem>
-          ) : null}
         </TenantAdminAuthGuard>
         <TenantAdminAuthGuard permissions="tax.update">
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(taxRule)
               setOpen("update")
             }}
           >
@@ -85,12 +64,12 @@ export function DataTableRowActions<TData>({
         <TenantAdminAuthGuard permissions="tax.update">
           <DropdownMenuItem
             onClick={() => {
-              toggleActive.mutate(taxZone.id, {
+              toggleActive.mutate(taxRule.id, {
                 onSuccess: (updated) => {
                   toast.success(
                     updated.is_active
-                      ? "Tax zone is now active"
-                      : "Tax zone is now inactive"
+                      ? "Tax rule is now active"
+                      : "Tax rule is now inactive"
                   )
                 },
                 onError: (error) => {
@@ -99,37 +78,20 @@ export function DataTableRowActions<TData>({
               })
             }}
           >
-            {taxZone.is_active ? (
+            {taxRule.is_active ? (
               <ToggleRight className="mr-2 h-4 w-4" />
             ) : (
               <ToggleLeft className="mr-2 h-4 w-4" />
             )}
-            {taxZone.is_active ? "Deactivate" : "Activate"}
+            {taxRule.is_active ? "Deactivate" : "Activate"}
           </DropdownMenuItem>
-          {!taxZone.is_default ? (
-            <DropdownMenuItem
-              onClick={() => {
-                setDefault.mutate(taxZone.id, {
-                  onSuccess: () => {
-                    toast.success("Default tax zone updated")
-                  },
-                  onError: (error) => {
-                    toast.error(error.message || "Failed to set default")
-                  },
-                })
-              }}
-            >
-              <Star className="mr-2 h-4 w-4" />
-              Set as default
-            </DropdownMenuItem>
-          ) : null}
         </TenantAdminAuthGuard>
         <DropdownMenuSeparator />
         <TenantAdminAuthGuard permissions="tax.delete">
           <DropdownMenuItem
             variant="destructive"
             onClick={() => {
-              setCurrentRow(taxZone)
+              setCurrentRow(taxRule)
               setOpen("delete")
             }}
           >
