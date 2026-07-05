@@ -6,6 +6,8 @@ import {
   type ModuleViewField,
 } from "@/components/tenant/admin/components/shared/module-view-dialog"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { useTaxZones } from "./tax-zones-provider"
 import { type TaxZone } from "@/types/tenant/tax-zone"
 
 type TaxZonesViewDialogProps = {
@@ -56,6 +58,8 @@ export function TaxZonesViewDialog({
   onOpenChange,
   taxZone,
 }: TaxZonesViewDialogProps) {
+  const { setOpen } = useTaxZones()
+
   return (
     <ModuleViewDialog
       open={open}
@@ -63,6 +67,11 @@ export function TaxZonesViewDialog({
       title="Tax Zone Details"
       description={`Viewing tax zone #${taxZone.id}`}
       fields={getTaxZoneViewFields(taxZone)}
+      footer={
+        <Button variant="outline" onClick={() => setOpen("map")}>
+          View on Map
+        </Button>
+      }
     />
   )
 }

@@ -22,6 +22,7 @@ import { TaxZonesViewDialog } from "./tax-zones-view-dialog"
 import { TaxZonesImportDialog } from "./tax-zones-import-dialog"
 import { TaxZonesMultiDeleteDialog } from "./tax-zones-multi-delete-dialog"
 import { useTaxZones } from "./tax-zones-provider"
+import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
 
 export function TaxZonesDialogs() {
   const {
@@ -58,6 +59,21 @@ export function TaxZonesDialogs() {
 
   return (
     <>
+      <TaxZoneMapDialog
+        open={open === "map"}
+        onOpenChange={(val) => {
+          if (!val) setOpen("view")
+        }}
+        coordinates={
+          currentRow?.latitude && currentRow?.longitude
+            ? {
+                latitude: Number(currentRow.latitude),
+                longitude: Number(currentRow.longitude),
+              }
+            : undefined
+        }
+      />
+
       <TaxZonesMutateDialog
         key="tax-zone-create"
         open={open === "create"}

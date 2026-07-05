@@ -27,6 +27,7 @@ type ModuleViewDialogProps = {
   title: string
   description?: string
   fields: ModuleViewField[]
+  footer?: React.ReactNode
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -54,6 +55,7 @@ export function ModuleViewDialog({
   title,
   description,
   fields,
+  footer,
 }: ModuleViewDialogProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
@@ -74,6 +76,7 @@ export function ModuleViewDialog({
         </div>
 
         <ResponsiveDialogFooter>
+          {footer}
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}
           />

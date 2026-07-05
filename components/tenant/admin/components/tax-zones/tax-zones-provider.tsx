@@ -13,6 +13,7 @@ type TaxZonesDialogType =
   | "import"
   | "export"
   | "deleteMany"
+  | "map"
 
 type TaxZonesContextType = {
   open: TaxZonesDialogType | null
