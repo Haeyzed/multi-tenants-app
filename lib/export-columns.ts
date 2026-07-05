@@ -207,3 +207,15 @@ export const WAREHOUSE_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "sort_order", label: "Sort Order" },
   { key: "created_at", label: "Created At" },
 ]
+
+export const UNIT_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "code", label: "Code" },
+  { key: "symbol", label: "Symbol" },
+  { key: "type", label: "Type" },
+  { key: "conversion_factor", label: "Conversion Factor" },
+  { key: "is_base", label: "Base Unit" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]

@@ -159,8 +159,8 @@ export function SuppliersMutateDialog({
         if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
-        <ResponsiveDialogHeader>
+      <ResponsiveDialogContent className="flex max-h-[min(90dvh,800px)] w-full flex-col gap-0 overflow-hidden sm:max-w-2xl">
+        <ResponsiveDialogHeader className="shrink-0">
           <ResponsiveDialogTitle>
             {isUpdate ? "Update" : "Create"} Supplier
           </ResponsiveDialogTitle>
@@ -172,11 +172,12 @@ export function SuppliersMutateDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <form
-          id="suppliers-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <form
+            id="suppliers-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
           <Field>
             <FieldLabel>Name *</FieldLabel>
             <FieldContent>
@@ -289,9 +290,10 @@ export function SuppliersMutateDialog({
               Active
             </label>
           </div>
-        </form>
+          </form>
+        </div>
 
-        <ResponsiveDialogFooter>
+        <ResponsiveDialogFooter className="shrink-0">
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}
           />

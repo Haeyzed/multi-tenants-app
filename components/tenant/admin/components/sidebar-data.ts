@@ -4,6 +4,7 @@ import {
   LayoutDashboardIcon,
   PackageIcon,
   PercentIcon,
+  RulerIcon,
   SettingsIcon,
   TagIcon,
   TagsIcon,
@@ -68,16 +69,6 @@ export const sidebarData: SidebarData = {
           icon: TagIcon,
         },
         {
-          title: "Suppliers",
-          url: "/admin/suppliers",
-          icon: TruckIcon,
-        },
-        {
-          title: "Warehouses",
-          url: "/admin/warehouses",
-          icon: WarehouseIcon,
-        },
-        {
           title: "Categories",
           url: "/admin/categories",
           icon: TagsIcon,
@@ -90,8 +81,28 @@ export const sidebarData: SidebarData = {
       ],
     },
     {
+      title: "Inventory",
+      items: [
+        {
+          title: "Suppliers",
+          url: "/admin/suppliers",
+          icon: TruckIcon,
+        },
+        {
+          title: "Warehouses",
+          url: "/admin/warehouses",
+          icon: WarehouseIcon,
+        },
+      ],
+    },
+    {
       title: "Settings",
       items: [
+        {
+          title: "Units",
+          url: "/admin/units",
+          icon: RulerIcon,
+        },
         {
           title: "Tax",
           icon: PercentIcon,

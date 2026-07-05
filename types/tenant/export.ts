@@ -93,3 +93,9 @@ export type ProductStatistics = {
   featured: number
   low_stock: number
 }
+
+export type UnitStatistics = {
+  total: number
+  base: number
+  types: Record<string, number>
+}

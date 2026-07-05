@@ -218,32 +218,34 @@ export function WarehousesManageLocationsDialog({
   return (
     <>
       <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
-          <ResponsiveDialogHeader>
+        <ResponsiveDialogContent className="flex max-h-[min(90dvh,800px)] w-full flex-col gap-0 overflow-hidden sm:max-w-4xl">
+          <ResponsiveDialogHeader className="shrink-0">
             <ResponsiveDialogTitle>Manage Locations</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
               Storage locations for &quot;{warehouse.name}&quot;
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="space-y-4">
-            <div className="flex justify-end">
-              <Button size="sm" onClick={openCreateForm}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Location
-              </Button>
-            </div>
+          <div className="flex shrink-0 justify-end">
+            <Button size="sm" onClick={openCreateForm}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Location
+            </Button>
+          </div>
 
+          <div className="min-h-0 flex-1 overflow-hidden pb-2">
             {isLoading ? (
-              <div className="flex justify-center py-8">
+              <div className="flex h-40 items-center justify-center">
                 <Spinner />
               </div>
             ) : locations.length === 0 ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">
+              <p className="flex h-40 items-center justify-center text-center text-sm text-muted-foreground">
                 No locations yet. Add one to get started.
               </p>
             ) : (
-              <Table>
+              <div className="max-h-[min(50dvh,360px)] overflow-auto rounded-md border">
+                <div className="min-w-full overflow-x-auto">
+                  <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Code</TableHead>
@@ -305,11 +307,13 @@ export function WarehousesManageLocationsDialog({
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+                  </Table>
+                </div>
+              </div>
             )}
           </div>
 
-          <ResponsiveDialogFooter>
+          <ResponsiveDialogFooter className="shrink-0">
             <ResponsiveDialogClose
               render={<Button variant="outline">Close</Button>}
             />
@@ -327,8 +331,8 @@ export function WarehousesManageLocationsDialog({
           }
         }}
       >
-        <ResponsiveDialogContent>
-          <ResponsiveDialogHeader>
+        <ResponsiveDialogContent className="flex max-h-[min(90dvh,700px)] w-full flex-col gap-0 overflow-hidden sm:max-w-lg">
+          <ResponsiveDialogHeader className="shrink-0">
             <ResponsiveDialogTitle>
               {isUpdate ? "Edit" : "Add"} Location
             </ResponsiveDialogTitle>
@@ -339,11 +343,12 @@ export function WarehousesManageLocationsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <form
-            id="warehouse-location-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <form
+              id="warehouse-location-form"
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4"
+            >
             <Field>
               <FieldLabel>Zone</FieldLabel>
               <FieldContent>
@@ -445,9 +450,10 @@ export function WarehousesManageLocationsDialog({
                 </label>
               </div>
             </div>
-          </form>
+            </form>
+          </div>
 
-          <ResponsiveDialogFooter>
+          <ResponsiveDialogFooter className="shrink-0">
             <ResponsiveDialogClose
               render={<Button variant="outline">Cancel</Button>}
             />
@@ -457,7 +463,11 @@ export function WarehousesManageLocationsDialog({
               disabled={isSubmitting}
             >
               {isSubmitting && <Spinner />}
-              {isUpdate ? "Update Location" : "Add Location"}
+              {isSubmitting
+                ? "Saving..."
+                : isUpdate
+                  ? "Update Location"
+                  : "Add Location"}
             </Button>
           </ResponsiveDialogFooter>
         </ResponsiveDialogContent>
