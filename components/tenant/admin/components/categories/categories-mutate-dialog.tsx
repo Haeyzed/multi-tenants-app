@@ -26,6 +26,18 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import {
+  ColorPicker,
+  ColorPickerAlphaSlider,
+  ColorPickerArea,
+  ColorPickerContent,
+  ColorPickerEyeDropper,
+  ColorPickerFormatSelect,
+  ColorPickerHueSlider,
+  ColorPickerInput,
+  ColorPickerSwatch,
+  ColorPickerTrigger,
+} from "@/components/ui/color-picker"
 import { Spinner } from "@/components/ui/spinner"
 import { handleFormApiError } from "@/lib/form-api-errors"
 import {
@@ -405,7 +417,53 @@ export function CategoriesMutateDialog({
             <Field>
               <FieldLabel>Color</FieldLabel>
               <FieldContent>
-                <Input placeholder="#000000" {...form.register("color")} />
+                <ColorPicker
+                  value={form.watch("color") || "#3b82f6"}
+                  onValueChange={(value) =>
+                    form.setValue("color", value || null, { shouldDirty: true })
+                  }
+                  defaultFormat="hex"
+                >
+                  <div className="flex items-center gap-3">
+                    <ColorPickerTrigger render={
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="flex items-center gap-2 px-3"
+                      >
+                        <ColorPickerSwatch className="size-4" />
+                        {form.watch("color") || "Pick color"}
+                      </Button>
+                    }/>
+                    {form.watch("color") ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          form.setValue("color", null, { shouldDirty: true })
+                        }
+                      >
+                        Clear
+                      </Button>
+                    ) : null}
+                  </div>
+                  <ColorPickerContent>
+                    <ColorPickerArea />
+                    <div className="flex items-center gap-2">
+                      <ColorPickerEyeDropper />
+                      <div className="flex flex-1 flex-col gap-2">
+                        <ColorPickerHueSlider />
+                        <ColorPickerAlphaSlider />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <ColorPickerFormatSelect />
+                      <ColorPickerInput />
+                    </div>
+                  </ColorPickerContent>
+                </ColorPicker>
+                <FieldError message={form.formState.errors.color?.message} />
               </FieldContent>
             </Field>
             <Field>

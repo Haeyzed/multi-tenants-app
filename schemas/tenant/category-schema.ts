@@ -11,7 +11,15 @@ const baseCategorySchema = z.object({
   image_media_id: z.number().nullable().optional(),
   banner_media_id: z.number().nullable().optional(),
   icon_media_id: z.number().nullable().optional(),
-  color: z.string().max(50).nullable().optional(),
+  color: z
+    .string()
+    .max(50)
+    .nullable()
+    .optional()
+    .refine(
+      (value) => !value || value === "" || /^#([0-9A-F]{3}){1,2}$/i.test(value),
+      { message: "Must be a valid hex color" }
+    ),
   icon_class: z.string().max(100).nullable().optional(),
   layout_template: z.string().max(255).nullable().optional(),
   meta_title: z.string().max(255).nullable().optional(),

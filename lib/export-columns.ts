@@ -67,6 +67,34 @@ export const CATEGORY_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "created_at", label: "Created At" },
 ]
 
+export const TAX_CLASS_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "code", label: "Code" },
+  { key: "description", label: "Description" },
+  { key: "is_default", label: "Default" },
+  { key: "is_active", label: "Active" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const TAX_ZONE_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "country_code", label: "Country Code" },
+  { key: "state", label: "State" },
+  { key: "city", label: "City" },
+  { key: "postal_code", label: "Postal Code" },
+  { key: "postal_code_pattern", label: "Postal Code Pattern" },
+  { key: "latitude", label: "Latitude" },
+  { key: "longitude", label: "Longitude" },
+  { key: "radius_km", label: "Radius (km)" },
+  { key: "is_default", label: "Default" },
+  { key: "is_active", label: "Active" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
 export const CUSTOMER_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "id", label: "ID" },
   { key: "first_name", label: "First Name" },

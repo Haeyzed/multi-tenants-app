@@ -3,6 +3,8 @@ import {
   ImageIcon,
   LayoutDashboardIcon,
   PackageIcon,
+  PercentIcon,
+  SettingsIcon,
   TagIcon,
   TagsIcon,
   UsersIcon,
@@ -72,6 +74,27 @@ export const sidebarData: SidebarData = {
           title: "Media",
           url: "/admin/media",
           icon: ImageIcon,
+        },
+      ],
+    },
+    {
+      title: "Settings",
+      items: [
+        {
+          title: "Tax",
+          icon: PercentIcon,
+          items: [
+            {
+              title: "Tax Classes",
+              url: "/admin/settings/tax/classes",
+              icon: SettingsIcon,
+            },
+            {
+              title: "Tax Zones",
+              url: "/admin/settings/tax/zones",
+              icon: SettingsIcon,
+            },
+          ],
         },
       ],
     },

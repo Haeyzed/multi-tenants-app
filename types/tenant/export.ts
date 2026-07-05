@@ -30,6 +30,20 @@ export type CategoryStatistics = {
   root: number
 }
 
+export type TaxClassStatistics = {
+  total: number
+  active: number
+  inactive: number
+  default: number
+}
+
+export type TaxZoneStatistics = {
+  total: number
+  active: number
+  inactive: number
+  default: number
+}
+
 export type CustomerStatistics = {
   total: number
   active: number
