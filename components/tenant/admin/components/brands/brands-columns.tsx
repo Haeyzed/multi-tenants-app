@@ -87,7 +87,7 @@ export const columns: ColumnDef<Brand>[] = [
       <DataTableColumnHeader column={column} label="Description" />
     ),
     cell: ({ row }) => (
-      <span className="max-w-[200px] truncate text-muted-foreground">
+      <span className="max-w-50 truncate text-muted-foreground">
         {row.getValue("description") || "—"}
       </span>
     ),

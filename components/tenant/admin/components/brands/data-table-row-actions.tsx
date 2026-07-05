@@ -1,7 +1,8 @@
 import { Edit, Eye, EyeOff, MoreHorizontal, Star, Trash2 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"import {
+import { Button } from "@/components/ui/button"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,

@@ -24,7 +24,12 @@ function invalidateTenantDomainQueries(
   tenantId: string
 ) {
   queryClient.invalidateQueries({ queryKey: ["tenant-domains", tenantId] });
+  invalidateTenantListQueries(queryClient);
+}
+
+function invalidateTenantListQueries(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: ["tenants"] });
+  queryClient.invalidateQueries({ queryKey: ["tenant-statistics"] });
 }
 
 export const useGetTenantDomains = (
@@ -62,7 +67,7 @@ export const useCreateTenant = () => {
   return useMutation({
     mutationFn: (tenant: any) => createTenant(tenant),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
@@ -73,7 +78,7 @@ export const useUpdateTenant = () => {
     mutationFn: ({ id, tenant }: { id: string; tenant: any }) =>
       updateTenant(id, tenant),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
@@ -83,7 +88,7 @@ export const useDeleteTenant = () => {
   return useMutation({
     mutationFn: (id: string) => deleteTenant(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
@@ -93,7 +98,7 @@ export const useActivateTenant = () => {
   return useMutation({
     mutationFn: (id: string) => activateTenant(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
@@ -103,7 +108,7 @@ export const useSuspendTenant = () => {
   return useMutation({
     mutationFn: (id: string) => suspendTenant(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
@@ -177,7 +182,7 @@ export const useDeleteManyTenants = () => {
   return useMutation({
     mutationFn: (ids: string[]) => deleteManyTenants(ids),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
@@ -193,8 +198,7 @@ export const useImportTenants = () => {
   return useMutation({
     mutationFn: (file: File) => importTenants(file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tenants"] });
-      queryClient.invalidateQueries({ queryKey: ["tenant-statistics"] });
+      invalidateTenantListQueries(queryClient);
     },
   });
 };
