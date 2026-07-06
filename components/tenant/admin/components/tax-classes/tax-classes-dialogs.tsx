@@ -17,7 +17,7 @@ import { useDeleteTaxClass } from "@/hooks/tenant/use-tax-class-query"
 import { exportTaxClasses } from "@/lib/services/tenant/tax-class-service"
 import { TAX_CLASS_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { TaxClassesMutateDialog } from "./tax-classes-mutate-dialog"
+import { TaxClassesFormDialog } from "./tax-classes-form-dialog"
 import { TaxClassesViewDialog } from "./tax-classes-view-dialog"
 import { TaxClassesImportDialog } from "./tax-classes-import-dialog"
 import { TaxClassesMultiDeleteDialog } from "./tax-classes-multi-delete-dialog"
@@ -58,7 +58,7 @@ export function TaxClassesDialogs() {
 
   return (
     <>
-      <TaxClassesMutateDialog
+      <TaxClassesFormDialog
         key="tax-class-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -125,7 +125,7 @@ export function TaxClassesDialogs() {
             taxClass={currentRow}
           />
 
-          <TaxClassesMutateDialog
+          <TaxClassesFormDialog
             key={`tax-class-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

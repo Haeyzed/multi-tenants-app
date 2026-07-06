@@ -65,7 +65,7 @@ function slugifyCode(value: string): string {
     .replace(/^_+|_+$/g, "")
 }
 
-export function UnitsMutateDialog({
+export function UnitsFormDialog({
   open,
   onOpenChange,
   currentRow,
@@ -164,8 +164,8 @@ export function UnitsMutateDialog({
         if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent className="flex max-h-[min(90dvh,800px)] w-full flex-col gap-0 overflow-hidden sm:max-w-2xl">
-        <ResponsiveDialogHeader className="shrink-0">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+        <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {isUpdate ? "Update" : "Create"} Unit
           </ResponsiveDialogTitle>
@@ -177,123 +177,119 @@ export function UnitsMutateDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <form
-            id="units-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+        <form
+          id="units-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
+          <Field>
+            <FieldLabel>Name *</FieldLabel>
+            <FieldContent>
+              <Input
+                placeholder="Kilogram"
+                {...form.register("name", {
+                  onChange: (event) => {
+                    if (!isUpdate && !form.getValues("code")) {
+                      form.setValue("code", slugifyCode(event.target.value))
+                    }
+                  },
+                })}
+              />
+              <FieldError message={form.formState.errors.name?.message} />
+            </FieldContent>
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-2">
             <Field>
-              <FieldLabel>Name *</FieldLabel>
+              <FieldLabel>Code *</FieldLabel>
               <FieldContent>
                 <Input
-                  placeholder="Kilogram"
-                  {...form.register("name", {
-                    onChange: (event) => {
-                      if (!isUpdate && !form.getValues("code")) {
-                        form.setValue("code", slugifyCode(event.target.value))
-                      }
-                    },
-                  })}
+                  placeholder="kg"
+                  className="font-mono"
+                  {...form.register("code")}
                 />
-                <FieldError message={form.formState.errors.name?.message} />
+                <FieldError message={form.formState.errors.code?.message} />
               </FieldContent>
             </Field>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field>
-                <FieldLabel>Code *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="kg"
-                    className="font-mono"
-                    {...form.register("code")}
-                  />
-                  <FieldError message={form.formState.errors.code?.message} />
-                </FieldContent>
-              </Field>
-
-              <Field>
-                <FieldLabel>Symbol *</FieldLabel>
-                <FieldContent>
-                  <Input placeholder="kg" {...form.register("symbol")} />
-                  <FieldError message={form.formState.errors.symbol?.message} />
-                </FieldContent>
-              </Field>
-            </div>
 
             <Field>
-              <FieldLabel>Type *</FieldLabel>
+              <FieldLabel>Symbol *</FieldLabel>
               <FieldContent>
-                <Combobox
-                  items={unitTypeOptions}
-                  itemToStringValue={(item) => item.label}
-                  value={selectedType}
-                  onValueChange={(item) => {
-                    if (!item) return
-                    form.setValue("type", item.value)
-                  }}
-                >
-                  <ComboboxInput placeholder="Select unit type..." />
-                  <ComboboxContent>
-                    <ComboboxEmpty>No unit types found.</ComboboxEmpty>
-                    <ComboboxList>
-                      {(item) => (
-                        <ComboboxItem key={item.value} value={item}>
-                          {item.label}
-                        </ComboboxItem>
-                      )}
-                    </ComboboxList>
-                  </ComboboxContent>
-                </Combobox>
-                <FieldError message={form.formState.errors.type?.message} />
+                <Input placeholder="kg" {...form.register("symbol")} />
+                <FieldError message={form.formState.errors.symbol?.message} />
+              </FieldContent>
+            </Field>
+          </div>
+
+          <Field>
+            <FieldLabel>Type *</FieldLabel>
+            <FieldContent>
+              <Combobox
+                items={unitTypeOptions}
+                itemToStringValue={(item) => item.label}
+                value={selectedType}
+                onValueChange={(item) => {
+                  if (!item) return
+                  form.setValue("type", item.value)
+                }}
+              >
+                <ComboboxInput placeholder="Select unit type..." />
+                <ComboboxContent>
+                  <ComboboxEmpty>No unit types found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              <FieldError message={form.formState.errors.type?.message} />
+            </FieldContent>
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field>
+              <FieldLabel>Conversion Factor *</FieldLabel>
+              <FieldContent>
+                <Input
+                  type="number"
+                  step="any"
+                  {...form.register("conversion_factor", {
+                    valueAsNumber: true,
+                  })}
+                />
+                <FieldError
+                  message={form.formState.errors.conversion_factor?.message}
+                />
               </FieldContent>
             </Field>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field>
-                <FieldLabel>Conversion Factor *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    type="number"
-                    step="any"
-                    {...form.register("conversion_factor", {
-                      valueAsNumber: true,
-                    })}
-                  />
-                  <FieldError
-                    message={form.formState.errors.conversion_factor?.message}
-                  />
-                </FieldContent>
-              </Field>
+            <Field>
+              <FieldLabel>Sort Order</FieldLabel>
+              <FieldContent>
+                <Input
+                  type="number"
+                  {...form.register("sort_order", { valueAsNumber: true })}
+                />
+              </FieldContent>
+            </Field>
+          </div>
 
-              <Field>
-                <FieldLabel>Sort Order</FieldLabel>
-                <FieldContent>
-                  <Input
-                    type="number"
-                    {...form.register("sort_order", { valueAsNumber: true })}
-                  />
-                </FieldContent>
-              </Field>
-            </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="is_base"
+              checked={form.watch("is_base")}
+              onCheckedChange={(checked) => form.setValue("is_base", !!checked)}
+            />
+            <label htmlFor="is_base" className="text-sm font-medium">
+              Base unit for this type
+            </label>
+          </div>
+        </form>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_base"
-                checked={form.watch("is_base")}
-                onCheckedChange={(checked) =>
-                  form.setValue("is_base", !!checked)
-                }
-              />
-              <label htmlFor="is_base" className="text-sm font-medium">
-                Base unit for this type
-              </label>
-            </div>
-          </form>
-        </div>
-
-        <ResponsiveDialogFooter className="shrink-0">
+        <ResponsiveDialogFooter>
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}
           />

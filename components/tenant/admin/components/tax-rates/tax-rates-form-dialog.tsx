@@ -45,7 +45,7 @@ import {
   type UpdateTaxRateFormValues,
 } from "@/schemas/tenant/tax-rate-schema"
 
-type TaxRatesMutateDialogProps = {
+type TaxRatesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: TaxRate
@@ -63,11 +63,11 @@ function parseDateString(value?: string | null): Date | undefined {
   return new Date(year, month - 1, day)
 }
 
-export function TaxRatesMutateDialog({
+export function TaxRatesFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: TaxRatesMutateDialogProps) {
+}: TaxRatesFormDialogProps) {
   const isUpdate = !!currentRow
   const createTaxRate = useCreateTaxRate()
   const updateTaxRate = useUpdateTaxRate()

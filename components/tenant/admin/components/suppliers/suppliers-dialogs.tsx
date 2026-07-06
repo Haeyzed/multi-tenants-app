@@ -17,7 +17,7 @@ import { useDeleteSupplier } from "@/hooks/tenant/use-supplier-query"
 import { exportSuppliers } from "@/lib/services/tenant/supplier-service"
 import { SUPPLIER_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { SuppliersMutateDialog } from "./suppliers-mutate-dialog"
+import { SuppliersFormDialog } from "./suppliers-form-dialog"
 import { SuppliersViewDialog } from "./suppliers-view-dialog"
 import { SuppliersImportDialog } from "./suppliers-import-dialog"
 import { SuppliersMultiDeleteDialog } from "./suppliers-multi-delete-dialog"
@@ -61,7 +61,7 @@ export function SuppliersDialogs() {
 
   return (
     <>
-      <SuppliersMutateDialog
+      <SuppliersFormDialog
         key="supplier-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -128,7 +128,7 @@ export function SuppliersDialogs() {
             supplier={currentRow}
           />
 
-          <SuppliersMutateDialog
+          <SuppliersFormDialog
             key={`supplier-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

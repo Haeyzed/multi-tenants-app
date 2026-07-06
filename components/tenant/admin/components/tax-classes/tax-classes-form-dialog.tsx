@@ -32,7 +32,7 @@ import {
   type UpdateTaxClassFormValues,
 } from "@/schemas/tenant/tax-class-schema"
 
-type TaxClassesMutateDialogProps = {
+type TaxClassesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: TaxClass
@@ -51,11 +51,11 @@ function slugifyCode(value: string): string {
     .replace(/^_+|_+$/g, "")
 }
 
-export function TaxClassesMutateDialog({
+export function TaxClassesFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: TaxClassesMutateDialogProps) {
+}: TaxClassesFormDialogProps) {
   const isUpdate = !!currentRow
   const createTaxClass = useCreateTaxClass()
   const updateTaxClass = useUpdateTaxClass()

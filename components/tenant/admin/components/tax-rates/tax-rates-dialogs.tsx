@@ -17,7 +17,7 @@ import { useDeleteTaxRate } from "@/hooks/tenant/use-tax-rate-query"
 import { exportTaxRates } from "@/lib/services/tenant/tax-rate-service"
 import { TAX_RATE_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { TaxRatesMutateDialog } from "./tax-rates-mutate-dialog"
+import { TaxRatesFormDialog } from "./tax-rates-form-dialog"
 import { TaxRatesViewDialog } from "./tax-rates-view-dialog"
 import { TaxRatesImportDialog } from "./tax-rates-import-dialog"
 import { TaxRatesMultiDeleteDialog } from "./tax-rates-multi-delete-dialog"
@@ -58,7 +58,7 @@ export function TaxRatesDialogs() {
 
   return (
     <>
-      <TaxRatesMutateDialog
+      <TaxRatesFormDialog
         key="tax-rate-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -125,7 +125,7 @@ export function TaxRatesDialogs() {
             taxRate={currentRow}
           />
 
-          <TaxRatesMutateDialog
+          <TaxRatesFormDialog
             key={`tax-rate-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

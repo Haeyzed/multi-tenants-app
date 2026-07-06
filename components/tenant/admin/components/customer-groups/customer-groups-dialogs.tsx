@@ -17,7 +17,7 @@ import { useDeleteCustomerGroup } from "@/hooks/tenant/use-customer-group-query"
 import { exportCustomerGroups } from "@/lib/services/tenant/customer-group-service"
 import { CUSTOMER_GROUP_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { CustomerGroupsMutateDialog } from "./customer-groups-mutate-dialog"
+import { CustomerGroupsFormDialog } from "./customer-groups-form-dialog"
 import { CustomerGroupsViewDialog } from "./customer-groups-view-dialog"
 import { CustomerGroupsImportDialog } from "./customer-groups-import-dialog"
 import { CustomerGroupsMultiDeleteDialog } from "./customer-groups-multi-delete-dialog"
@@ -60,7 +60,7 @@ export function CustomerGroupsDialogs() {
 
   return (
     <>
-      <CustomerGroupsMutateDialog
+      <CustomerGroupsFormDialog
         key="customer-group-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -127,7 +127,7 @@ export function CustomerGroupsDialogs() {
             group={currentRow}
           />
 
-          <CustomerGroupsMutateDialog
+          <CustomerGroupsFormDialog
             key={`customer-group-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

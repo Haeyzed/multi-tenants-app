@@ -17,7 +17,7 @@ import { useDeleteUnit } from "@/hooks/tenant/use-unit-query"
 import { exportUnits } from "@/lib/services/tenant/unit-service"
 import { UNIT_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { UnitsMutateDialog } from "./units-mutate-dialog"
+import { UnitsFormDialog } from "./units-form-dialog"
 import { UnitsViewDialog } from "./units-view-dialog"
 import { UnitsImportDialog } from "./units-import-dialog"
 import { UnitsMultiDeleteDialog } from "./units-multi-delete-dialog"
@@ -58,7 +58,7 @@ export function UnitsDialogs() {
 
   return (
     <>
-      <UnitsMutateDialog
+      <UnitsFormDialog
         key="unit-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -125,7 +125,7 @@ export function UnitsDialogs() {
             unit={currentRow}
           />
 
-          <UnitsMutateDialog
+          <UnitsFormDialog
             key={`unit-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

@@ -32,7 +32,7 @@ import {
   type UpdateBrandFormValues,
 } from "@/schemas/tenant/brand-schema"
 
-type BrandsMutateDialogProps = {
+type BrandsFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Brand
@@ -43,11 +43,11 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
-export function BrandsMutateDialog({
+export function BrandsFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: BrandsMutateDialogProps) {
+}: BrandsFormDialogProps) {
   const isUpdate = !!currentRow
   const createBrand = useCreateBrand()
   const updateBrand = useUpdateBrand()

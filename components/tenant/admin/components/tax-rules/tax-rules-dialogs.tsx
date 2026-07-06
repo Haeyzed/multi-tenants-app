@@ -17,7 +17,7 @@ import { useDeleteTaxRule } from "@/hooks/tenant/use-tax-rule-query"
 import { exportTaxRules } from "@/lib/services/tenant/tax-rule-service"
 import { TAX_RULE_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { TaxRulesMutateDialog } from "./tax-rules-mutate-dialog"
+import { TaxRulesFormDialog } from "./tax-rules-form-dialog"
 import { TaxRulesViewDialog } from "./tax-rules-view-dialog"
 import { TaxRulesMultiDeleteDialog } from "./tax-rules-multi-delete-dialog"
 import { useTaxRules } from "./tax-rules-provider"
@@ -59,7 +59,7 @@ export function TaxRulesDialogs() {
 
   return (
     <>
-      <TaxRulesMutateDialog
+      <TaxRulesFormDialog
         key="tax-rule-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -118,7 +118,7 @@ export function TaxRulesDialogs() {
             taxRule={currentRow}
           />
 
-          <TaxRulesMutateDialog
+          <TaxRulesFormDialog
             key={`tax-rule-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

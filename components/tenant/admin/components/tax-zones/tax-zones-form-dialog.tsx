@@ -33,7 +33,7 @@ import {
 } from "@/schemas/tenant/tax-zone-schema"
 import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
 
-type TaxZonesMutateDialogProps = {
+type TaxZonesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: TaxZone
@@ -50,11 +50,11 @@ function parseOptionalNumber(value: string | number | null | undefined): number 
   return Number.isNaN(num) ? null : num
 }
 
-export function TaxZonesMutateDialog({
+export function TaxZonesFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: TaxZonesMutateDialogProps) {
+}: TaxZonesFormDialogProps) {
   const isUpdate = !!currentRow
   const createTaxZone = useCreateTaxZone()
   const updateTaxZone = useUpdateTaxZone()

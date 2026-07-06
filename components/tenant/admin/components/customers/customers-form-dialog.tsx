@@ -31,7 +31,7 @@ import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { handleFormApiError } from "@/lib/form-api-errors"
 import { TenantAdminAuthGuard } from "@/components/tenant/admin/components/auth-guard"
-import { CustomerGroupsMutateDialog } from "@/components/tenant/admin/components/customer-groups/customer-groups-mutate-dialog"
+import { CustomerGroupsFormDialog } from "@/components/tenant/admin/components/customer-groups/customer-groups-form-dialog"
 import {
   useCreateCustomer,
   useUpdateCustomer,
@@ -49,7 +49,7 @@ import {
   type UpdateCustomerFormValues,
 } from "@/schemas/tenant/customer-schema"
 
-type CustomersMutateDialogProps = {
+type CustomersFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Customer
@@ -81,11 +81,11 @@ function parseDateString(value?: string | null): Date | undefined {
   return new Date(year, month - 1, day)
 }
 
-export function CustomersMutateDialog({
+export function CustomersFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: CustomersMutateDialogProps) {
+}: CustomersFormDialogProps) {
   const isUpdate = !!currentRow
   const createCustomer = useCreateCustomer()
   const updateCustomer = useUpdateCustomer()
@@ -412,7 +412,7 @@ export function CustomersMutateDialog({
       </ResponsiveDialogContent>
     </ResponsiveDialog>
 
-    <CustomerGroupsMutateDialog
+    <CustomerGroupsFormDialog
       open={groupDialogOpen}
       onOpenChange={setGroupDialogOpen}
       onSuccess={(group: CustomerGroup) => {

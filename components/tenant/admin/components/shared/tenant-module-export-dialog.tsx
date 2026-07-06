@@ -154,7 +154,7 @@ export function TenantModuleExportDialog({
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="max-w-lg">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Export {resourceLabel}</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>

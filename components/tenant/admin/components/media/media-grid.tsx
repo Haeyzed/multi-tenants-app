@@ -129,7 +129,7 @@ function MediaFileActions({
             type="button"
             variant="ghost"
             size="icon"
-            className="absolute end-1 top-1 size-7 bg-background/80 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
+            className="absolute inset-e-1 top-1 size-7 bg-background/80 opacity-0 transition-opacity group-hover:opacity-100 data-[state=open]:opacity-100"
             onClick={(event) => event.stopPropagation()}
           >
             <MoreHorizontalIcon className="size-4" />
@@ -367,7 +367,7 @@ export function MediaGrid({
             onClick={() => onOpenFolder?.(folder.id)}
           >
             {enableDrag ? (
-              <MediaLibraryDragHandle className="absolute start-1 top-1 z-10 opacity-100">
+              <MediaLibraryDragHandle className="absolute inset-s-1 top-1 z-10 opacity-100">
                 <GripVerticalIcon className="size-3.5" />
               </MediaLibraryDragHandle>
             ) : null}
@@ -459,7 +459,7 @@ export function MediaGrid({
             }}
           >
             {enableDrag ? (
-              <div className="absolute start-1 top-1 z-10 flex items-center gap-0.5">
+              <div className="absolute inset-s-1 top-1 z-10 flex items-center gap-0.5">
                 <MediaLibraryDragHandle className="static opacity-100">
                   <GripVerticalIcon className="size-3.5" />
                 </MediaLibraryDragHandle>
@@ -484,7 +484,7 @@ export function MediaGrid({
                   <div
                     className={cn(
                       "absolute top-1 z-10 flex items-center gap-0.5",
-                      enableDrag ? "start-7" : "start-1"
+                      enableDrag ? "inset-s-7" : "inset-s-1"
                     )}
                   >
                     <Checkbox

@@ -237,51 +237,53 @@ export function SuppliersManageAddressesDialog({
               <div className="max-h-[min(50dvh,360px)] overflow-auto rounded-md border">
                 <div className="min-w-full overflow-x-auto">
                   <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Address</TableHead>
-                    <TableHead>Default</TableHead>
-                    <TableHead className="w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {addresses.map((address) => (
-                    <TableRow key={address.id}>
-                      <TableCell className="capitalize">{address.type}</TableCell>
-                      <TableCell className="max-w-xs truncate">
-                        {formatAddress(address)}
-                      </TableCell>
-                      <TableCell>
-                        {address.is_default ? (
-                          <Badge variant="secondary">Default</Badge>
-                        ) : (
-                          "—"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => openEditForm(address)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => setDeletingAddress(address)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Address</TableHead>
+                        <TableHead>Default</TableHead>
+                        <TableHead className="w-24">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {addresses.map((address) => (
+                        <TableRow key={address.id}>
+                          <TableCell className="capitalize">
+                            {address.type}
+                          </TableCell>
+                          <TableCell className="max-w-xs truncate">
+                            {formatAddress(address)}
+                          </TableCell>
+                          <TableCell>
+                            {address.is_default ? (
+                              <Badge variant="secondary">Default</Badge>
+                            ) : (
+                              "—"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => openEditForm(address)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => setDeletingAddress(address)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
                   </Table>
                 </div>
               </div>
@@ -306,8 +308,8 @@ export function SuppliersManageAddressesDialog({
           }
         }}
       >
-        <ResponsiveDialogContent className="flex max-h-[min(90dvh,700px)] flex-col gap-0 overflow-hidden sm:max-w-lg">
-          <ResponsiveDialogHeader className="shrink-0">
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>
               {isUpdate ? "Edit" : "Add"} Address
             </ResponsiveDialogTitle>
@@ -318,114 +320,117 @@ export function SuppliersManageAddressesDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
             <form
               id="supplier-address-form"
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-            <Field>
-              <FieldLabel>Type</FieldLabel>
-              <FieldContent>
-                <Select
-                  value={addressType}
-                  onValueChange={(value) =>
-                    form.setValue(
-                      "type",
-                      value as "office" | "billing" | "shipping"
-                    )
+              <Field>
+                <FieldLabel>Type</FieldLabel>
+                <FieldContent>
+                  <Select
+                    value={addressType}
+                    onValueChange={(value) =>
+                      form.setValue(
+                        "type",
+                        value as "office" | "billing" | "shipping"
+                      )
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ADDRESS_TYPES.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Address Line 1 *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="123 Main St"
+                    {...form.register("address_line_1")}
+                  />
+                  <FieldError
+                    message={form.formState.errors.address_line_1?.message}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Address Line 2</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="Suite 100"
+                    {...form.register("address_line_2")}
+                  />
+                </FieldContent>
+              </Field>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>City *</FieldLabel>
+                  <FieldContent>
+                    <Input placeholder="City" {...form.register("city")} />
+                    <FieldError message={form.formState.errors.city?.message} />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>State</FieldLabel>
+                  <FieldContent>
+                    <Input placeholder="State" {...form.register("state")} />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Postal Code</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="Postal code"
+                      {...form.register("postal_code")}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Country *</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="US"
+                      maxLength={2}
+                      className="uppercase"
+                      {...form.register("country", {
+                        onChange: (e) => {
+                          form.setValue("country", e.target.value.toUpperCase())
+                        },
+                      })}
+                    />
+                    <FieldError
+                      message={form.formState.errors.country?.message}
+                    />
+                  </FieldContent>
+                </Field>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_default_address"
+                  checked={form.watch("is_default")}
+                  onCheckedChange={(checked) =>
+                    form.setValue("is_default", !!checked)
                   }
+                />
+                <label
+                  htmlFor="is_default_address"
+                  className="text-sm font-medium"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ADDRESS_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Address Line 1 *</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="123 Main St"
-                  {...form.register("address_line_1")}
-                />
-                <FieldError
-                  message={form.formState.errors.address_line_1?.message}
-                />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Address Line 2</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="Suite 100"
-                  {...form.register("address_line_2")}
-                />
-              </FieldContent>
-            </Field>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Field>
-                <FieldLabel>City *</FieldLabel>
-                <FieldContent>
-                  <Input placeholder="City" {...form.register("city")} />
-                  <FieldError message={form.formState.errors.city?.message} />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>State</FieldLabel>
-                <FieldContent>
-                  <Input placeholder="State" {...form.register("state")} />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Postal Code</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="Postal code"
-                    {...form.register("postal_code")}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Country *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="US"
-                    maxLength={2}
-                    className="uppercase"
-                    {...form.register("country", {
-                      onChange: (e) => {
-                        form.setValue("country", e.target.value.toUpperCase())
-                      },
-                    })}
-                  />
-                  <FieldError message={form.formState.errors.country?.message} />
-                </FieldContent>
-              </Field>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_default_address"
-                checked={form.watch("is_default")}
-                onCheckedChange={(checked) =>
-                  form.setValue("is_default", !!checked)
-                }
-              />
-              <label htmlFor="is_default_address" className="text-sm font-medium">
-                Default address
-              </label>
-            </div>
+                  Default address
+                </label>
+              </div>
             </form>
-          </div>
 
-          <ResponsiveDialogFooter className="shrink-0">
+          <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Cancel</Button>}
             />
@@ -455,7 +460,8 @@ export function SuppliersManageAddressesDialog({
           <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>Delete address?</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
-              You are about to delete this address. This action cannot be undone.
+              You are about to delete this address. This action cannot be
+              undone.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
           <ResponsiveDialogFooter>

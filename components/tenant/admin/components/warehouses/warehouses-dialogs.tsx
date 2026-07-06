@@ -17,7 +17,7 @@ import { useDeleteWarehouse } from "@/hooks/tenant/use-warehouse-query"
 import { exportWarehouses } from "@/lib/services/tenant/warehouse-service"
 import { WAREHOUSE_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { WarehousesMutateDialog } from "./warehouses-mutate-dialog"
+import { WarehousesFormDialog } from "./warehouses-form-dialog"
 import { WarehousesViewDialog } from "./warehouses-view-dialog"
 import { WarehouseMapDialog } from "./warehouse-map-dialog"
 import { WarehousesImportDialog } from "./warehouses-import-dialog"
@@ -61,7 +61,7 @@ export function WarehousesDialogs() {
 
   return (
     <>
-      <WarehousesMutateDialog
+      <WarehousesFormDialog
         key="warehouse-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -150,7 +150,7 @@ export function WarehousesDialogs() {
             />
           ) : null}
 
-          <WarehousesMutateDialog
+          <WarehousesFormDialog
             key={`warehouse-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

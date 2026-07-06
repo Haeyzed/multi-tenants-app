@@ -32,7 +32,7 @@ import {
   type UpdateSupplierFormValues,
 } from "@/schemas/tenant/supplier-schema"
 
-type SuppliersMutateDialogProps = {
+type SupplierFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Supplier
@@ -51,11 +51,11 @@ function slugifyCode(value: string): string {
     .replace(/^_+|_+$/g, "")
 }
 
-export function SuppliersMutateDialog({
+export function SuppliersFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: SuppliersMutateDialogProps) {
+}: SupplierFormDialogProps) {
   const isUpdate = !!currentRow
   const createSupplier = useCreateSupplier()
   const updateSupplier = useUpdateSupplier()
@@ -159,8 +159,8 @@ export function SuppliersMutateDialog({
         if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent className="flex max-h-[min(90dvh,800px)] w-full flex-col gap-0 overflow-hidden sm:max-w-2xl">
-        <ResponsiveDialogHeader className="shrink-0">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+        <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {isUpdate ? "Update" : "Create"} Supplier
           </ResponsiveDialogTitle>
@@ -172,7 +172,6 @@ export function SuppliersMutateDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
           <form
             id="suppliers-form"
             onSubmit={form.handleSubmit(onSubmit)}
@@ -291,9 +290,8 @@ export function SuppliersMutateDialog({
             </label>
           </div>
           </form>
-        </div>
 
-        <ResponsiveDialogFooter className="shrink-0">
+        <ResponsiveDialogFooter>
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}
           />

@@ -331,8 +331,8 @@ export function WarehousesManageLocationsDialog({
           }
         }}
       >
-        <ResponsiveDialogContent className="flex max-h-[min(90dvh,700px)] w-full flex-col gap-0 overflow-hidden sm:max-w-lg">
-          <ResponsiveDialogHeader className="shrink-0">
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>
               {isUpdate ? "Edit" : "Add"} Location
             </ResponsiveDialogTitle>
@@ -343,7 +343,6 @@ export function WarehousesManageLocationsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
             <form
               id="warehouse-location-form"
               onSubmit={form.handleSubmit(onSubmit)}
@@ -451,9 +450,8 @@ export function WarehousesManageLocationsDialog({
               </div>
             </div>
             </form>
-          </div>
 
-          <ResponsiveDialogFooter className="shrink-0">
+          <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Cancel</Button>}
             />

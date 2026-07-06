@@ -17,7 +17,7 @@ import { useDeleteCategory } from "@/hooks/tenant/use-category-query"
 import { exportCategories } from "@/lib/services/tenant/category-service"
 import { CATEGORY_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { CategoriesMutateDialog } from "./categories-mutate-dialog"
+import { CategoriesFormDialog } from "./categories-form-dialog"
 import { CategoriesViewDialog } from "./categories-view-dialog"
 import { CategoriesImportDialog } from "./categories-import-dialog"
 import { CategoriesMultiDeleteDialog } from "./categories-multi-delete-dialog"
@@ -58,7 +58,7 @@ export function CategoriesDialogs() {
 
   return (
     <>
-      <CategoriesMutateDialog
+      <CategoriesFormDialog
         key="category-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -125,7 +125,7 @@ export function CategoriesDialogs() {
             category={currentRow}
           />
 
-          <CategoriesMutateDialog
+          <CategoriesFormDialog
             key={`category-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

@@ -34,7 +34,7 @@ import {
 } from "@/schemas/tenant/warehouse-schema"
 import { TaxZoneMapDialog } from "@/components/tenant/admin/components/tax-zones/tax-zone-map-dialog"
 
-type WarehousesMutateDialogProps = {
+type WarehousesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Warehouse
@@ -61,11 +61,11 @@ function parseOptionalNumber(
   return Number.isNaN(num) ? null : num
 }
 
-export function WarehousesMutateDialog({
+export function WarehousesFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: WarehousesMutateDialogProps) {
+}: WarehousesFormDialogProps) {
   const isUpdate = !!currentRow
   const createWarehouse = useCreateWarehouse()
   const updateWarehouse = useUpdateWarehouse()
@@ -211,8 +211,8 @@ export function WarehousesMutateDialog({
           if (!val) form.reset()
         }}
       >
-        <ResponsiveDialogContent className="flex max-h-[min(90dvh,800px)] w-full flex-col gap-0 overflow-hidden sm:max-w-2xl">
-          <ResponsiveDialogHeader className="shrink-0">
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>
               {isUpdate ? "Update" : "Create"} Warehouse
             </ResponsiveDialogTitle>
@@ -224,7 +224,6 @@ export function WarehousesMutateDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
             <form
               id="warehouses-form"
               onSubmit={form.handleSubmit(onSubmit)}
@@ -419,9 +418,8 @@ export function WarehousesMutateDialog({
               </div>
             </div>
             </form>
-          </div>
 
-          <ResponsiveDialogFooter className="shrink-0">
+          <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Close</Button>}
             />

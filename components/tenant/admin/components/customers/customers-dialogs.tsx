@@ -17,7 +17,7 @@ import { useDeleteCustomer } from "@/hooks/tenant/use-customer-query"
 import { exportCustomers } from "@/lib/services/tenant/customer-service"
 import { CUSTOMER_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { CustomersMutateDialog } from "./customers-mutate-dialog"
+import { CustomersFormDialog } from "./customers-form-dialog"
 import { CustomersViewDialog } from "./customers-view-dialog"
 import { CustomersImportDialog } from "./customers-import-dialog"
 import { CustomersMultiDeleteDialog } from "./customers-multi-delete-dialog"
@@ -58,7 +58,7 @@ export function CustomersDialogs() {
 
   return (
     <>
-      <CustomersMutateDialog
+      <CustomersFormDialog
         key="customer-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -125,7 +125,7 @@ export function CustomersDialogs() {
             customer={currentRow}
           />
 
-          <CustomersMutateDialog
+          <CustomersFormDialog
             key={`customer-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

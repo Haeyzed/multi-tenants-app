@@ -59,7 +59,7 @@ export function ModuleViewDialog({
 }: ModuleViewDialogProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
           {description ? (

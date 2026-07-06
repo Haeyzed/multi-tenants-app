@@ -216,57 +216,57 @@ export function SuppliersManageBankAccountsDialog({
               <div className="max-h-[min(50dvh,360px)] overflow-auto rounded-md border">
                 <div className="min-w-full overflow-x-auto">
                   <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Account Name</TableHead>
-                    <TableHead>Bank</TableHead>
-                    <TableHead>Account Number</TableHead>
-                    <TableHead>Currency</TableHead>
-                    <TableHead>Default</TableHead>
-                    <TableHead className="w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {bankAccounts.map((account) => (
-                    <TableRow key={account.id}>
-                      <TableCell className="font-medium">
-                        {account.account_name}
-                      </TableCell>
-                      <TableCell>{account.bank_name}</TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {account.account_number}
-                      </TableCell>
-                      <TableCell>{account.currency}</TableCell>
-                      <TableCell>
-                        {account.is_default ? (
-                          <Badge variant="secondary">Default</Badge>
-                        ) : (
-                          "—"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => openEditForm(account)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => setDeletingAccount(account)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Account Name</TableHead>
+                        <TableHead>Bank</TableHead>
+                        <TableHead>Account Number</TableHead>
+                        <TableHead>Currency</TableHead>
+                        <TableHead>Default</TableHead>
+                        <TableHead className="w-24">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {bankAccounts.map((account) => (
+                        <TableRow key={account.id}>
+                          <TableCell className="font-medium">
+                            {account.account_name}
+                          </TableCell>
+                          <TableCell>{account.bank_name}</TableCell>
+                          <TableCell className="font-mono text-sm">
+                            {account.account_number}
+                          </TableCell>
+                          <TableCell>{account.currency}</TableCell>
+                          <TableCell>
+                            {account.is_default ? (
+                              <Badge variant="secondary">Default</Badge>
+                            ) : (
+                              "—"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => openEditForm(account)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => setDeletingAccount(account)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
                   </Table>
                 </div>
               </div>
@@ -291,8 +291,8 @@ export function SuppliersManageBankAccountsDialog({
           }
         }}
       >
-        <ResponsiveDialogContent className="flex max-h-[min(90dvh,700px)] flex-col gap-0 overflow-hidden sm:max-w-lg">
-          <ResponsiveDialogHeader className="shrink-0">
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>
               {isUpdate ? "Edit" : "Add"} Bank Account
             </ResponsiveDialogTitle>
@@ -303,112 +303,118 @@ export function SuppliersManageBankAccountsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
             <form
               id="supplier-bank-account-form"
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-            <Field>
-              <FieldLabel>Account Name *</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="Operating Account"
-                  {...form.register("account_name")}
-                />
-                <FieldError
-                  message={form.formState.errors.account_name?.message}
-                />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Account Number *</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="1234567890"
-                  className="font-mono"
-                  {...form.register("account_number")}
-                />
-                <FieldError
-                  message={form.formState.errors.account_number?.message}
-                />
-              </FieldContent>
-            </Field>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field>
-                <FieldLabel>Bank Name *</FieldLabel>
+                <FieldLabel>Account Name *</FieldLabel>
                 <FieldContent>
                   <Input
-                    placeholder="Bank name"
-                    {...form.register("bank_name")}
+                    placeholder="Operating Account"
+                    {...form.register("account_name")}
                   />
                   <FieldError
-                    message={form.formState.errors.bank_name?.message}
+                    message={form.formState.errors.account_name?.message}
                   />
                 </FieldContent>
               </Field>
               <Field>
-                <FieldLabel>Bank Branch</FieldLabel>
+                <FieldLabel>Account Number *</FieldLabel>
                 <FieldContent>
                   <Input
-                    placeholder="Branch name"
-                    {...form.register("bank_branch")}
+                    placeholder="1234567890"
+                    className="font-mono"
+                    {...form.register("account_number")}
+                  />
+                  <FieldError
+                    message={form.formState.errors.account_number?.message}
                   />
                 </FieldContent>
               </Field>
-              <Field>
-                <FieldLabel>SWIFT Code</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="SWIFT"
-                    className="uppercase"
-                    {...form.register("swift_code")}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>IBAN</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="IBAN"
-                    className="uppercase"
-                    {...form.register("iban")}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Currency</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="USD"
-                    maxLength={3}
-                    className="uppercase"
-                    {...form.register("currency", {
-                      onChange: (e) => {
-                        form.setValue("currency", e.target.value.toUpperCase())
-                      },
-                    })}
-                  />
-                  <FieldError message={form.formState.errors.currency?.message} />
-                </FieldContent>
-              </Field>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_default_account"
-                checked={form.watch("is_default")}
-                onCheckedChange={(checked) =>
-                  form.setValue("is_default", !!checked)
-                }
-              />
-              <label htmlFor="is_default_account" className="text-sm font-medium">
-                Default bank account
-              </label>
-            </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Bank Name *</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="Bank name"
+                      {...form.register("bank_name")}
+                    />
+                    <FieldError
+                      message={form.formState.errors.bank_name?.message}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Bank Branch</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="Branch name"
+                      {...form.register("bank_branch")}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>SWIFT Code</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="SWIFT"
+                      className="uppercase"
+                      {...form.register("swift_code")}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>IBAN</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="IBAN"
+                      className="uppercase"
+                      {...form.register("iban")}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Currency</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      placeholder="USD"
+                      maxLength={3}
+                      className="uppercase"
+                      {...form.register("currency", {
+                        onChange: (e) => {
+                          form.setValue(
+                            "currency",
+                            e.target.value.toUpperCase()
+                          )
+                        },
+                      })}
+                    />
+                    <FieldError
+                      message={form.formState.errors.currency?.message}
+                    />
+                  </FieldContent>
+                </Field>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_default_account"
+                  checked={form.watch("is_default")}
+                  onCheckedChange={(checked) =>
+                    form.setValue("is_default", !!checked)
+                  }
+                />
+                <label
+                  htmlFor="is_default_account"
+                  className="text-sm font-medium"
+                >
+                  Default bank account
+                </label>
+              </div>
             </form>
-          </div>
 
-          <ResponsiveDialogFooter className="shrink-0">
+          <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Cancel</Button>}
             />
@@ -438,8 +444,8 @@ export function SuppliersManageBankAccountsDialog({
           <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>Delete bank account?</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
-              You are about to delete &quot;{deletingAccount?.account_name}&quot;.
-              This action cannot be undone.
+              You are about to delete &quot;{deletingAccount?.account_name}
+              &quot;. This action cannot be undone.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
           <ResponsiveDialogFooter>

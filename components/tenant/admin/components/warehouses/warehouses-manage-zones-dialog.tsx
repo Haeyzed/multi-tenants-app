@@ -206,55 +206,57 @@ export function WarehousesManageZonesDialog({
               <div className="max-h-[min(50dvh,360px)] overflow-auto rounded-md border">
                 <div className="min-w-full overflow-x-auto">
                   <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Active</TableHead>
-                    <TableHead>Sort</TableHead>
-                    <TableHead className="w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {zones.map((zone) => (
-                    <TableRow key={zone.id}>
-                      <TableCell className="font-medium">{zone.name}</TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {zone.code}
-                      </TableCell>
-                      <TableCell>{zone.zone_type || "—"}</TableCell>
-                      <TableCell>
-                        {zone.is_active ? (
-                          <Badge variant="secondary">Active</Badge>
-                        ) : (
-                          "Inactive"
-                        )}
-                      </TableCell>
-                      <TableCell>{zone.sort_order ?? 0}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => openEditForm(zone)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => setDeletingZone(zone)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Active</TableHead>
+                        <TableHead>Sort</TableHead>
+                        <TableHead className="w-24">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {zones.map((zone) => (
+                        <TableRow key={zone.id}>
+                          <TableCell className="font-medium">
+                            {zone.name}
+                          </TableCell>
+                          <TableCell className="font-mono text-sm">
+                            {zone.code}
+                          </TableCell>
+                          <TableCell>{zone.zone_type || "—"}</TableCell>
+                          <TableCell>
+                            {zone.is_active ? (
+                              <Badge variant="secondary">Active</Badge>
+                            ) : (
+                              "Inactive"
+                            )}
+                          </TableCell>
+                          <TableCell>{zone.sort_order ?? 0}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => openEditForm(zone)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => setDeletingZone(zone)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
                   </Table>
                 </div>
               </div>
@@ -279,8 +281,8 @@ export function WarehousesManageZonesDialog({
           }
         }}
       >
-        <ResponsiveDialogContent className="flex max-h-[min(90dvh,700px)] w-full flex-col gap-0 overflow-hidden sm:max-w-lg">
-          <ResponsiveDialogHeader className="shrink-0">
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>
               {isUpdate ? "Edit" : "Add"} Zone
             </ResponsiveDialogTitle>
@@ -291,73 +293,71 @@ export function WarehousesManageZonesDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
             <form
               id="warehouse-zone-form"
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-            <Field>
-              <FieldLabel>Name *</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="Receiving"
-                  {...form.register("name", {
-                    onChange: (event) => {
-                      if (!isUpdate && !form.getValues("code")) {
-                        form.setValue("code", slugifyCode(event.target.value))
-                      }
-                    },
-                  })}
+              <Field>
+                <FieldLabel>Name *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="Receiving"
+                    {...form.register("name", {
+                      onChange: (event) => {
+                        if (!isUpdate && !form.getValues("code")) {
+                          form.setValue("code", slugifyCode(event.target.value))
+                        }
+                      },
+                    })}
+                  />
+                  <FieldError message={form.formState.errors.name?.message} />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Code *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="receiving"
+                    className="font-mono"
+                    {...form.register("code")}
+                  />
+                  <FieldError message={form.formState.errors.code?.message} />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Zone Type</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="storage, picking, receiving..."
+                    {...form.register("zone_type")}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Sort Order</FieldLabel>
+                <FieldContent>
+                  <Input
+                    type="number"
+                    {...form.register("sort_order", { valueAsNumber: true })}
+                  />
+                </FieldContent>
+              </Field>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="zone_is_active"
+                  checked={form.watch("is_active")}
+                  onCheckedChange={(checked) =>
+                    form.setValue("is_active", !!checked)
+                  }
                 />
-                <FieldError message={form.formState.errors.name?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Code *</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="receiving"
-                  className="font-mono"
-                  {...form.register("code")}
-                />
-                <FieldError message={form.formState.errors.code?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Zone Type</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="storage, picking, receiving..."
-                  {...form.register("zone_type")}
-                />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Sort Order</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="number"
-                  {...form.register("sort_order", { valueAsNumber: true })}
-                />
-              </FieldContent>
-            </Field>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="zone_is_active"
-                checked={form.watch("is_active")}
-                onCheckedChange={(checked) =>
-                  form.setValue("is_active", !!checked)
-                }
-              />
-              <label htmlFor="zone_is_active" className="text-sm font-medium">
-                Active
-              </label>
-            </div>
+                <label htmlFor="zone_is_active" className="text-sm font-medium">
+                  Active
+                </label>
+              </div>
             </form>
-          </div>
 
-          <ResponsiveDialogFooter className="shrink-0">
+          <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Cancel</Button>}
             />

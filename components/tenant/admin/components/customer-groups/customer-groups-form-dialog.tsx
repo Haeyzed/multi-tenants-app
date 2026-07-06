@@ -32,19 +32,19 @@ import {
   type UpdateCustomerGroupFormValues,
 } from "@/schemas/tenant/customer-group-schema"
 
-type CustomerGroupsMutateDialogProps = {
+type CustomerGroupsFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: CustomerGroup
   onSuccess?: (group: CustomerGroup) => void
 }
 
-export function CustomerGroupsMutateDialog({
+export function CustomerGroupsFormDialog({
   open,
   onOpenChange,
   currentRow,
   onSuccess,
-}: CustomerGroupsMutateDialogProps) {
+}: CustomerGroupsFormDialogProps) {
   const isUpdate = !!currentRow
   const createGroup = useCreateCustomerGroup()
   const updateGroup = useUpdateCustomerGroup()

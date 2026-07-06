@@ -17,7 +17,7 @@ import { useDeleteBrand } from "@/hooks/tenant/use-brand-query"
 import { exportBrands } from "@/lib/services/tenant/brand-service"
 import { BRAND_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { BrandsMutateDialog } from "./brands-mutate-dialog"
+import { BrandsFormDialog } from "./brands-form-dialog"
 import { BrandsViewDialog } from "./brands-view-dialog"
 import { BrandsImportDialog } from "./brands-import-dialog"
 import { BrandsMultiDeleteDialog } from "./brands-multi-delete-dialog"
@@ -58,7 +58,7 @@ export function BrandsDialogs() {
 
   return (
     <>
-      <BrandsMutateDialog
+      <BrandsFormDialog
         key="brand-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -125,7 +125,7 @@ export function BrandsDialogs() {
             brand={currentRow}
           />
 
-          <BrandsMutateDialog
+          <BrandsFormDialog
             key={`brand-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

@@ -275,8 +275,8 @@ export function SuppliersManageContactsDialog({
           }
         }}
       >
-        <ResponsiveDialogContent className="flex max-h-[min(90dvh,700px)] flex-col gap-0 overflow-hidden sm:max-w-lg">
-          <ResponsiveDialogHeader className="shrink-0">
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
             <ResponsiveDialogTitle>
               {isUpdate ? "Edit" : "Add"} Contact
             </ResponsiveDialogTitle>
@@ -287,7 +287,6 @@ export function SuppliersManageContactsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-          <div className="min-h-0 flex-1 overflow-y-auto">
             <form
               id="supplier-contact-form"
               onSubmit={form.handleSubmit(onSubmit)}
@@ -339,9 +338,8 @@ export function SuppliersManageContactsDialog({
               </label>
             </div>
             </form>
-          </div>
 
-          <ResponsiveDialogFooter className="shrink-0">
+          <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Cancel</Button>}
             />

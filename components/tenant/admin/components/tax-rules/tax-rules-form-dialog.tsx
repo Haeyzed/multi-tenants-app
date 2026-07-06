@@ -51,7 +51,7 @@ import {
   type UpdateTaxRuleFormValues,
 } from "@/schemas/tenant/tax-rule-schema"
 
-type TaxRulesMutateDialogProps = {
+type TaxRulesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: TaxRule
@@ -86,11 +86,11 @@ function parseDateString(value?: string | null): Date | undefined {
   return new Date(year, month - 1, day)
 }
 
-export function TaxRulesMutateDialog({
+export function TaxRulesFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: TaxRulesMutateDialogProps) {
+}: TaxRulesFormDialogProps) {
   const isUpdate = !!currentRow
   const createTaxRule = useCreateTaxRule()
   const updateTaxRule = useUpdateTaxRule()

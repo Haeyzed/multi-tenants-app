@@ -1,6 +1,8 @@
+"use client"
+
 import { z } from "zod"
 import * as React from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
@@ -14,17 +16,25 @@ import {
   ResponsiveDialogTitle,
   ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
-import { Input } from "@/components/ui/input"
+import {
+  FileUpload,
+  FileUploadDropzone,
+  FileUploadItem,
+  FileUploadItemDelete,
+  FileUploadItemMetadata,
+  FileUploadItemPreview,
+  FileUploadList,
+  FileUploadTrigger,
+} from "@/components/ui/file-upload"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { useImportBrands } from "@/hooks/tenant/use-brand-query"
 import { downloadBrandsImportSample } from "@/lib/services/tenant/brand-service"
+import { CloudUpload, X } from "lucide-react"
 
 const formSchema = z.object({
   file: z
-    .instanceof(FileList)
-    .refine((files) => files.length > 0, {
-      message: "Please upload a file.",
-    })
+    .array(z.custom<File>())
+    .min(1, "Please upload a file.")
     .refine((files) => {
       const file = files?.[0]
       if (!file) return false
@@ -55,10 +65,8 @@ export function BrandsImportDialog({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { file: undefined },
+    defaultValues: { file: [] },
   })
-
-  const fileRef = form.register("file")
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const file = values.file[0]
@@ -81,10 +89,10 @@ export function BrandsImportDialog({
       open={open}
       onOpenChange={(val) => {
         onOpenChange(val)
-        form.reset()
+        if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent className="sm:max-w-sm">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Import Brands</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
@@ -117,17 +125,61 @@ export function BrandsImportDialog({
               }
             }}
           >
-            {isDownloadingSample && <Spinner />}
+            {isDownloadingSample && <Spinner className="mr-2" />}
             Download sample template
           </Button>
+
           <Field>
             <FieldLabel>File</FieldLabel>
             <FieldContent>
-              <Input
-                type="file"
-                accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
-                {...fileRef}
-                className="h-8 py-0"
+              <Controller
+                control={form.control}
+                name="file"
+                render={({ field }) => (
+                  <FileUpload
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv"
+                    maxFiles={1}
+                    maxSize={5 * 1024 * 1024}
+                    onFileReject={(_, message) => {
+                      form.setError("file", {
+                        message,
+                      })
+                    }}
+                  >
+                    <FileUploadDropzone className="flex-row flex-wrap border-dotted text-center">
+                      <CloudUpload className="mr-2 size-4" />
+                      Drag and drop or
+                      <FileUploadTrigger render={
+                        <Button variant="link" size="sm" className="mx-1 p-0">
+                          choose file
+                        </Button>
+                      }/>
+                      to upload
+                    </FileUploadDropzone>
+
+                    <FileUploadList>
+                      {field.value?.map((file, index) => (
+                        <FileUploadItem key={index} value={file}>
+                          <FileUploadItemPreview />
+                          <FileUploadItemMetadata />
+                          <FileUploadItemDelete render={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-7"
+                            >
+                              <X />
+                              <span className="sr-only">Delete</span>
+                            </Button>
+                          }>
+                          </FileUploadItemDelete>
+                        </FileUploadItem>
+                      ))}
+                    </FileUploadList>
+                  </FileUpload>
+                )}
               />
               <FieldError message={form.formState.errors.file?.message} />
             </FieldContent>
@@ -142,7 +194,7 @@ export function BrandsImportDialog({
             form="brands-import-form"
             disabled={importBrands.isPending}
           >
-            {importBrands.isPending && <Spinner />}
+            {importBrands.isPending && <Spinner className="mr-2" />}
             Import
           </Button>
         </ResponsiveDialogFooter>

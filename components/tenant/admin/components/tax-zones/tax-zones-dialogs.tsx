@@ -17,7 +17,7 @@ import { useDeleteTaxZone } from "@/hooks/tenant/use-tax-zone-query"
 import { exportTaxZones } from "@/lib/services/tenant/tax-zone-service"
 import { TAX_ZONE_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
-import { TaxZonesMutateDialog } from "./tax-zones-mutate-dialog"
+import { TaxZonesFormDialog } from "./tax-zones-form-dialog"
 import { TaxZonesViewDialog } from "./tax-zones-view-dialog"
 import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
 import { TaxZonesImportDialog } from "./tax-zones-import-dialog"
@@ -59,7 +59,7 @@ export function TaxZonesDialogs() {
 
   return (
     <>
-      <TaxZonesMutateDialog
+      <TaxZonesFormDialog
         key="tax-zone-create"
         open={open === "create"}
         onOpenChange={(val) => {
@@ -148,7 +148,7 @@ export function TaxZonesDialogs() {
             />
           ) : null}
 
-          <TaxZonesMutateDialog
+          <TaxZonesFormDialog
             key={`tax-zone-update-${currentRow.id}`}
             open={open === "update"}
             onOpenChange={(val) => {

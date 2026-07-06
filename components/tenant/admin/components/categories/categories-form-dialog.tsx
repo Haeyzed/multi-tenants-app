@@ -56,7 +56,7 @@ import {
   type UpdateCategoryFormValues,
 } from "@/schemas/tenant/category-schema"
 
-type CategoriesMutateDialogProps = {
+type CategoriesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Category
@@ -69,11 +69,11 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
-export function CategoriesMutateDialog({
+export function CategoriesFormDialog({
   open,
   onOpenChange,
   currentRow,
-}: CategoriesMutateDialogProps) {
+}: CategoriesFormDialogProps) {
   const isUpdate = !!currentRow
   const createCategory = useCreateCategory()
   const updateCategory = useUpdateCategory()
