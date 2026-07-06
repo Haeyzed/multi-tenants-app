@@ -8,7 +8,7 @@ import {
   type ExportSelection,
 } from "@/types/tenant/export"
 
-type ProductsDialogType = "delete" | "export" | "deleteMany"
+type ProductsDialogType = "delete" | "export" | "import" | "deleteMany"
 
 type ProductsContextType = {
   open: ProductsDialogType | null

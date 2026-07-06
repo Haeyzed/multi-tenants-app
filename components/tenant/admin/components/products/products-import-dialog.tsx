@@ -27,8 +27,8 @@ import {
   FileUploadTrigger,
 } from "@/components/ui/file-upload"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
-import { useImportSuppliers } from "@/hooks/tenant/use-supplier-query"
-import { downloadSuppliersImportSample } from "@/lib/services/tenant/supplier-service"
+import { useImportProducts } from "@/hooks/tenant/use-product-query"
+import { downloadProductsImportSample } from "@/lib/services/tenant/product-service"
 import { CloudUpload, X } from "lucide-react"
 
 const formSchema = z.object({
@@ -46,7 +46,7 @@ const formSchema = z.object({
     }, "Please upload an Excel or CSV file."),
 })
 
-type SuppliersImportDialogProps = {
+type ProductsImportDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
@@ -56,11 +56,11 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
-export function SuppliersImportDialog({
+export function ProductsImportDialog({
   open,
   onOpenChange,
-}: SuppliersImportDialogProps) {
-  const importSuppliers = useImportSuppliers()
+}: ProductsImportDialogProps) {
+  const importProducts = useImportProducts()
   const [isDownloadingSample, setIsDownloadingSample] = React.useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -72,18 +72,18 @@ export function SuppliersImportDialog({
     const file = values.file[0]
     if (!file) return
 
-    importSuppliers.mutate(file, {
+    importProducts.mutate(file, {
       onSuccess: (result) => {
         if ((result.summary.failed ?? 0) > 0) {
           toast.warning(result.message)
         } else {
-          toast.success(result.message || "Suppliers imported successfully")
+          toast.success(result.message || "Products imported successfully")
         }
         onOpenChange(false)
         form.reset()
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to import suppliers")
+        toast.error(error.message || "Failed to import products")
       },
     })
   }
@@ -98,13 +98,13 @@ export function SuppliersImportDialog({
     >
       <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>Import Suppliers</ResponsiveDialogTitle>
+          <ResponsiveDialogTitle>Import Products</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Import suppliers from an Excel (.xlsx) or CSV file.
+            Import simple products from an Excel (.xlsx) or CSV file.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
         <form
-          id="suppliers-import-form"
+          id="products-import-form"
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4"
         >
@@ -116,7 +116,7 @@ export function SuppliersImportDialog({
             onClick={async () => {
               setIsDownloadingSample(true)
               try {
-                await downloadSuppliersImportSample("xlsx")
+                await downloadProductsImportSample("xlsx")
                 toast.success("Sample template downloaded")
               } catch (error) {
                 toast.error(
@@ -198,10 +198,10 @@ export function SuppliersImportDialog({
           />
           <Button
             type="submit"
-            form="suppliers-import-form"
-            disabled={importSuppliers.isPending}
+            form="products-import-form"
+            disabled={importProducts.isPending}
           >
-            {importSuppliers.isPending && <Spinner className="mr-2" />}
+            {importProducts.isPending && <Spinner className="mr-2" />}
             Import
           </Button>
         </ResponsiveDialogFooter>

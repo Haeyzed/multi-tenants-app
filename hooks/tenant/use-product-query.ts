@@ -8,6 +8,7 @@ import {
   getProductOptions,
   getProducts,
   getProductStatistics,
+  importProducts,
   updateProduct,
 } from "@/lib/services/tenant/product-service"
 import { type ExportParams } from "@/types/tenant/export"
@@ -118,5 +119,17 @@ export const useDeleteManyProducts = () => {
 export const useExportProducts = () => {
   return useMutation({
     mutationFn: (params: ExportParams) => exportProducts(params),
+  })
+}
+
+export const useImportProducts = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => importProducts(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
+      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+    },
   })
 }

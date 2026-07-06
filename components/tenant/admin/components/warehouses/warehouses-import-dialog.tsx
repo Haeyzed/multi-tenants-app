@@ -73,8 +73,12 @@ export function WarehousesImportDialog({
     if (!file) return
 
     importWarehouses.mutate(file, {
-      onSuccess: () => {
-        toast.success("Warehouses imported successfully")
+      onSuccess: (result) => {
+        if ((result.summary.failed ?? 0) > 0) {
+          toast.warning(result.message)
+        } else {
+          toast.success(result.message || "Warehouses imported successfully")
+        }
         onOpenChange(false)
         form.reset()
       },

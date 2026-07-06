@@ -17,6 +17,16 @@ export type ExportSelection = {
 
 export type BulkDeleteSelection = ExportSelection
 
+export type ImportSummary = {
+  imported?: number | null
+  failed?: number
+  failures?: Array<{
+    row: number
+    attribute: string
+    errors: string[]
+  }>
+}
+
 export type BrandStatistics = {
   total: number
   visible: number

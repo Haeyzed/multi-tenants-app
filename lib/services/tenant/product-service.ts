@@ -13,7 +13,7 @@ import {
   ProductVisibilityValue,
   resolveProductEnumValue,
 } from "@/types/tenant/product"
-import { ExportParams } from "@/types/tenant/export"
+import { ExportParams, ImportSummary } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -210,6 +210,32 @@ export const exportProducts = async (params: ExportParams): Promise<void> => {
   await tenantApiClient.postFileDownload("/products/export", body, {
     defaultFilename: `products-export.${extension}`,
   })
+}
+
+export const downloadProductsImportSample = async (
+  type: "xlsx" | "csv" = "xlsx"
+): Promise<void> => {
+  await tenantApiClient.getFileDownload(
+    "/products/import/sample",
+    { type },
+    `products-import-sample.${type}`
+  )
+}
+
+export const importProducts = async (
+  file: File
+): Promise<{ summary: ImportSummary; message: string }> => {
+  const formData = new FormData()
+  formData.append("file", file)
+  const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
+    "/products/import",
+    formData
+  )
+
+  return {
+    summary: response.data,
+    message: response.message,
+  }
 }
 
 export const syncProductOptions = async (

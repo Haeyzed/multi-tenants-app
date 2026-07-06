@@ -17,6 +17,7 @@ import { useDeleteProduct } from "@/hooks/tenant/use-product-query"
 import { exportProducts } from "@/lib/services/tenant/product-service"
 import { PRODUCT_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ProductsImportDialog } from "./products-import-dialog"
 import { ProductsMultiDeleteDialog } from "./products-multi-delete-dialog"
 import { useProducts } from "./products-provider"
 
@@ -71,6 +72,14 @@ export function ProductsDialogs() {
         onComplete={() => {
           exportSelection?.onComplete?.()
           setExportSelection(null)
+        }}
+      />
+
+      <ProductsImportDialog
+        key="products-import"
+        open={open === "import"}
+        onOpenChange={(val) => {
+          if (!val) setOpen(null)
         }}
       />
 

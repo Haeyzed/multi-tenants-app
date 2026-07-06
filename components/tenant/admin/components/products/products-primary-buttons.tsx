@@ -25,6 +25,15 @@ export function ProductsPrimaryButtons() {
       </TenantAdminAuthGuard>
       <TenantAdminAuthGuard permissions="products.create">
         <Button
+          variant="outline"
+          className="space-x-1"
+          onClick={() => setOpen("import")}
+        >
+          <span>Import</span> <Download size={18} />
+        </Button>
+      </TenantAdminAuthGuard>
+      <TenantAdminAuthGuard permissions="products.create">
+        <Button
           className="space-x-1"
           render={<Link href="/admin/products/new" />}
           nativeButton={false}

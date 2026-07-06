@@ -5,7 +5,7 @@ import {
   SupplierContact,
   SupplierOption,
 } from "@/types/tenant/supplier"
-import { ExportParams, SupplierStatistics } from "@/types/tenant/export"
+import { ExportParams, ImportSummary, SupplierStatistics } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -120,10 +120,20 @@ export const downloadSuppliersImportSample = async (
   )
 }
 
-export const importSuppliers = async (file: File): Promise<void> => {
+export const importSuppliers = async (
+  file: File
+): Promise<{ summary: ImportSummary; message: string }> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/suppliers/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
+    "/suppliers/import",
+    formData
+  )
+
+  return {
+    summary: response.data,
+    message: response.message,
+  }
 }
 
 export const toggleSupplierActive = async (id: number): Promise<Supplier> => {

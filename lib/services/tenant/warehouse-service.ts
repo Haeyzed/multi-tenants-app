@@ -4,7 +4,7 @@ import {
   WarehouseOption,
   WarehouseZone,
 } from "@/types/tenant/warehouse"
-import { WarehouseStatistics, ExportParams } from "@/types/tenant/export"
+import { WarehouseStatistics, ExportParams, ImportSummary } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -118,10 +118,20 @@ export const downloadWarehousesImportSample = async (
   )
 }
 
-export const importWarehouses = async (file: File): Promise<void> => {
+export const importWarehouses = async (
+  file: File
+): Promise<{ summary: ImportSummary; message: string }> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/warehouses/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
+    "/warehouses/import",
+    formData
+  )
+
+  return {
+    summary: response.data,
+    message: response.message,
+  }
 }
 
 export const toggleWarehouseActive = async (id: number): Promise<Warehouse> => {
