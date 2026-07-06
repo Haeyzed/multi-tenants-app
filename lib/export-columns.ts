@@ -155,15 +155,17 @@ export const PRODUCT_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "id", label: "ID" },
   { key: "name", label: "Name" },
   { key: "slug", label: "Slug" },
-  { key: "sku", label: "SKU" },
-  { key: "barcode", label: "Barcode" },
-  { key: "price", label: "Price" },
-  { key: "compare_at_price", label: "Compare At Price" },
-  { key: "sale_price", label: "Sale Price" },
-  { key: "cost_price", label: "Cost Price" },
+  { key: "subtitle", label: "Subtitle" },
+  { key: "summary", label: "Summary" },
+  { key: "type", label: "Type" },
+  { key: "condition", label: "Condition" },
   { key: "status", label: "Status" },
+  { key: "visibility", label: "Visibility" },
   { key: "is_featured", label: "Featured" },
-  { key: "product_type", label: "Type" },
+  { key: "default_variant_sku", label: "SKU" },
+  { key: "default_variant_price", label: "Price" },
+  { key: "default_variant_compare_at_price", label: "Compare At Price" },
+  { key: "default_variant_cost_price", label: "Cost Price" },
   { key: "category", label: "Category" },
   { key: "brand", label: "Brand" },
   { key: "quantity", label: "Quantity" },
@@ -204,6 +206,53 @@ export const WAREHOUSE_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "longitude", label: "Longitude" },
   { key: "is_active", label: "Active" },
   { key: "is_primary", label: "Primary" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const TAG_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "color", label: "Color" },
+  { key: "icon", label: "Icon" },
+  { key: "is_visible", label: "Visible" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const ATTRIBUTE_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "code", label: "Code" },
+  { key: "type", label: "Type" },
+  { key: "display_type", label: "Display Type" },
+  { key: "is_filterable", label: "Filterable" },
+  { key: "is_variant", label: "Variant" },
+  { key: "is_required", label: "Required" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const ATTRIBUTE_SET_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "description", label: "Description" },
+  { key: "is_active", label: "Active" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
+export const COLLECTION_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "description", label: "Description" },
+  { key: "is_visible", label: "Visible" },
+  { key: "is_featured", label: "Featured" },
+  { key: "type", label: "Type" },
   { key: "sort_order", label: "Sort Order" },
   { key: "created_at", label: "Created At" },
 ]

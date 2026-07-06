@@ -22,12 +22,13 @@ import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { Badge } from "@/components/ui/badge"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import {
   Table,
   TableBody,
@@ -57,11 +58,14 @@ type SuppliersManageAddressesDialogProps = {
   supplier: Supplier
 }
 
-const ADDRESS_TYPES = [
+const ADDRESS_TYPES: {
+  value: "office" | "billing" | "shipping"
+  label: string
+}[] = [
   { value: "office", label: "Office" },
   { value: "billing", label: "Billing" },
   { value: "shipping", label: "Shipping" },
-] as const
+]
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -205,6 +209,8 @@ export function SuppliersManageAddressesDialog({
 
   const isSubmitting = createAddress.isPending || updateAddress.isPending
   const addressType = form.watch("type") ?? "office"
+  const selectedAddressType =
+    ADDRESS_TYPES.find((item) => item.value === addressType) ?? ADDRESS_TYPES[0]
 
   return (
     <>
@@ -328,26 +334,27 @@ export function SuppliersManageAddressesDialog({
               <Field>
                 <FieldLabel>Type</FieldLabel>
                 <FieldContent>
-                  <Select
-                    value={addressType}
-                    onValueChange={(value) =>
-                      form.setValue(
-                        "type",
-                        value as "office" | "billing" | "shipping"
-                      )
-                    }
+                  <Combobox
+                    items={ADDRESS_TYPES}
+                    itemToStringValue={(item) => item.label}
+                    value={selectedAddressType}
+                    onValueChange={(item) => {
+                      if (!item) return
+                      form.setValue("type", item.value)
+                    }}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ADDRESS_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    <ComboboxInput placeholder="Select type..." />
+                    <ComboboxContent>
+                      <ComboboxEmpty>No types found.</ComboboxEmpty>
+                      <ComboboxList>
+                        {(item) => (
+                          <ComboboxItem key={item.value} value={item}>
+                            {item.label}
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
                 </FieldContent>
               </Field>
               <Field>

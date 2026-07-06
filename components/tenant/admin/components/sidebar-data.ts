@@ -1,17 +1,21 @@
 import {
+  FolderOpenIcon,
   GalleryVerticalEndIcon,
   ImageIcon,
   LayoutDashboardIcon,
+  LayersIcon,
   PackageIcon,
   PercentIcon,
   RulerIcon,
   SettingsIcon,
+  ShapesIcon,
   TagIcon,
   TagsIcon,
   TruckIcon,
   UsersIcon,
   UsersRoundIcon,
   WarehouseIcon,
+  Boxes,
 } from "lucide-react"
 import type { SidebarData } from "@/components/layout/types"
 
@@ -74,6 +78,26 @@ export const sidebarData: SidebarData = {
           icon: TagsIcon,
         },
         {
+          title: "Tags",
+          url: "/admin/tags",
+          icon: TagIcon,
+        },
+        {
+          title: "Attributes",
+          url: "/admin/attributes",
+          icon: ShapesIcon,
+        },
+        {
+          title: "Attribute Sets",
+          url: "/admin/attribute-sets",
+          icon: LayersIcon,
+        },
+        {
+          title: "Collections",
+          url: "/admin/collections",
+          icon: FolderOpenIcon,
+        },
+        {
           title: "Media",
           url: "/admin/media",
           icon: ImageIcon,
@@ -83,6 +107,11 @@ export const sidebarData: SidebarData = {
     {
       title: "Inventory",
       items: [
+        {
+          title: "Stock levels",
+          url: "/admin/inventory",
+          icon: Boxes,
+        },
         {
           title: "Suppliers",
           url: "/admin/suppliers",

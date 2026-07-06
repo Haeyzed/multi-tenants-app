@@ -99,3 +99,27 @@ export type UnitStatistics = {
   base: number
   types: Record<string, number>
 }
+
+export type TagStatistics = {
+  total: number
+  visible: number
+  hidden: number
+}
+
+export type AttributeStatistics = {
+  total: number
+  filterable: number
+  variant: number
+}
+
+export type AttributeSetStatistics = {
+  total: number
+  active: number
+  inactive: number
+}
+
+export type CollectionStatistics = {
+  total: number
+  visible: number
+  featured: number
+}

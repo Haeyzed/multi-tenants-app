@@ -16,8 +16,8 @@ import { type Product } from "@/types/tenant/product"
 import { ProductsBulkActions } from "./products-bulk-actions"
 import { columns } from "./products-columns"
 
-const COLUMN_COUNT = 10
-const FILTER_COUNT = 2
+const COLUMN_COUNT = 12
+const FILTER_COUNT = 4
 
 export function ProductsTable() {
   const [name] = useQueryState("name", parseAsString.withDefault(""))

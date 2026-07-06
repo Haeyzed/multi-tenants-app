@@ -3,12 +3,17 @@
 import * as React from "react"
 import Link from "next/link"
 import { type ColumnDef } from "@tanstack/react-table"
-import { Archive, CheckCircle2, FileEdit, Star, Text } from "lucide-react"
+import { Archive, CheckCircle2, Eye, EyeOff, FileEdit, Star, Text } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
+import { Badge } from "@/components/ui/badge"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
-import { type Product } from "@/types/tenant/product"
+import {
+  type Product,
+  resolveProductEnumLabel,
+  resolveProductEnumValue,
+} from "@/types/tenant/product"
 import { DataTableRowActions } from "./data-table-row-actions"
 
 const statusVariant: Record<
@@ -18,6 +23,32 @@ const statusVariant: Record<
   active: "success",
   draft: "warning",
   archived: "default",
+}
+
+const TYPE_OPTIONS = [
+  { label: "Simple", value: "simple" },
+  { label: "Variable", value: "variable" },
+  { label: "Bundle", value: "bundle" },
+  { label: "Digital", value: "digital" },
+  { label: "Service", value: "service" },
+  { label: "Subscription", value: "subscription" },
+  { label: "Gift Card", value: "gift_card" },
+  { label: "Configurable", value: "configurable" },
+]
+
+const VISIBILITY_OPTIONS = [
+  { label: "Visible", value: "visible", icon: Eye },
+  { label: "Hidden", value: "hidden", icon: EyeOff },
+  { label: "Catalog Only", value: "catalog", icon: Eye },
+  { label: "Search Only", value: "search", icon: Eye },
+]
+
+function getDefaultVariantInventory(product: Product) {
+  return (
+    product.default_variant?.inventories?.[0] ??
+    product.default_variant?.inventory ??
+    null
+  )
 }
 
 export const columns: ColumnDef<Product>[] = [
@@ -74,11 +105,55 @@ export const columns: ColumnDef<Product>[] = [
             {row.original.name}
           </Link>
           <p className="truncate text-xs text-muted-foreground">
-            {row.original.sku}
+            {row.original.default_variant?.sku ?? "—"}
           </p>
         </div>
       </div>
     ),
+  },
+  {
+    id: "type",
+    accessorFn: (row) => resolveProductEnumValue(row.type, "simple"),
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} label="Type" />
+    ),
+    cell: ({ row }) => (
+      <Badge variant="outline" className="capitalize">
+        {resolveProductEnumLabel(row.original.type)}
+      </Badge>
+    ),
+    meta: {
+      label: "Type",
+      variant: "multiSelect",
+      options: TYPE_OPTIONS,
+    },
+    enableColumnFilter: true,
+  },
+  {
+    id: "visibility",
+    accessorFn: (row) => resolveProductEnumValue(row.visibility, "visible"),
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} label="Visibility" />
+    ),
+    cell: ({ row }) => {
+      const visibility = resolveProductEnumValue(
+        row.original.visibility,
+        "visible"
+      )
+      const isVisible = visibility !== "hidden"
+      return (
+        <Status variant={isVisible ? "success" : "default"}>
+          <StatusIndicator />
+          <StatusLabel>{resolveProductEnumLabel(row.original.visibility)}</StatusLabel>
+        </Status>
+      )
+    },
+    meta: {
+      label: "Visibility",
+      variant: "multiSelect",
+      options: VISIBILITY_OPTIONS,
+    },
+    enableColumnFilter: true,
   },
   {
     accessorKey: "status",
@@ -107,13 +182,21 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     id: "category",
-    accessorFn: (row) => row.category?.name ?? "—",
+    accessorFn: (row) =>
+      row.primary_category?.name ??
+      row.categories?.find((category) => category.is_primary)?.name ??
+      row.categories?.[0]?.name ??
+      "—",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Category" />
     ),
     cell: ({ row }) => (
       <span className="text-muted-foreground">
-        {row.original.category?.name ?? "—"}
+        {row.original.primary_category?.name ??
+          row.original.categories?.find((category) => category.is_primary)
+            ?.name ??
+          row.original.categories?.[0]?.name ??
+          "—"}
       </span>
     ),
   },
@@ -130,18 +213,19 @@ export const columns: ColumnDef<Product>[] = [
     ),
   },
   {
-    accessorKey: "price",
+    id: "price",
+    accessorFn: (row) => row.default_variant?.price ?? "0",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Price" />
     ),
     cell: ({ row }) => {
-      const price = Number(row.original.selling_price ?? row.original.price)
+      const price = Number(row.original.default_variant?.price ?? 0)
       return <span>${price.toFixed(2)}</span>
     },
   },
   {
     id: "stock",
-    accessorFn: (row) => row.inventory?.quantity ?? 0,
+    accessorFn: (row) => getDefaultVariantInventory(row)?.quantity ?? 0,
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Stock" />
     ),
@@ -149,11 +233,10 @@ export const columns: ColumnDef<Product>[] = [
       if (!row.original.track_inventory) {
         return <span className="text-muted-foreground">Not tracked</span>
       }
-      const qty = row.original.inventory?.available_quantity
-        ?? row.original.inventory?.quantity
-        ?? 0
+      const inventory = getDefaultVariantInventory(row.original)
+      const qty = inventory?.available_quantity ?? inventory?.quantity ?? 0
       return (
-        <span className={row.original.inventory?.is_low_stock ? "text-amber-600" : ""}>
+        <span className={inventory?.is_low_stock ? "text-amber-600" : ""}>
           {qty}
         </span>
       )

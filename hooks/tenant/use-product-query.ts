@@ -11,16 +11,24 @@ import {
   updateProduct,
 } from "@/lib/services/tenant/product-service"
 import { type ExportParams } from "@/types/tenant/export"
-import { type Product } from "@/types/tenant/product"
-import { type ProductFormValues } from "@/schemas/tenant/product-schema"
+import {
+  type Product,
+  type ProductTypeValue,
+  type ProductVisibilityValue,
+} from "@/types/tenant/product"
+import {
+  type StoreProductFormValues,
+  type UpdateProductFormValues,
+} from "@/schemas/tenant/product-schema"
 
 export const useGetProducts = (params?: {
   search?: string
   status?: Product["status"][]
+  visibility?: ProductVisibilityValue[]
+  type?: ProductTypeValue[]
   is_featured?: ("featured" | "not_featured")[]
   brand_id?: number
   category_id?: number
-  product_type?: string[]
   per_page?: number
   page?: number
 }) => {
@@ -55,7 +63,7 @@ export const useGetProductOptions = () => {
 export const useCreateProduct = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (product: ProductFormValues) => createProduct(product),
+    mutationFn: (product: StoreProductFormValues) => createProduct(product),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
@@ -72,7 +80,7 @@ export const useUpdateProduct = () => {
       product,
     }: {
       id: number
-      product: Partial<ProductFormValues>
+      product: UpdateProductFormValues
     }) => updateProduct(id, product),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
