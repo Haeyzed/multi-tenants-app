@@ -73,8 +73,12 @@ export function CustomerGroupsImportDialog({
     if (!file) return
 
     importCustomerGroups.mutate(file, {
-      onSuccess: () => {
-        toast.success("Customer groups imported successfully")
+      onSuccess: (result) => {
+        if ((result.summary.failed ?? 0) > 0) {
+          toast.warning(result.message)
+        } else {
+          toast.success(result.message || "Customer groups imported successfully")
+        }
         onOpenChange(false)
         form.reset()
       },

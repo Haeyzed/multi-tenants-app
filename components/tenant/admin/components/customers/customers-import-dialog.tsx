@@ -73,8 +73,12 @@ export function CustomersImportDialog({
     if (!file) return
 
     importCustomers.mutate(file, {
-      onSuccess: () => {
-        toast.success("Customers imported successfully")
+      onSuccess: (result) => {
+        if ((result.summary.failed ?? 0) > 0) {
+          toast.warning(result.message)
+        } else {
+          toast.success(result.message || "Customers imported successfully")
+        }
         onOpenChange(false)
         form.reset()
       },

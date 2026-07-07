@@ -2,7 +2,7 @@ import {
   CustomerGroup,
   CustomerGroupOption,
 } from "@/types/tenant/customer-group"
-import { CustomerGroupStatistics, ExportParams } from "@/types/tenant/export"
+import { CustomerGroupStatistics, ExportParams, ImportSummary } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -118,8 +118,18 @@ export const downloadCustomerGroupsImportSample = async (
   )
 }
 
-export const importCustomerGroups = async (file: File): Promise<void> => {
+export const importCustomerGroups = async (
+  file: File
+): Promise<{ summary: ImportSummary; message: string }> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/customer-groups/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
+    "/customer-groups/import",
+    formData
+  )
+
+  return {
+    summary: response.data,
+    message: response.message,
+  }
 }

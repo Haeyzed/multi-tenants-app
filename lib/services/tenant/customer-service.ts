@@ -1,5 +1,5 @@
 import { Customer, CustomerOption } from "@/types/tenant/customer"
-import { CustomerStatistics, ExportParams } from "@/types/tenant/export"
+import { CustomerStatistics, ExportParams, ImportSummary } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -131,8 +131,18 @@ export const downloadCustomersImportSample = async (
   )
 }
 
-export const importCustomers = async (file: File): Promise<void> => {
+export const importCustomers = async (
+  file: File
+): Promise<{ summary: ImportSummary; message: string }> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/customers/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
+    "/customers/import",
+    formData
+  )
+
+  return {
+    summary: response.data,
+    message: response.message,
+  }
 }
