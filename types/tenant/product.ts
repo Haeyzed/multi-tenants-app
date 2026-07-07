@@ -292,7 +292,7 @@ export interface Product {
   description: string | null
   type: ProductTypeValue | ProductEnumField<ProductTypeValue>
   condition: ProductConditionValue | ProductEnumField<ProductConditionValue>
-  status: ProductStatus
+  status: ProductStatus | ProductEnumField<ProductStatus>
   status_label?: string
   visibility: ProductVisibilityValue | ProductEnumField<ProductVisibilityValue>
   is_featured: boolean

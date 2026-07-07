@@ -11,13 +11,14 @@ import { Badge } from "@/components/ui/badge"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import {
   type Product,
+  type ProductStatus,
   resolveProductEnumLabel,
   resolveProductEnumValue,
 } from "@/types/tenant/product"
 import { DataTableRowActions } from "./data-table-row-actions"
 
 const statusVariant: Record<
-  Product["status"],
+  ProductStatus,
   React.ComponentProps<typeof Status>["variant"]
 > = {
   active: "success",
@@ -156,16 +157,19 @@ export const columns: ColumnDef<Product>[] = [
     enableColumnFilter: true,
   },
   {
-    accessorKey: "status",
+    id: "status",
+    accessorFn: (row) => resolveProductEnumValue(row.status, "draft"),
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Status" />
     ),
     cell: ({ row }) => {
-      const status = row.original.status
+      const status = resolveProductEnumValue(row.original.status, "draft")
       return (
         <Status variant={statusVariant[status] ?? "default"}>
           <StatusIndicator />
-          <StatusLabel className="capitalize">{status}</StatusLabel>
+          <StatusLabel className="capitalize">
+            {resolveProductEnumLabel(row.original.status)}
+          </StatusLabel>
         </Status>
       )
     },
