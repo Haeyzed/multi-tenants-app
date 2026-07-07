@@ -23,20 +23,24 @@ import {
   type UpdateProductFormValues,
 } from "@/schemas/tenant/product-schema"
 
-export const useGetProducts = (params?: {
-  search?: string
-  status?: ProductStatus[]
-  visibility?: ProductVisibilityValue[]
-  type?: ProductTypeValue[]
-  is_featured?: ("featured" | "not_featured")[]
-  brand_id?: number
-  category_id?: number
-  per_page?: number
-  page?: number
-}) => {
+export const useGetProducts = (
+  params?: {
+    search?: string
+    status?: ProductStatus[]
+    visibility?: ProductVisibilityValue[]
+    type?: ProductTypeValue[]
+    is_featured?: ("featured" | "not_featured")[]
+    brand_id?: number
+    category_id?: number
+    per_page?: number
+    page?: number
+  },
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
     queryKey: ["products", params],
     queryFn: () => getProducts(params),
+    enabled: options?.enabled ?? true,
   })
 }
 

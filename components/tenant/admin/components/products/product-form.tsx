@@ -28,6 +28,9 @@ import { ProductInventorySection } from "./sections/product-inventory-section"
 import { ProductOrganizationSection } from "./sections/product-organization-section"
 import { ProductPublishingSection } from "./sections/product-publishing-section"
 import { ProductMediaSection } from "./sections/product-media-section"
+import { ProductVideosSection } from "./sections/product-videos-section"
+import { ProductShippingSection } from "./sections/product-shipping-section"
+import { ProductDocumentsSection } from "./sections/product-documents-section"
 import { ProductSeoSection } from "./sections/product-seo-section"
 import { ProductAttributesSection } from "./sections/product-attributes-section"
 import { ProductOptionsSection } from "./sections/product-options-section"
@@ -184,6 +187,7 @@ export function ProductForm({ product }: ProductFormProps) {
             <>
               <ProductPricingSection form={form} />
               <ProductInventorySection form={form} product={product} />
+              <ProductShippingSection form={form} product={product} />
             </>
           )}
           {isUpdate && product && <ProductSuppliersSection product={product} />}
@@ -214,6 +218,8 @@ export function ProductForm({ product }: ProductFormProps) {
           )}
           <ProductAttributesSection form={form} />
           <ProductMediaSection form={form} product={product} />
+          <ProductVideosSection form={form} />
+          {isUpdate && product && <ProductDocumentsSection product={product} />}
           <ProductSeoSection form={form} />
         </div>
 

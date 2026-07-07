@@ -17,7 +17,7 @@ import {
 
 import { cn } from "@/lib/utils"
 import { downloadMediaItem } from "@/lib/tenant/media-download"
-import { isMediaImage, isMediaPreviewable } from "@/lib/tenant/media-file-kind"
+import { isMediaImage, isMediaPreviewable, mediaMatchesAccept } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import {
   MediaAiContextMenuSub,
@@ -68,6 +68,7 @@ interface MediaListProps {
   folders: MediaBrowserFolder[]
   items: MediaItem[]
   mode: "manage" | "picker"
+  accept?: string
   selectedIds: number[]
   pickerValue?: number | null
   onOpenFolder?: (folderId: number) => void
@@ -375,6 +376,7 @@ export function MediaList({
   folders,
   items,
   mode,
+  accept,
   selectedIds,
   pickerValue,
   onOpenFolder,
@@ -490,6 +492,7 @@ export function MediaList({
 
       {items.map((item) => {
         const isImage = isMediaImage(item)
+        const isPickable = mode !== "picker" || mediaMatchesAccept(item, accept)
         const isSelected =
           mode === "picker"
             ? pickerValue === item.id
@@ -500,11 +503,14 @@ export function MediaList({
             data-media-item
             className={cn(
               listRowClassName,
-              "cursor-pointer",
+              isPickable ? "cursor-pointer" : "cursor-not-allowed opacity-50",
               isSelected && "border-primary bg-primary/5"
             )}
             onClick={() => {
               if (mode === "picker") {
+                if (!isPickable) {
+                  return
+                }
                 onPick?.(item)
                 return
               }

@@ -207,6 +207,18 @@ export interface ProductServiceConfig {
   requires_confirmation?: boolean
   cancellation_hours?: number
   instructions?: string | null
+  schedules?: ProductServiceSchedule[]
+}
+
+export interface ProductServiceSchedule {
+  id?: number
+  product_id?: number
+  provider_id?: number | null
+  day_of_week: number
+  day_name?: string
+  start_time: string
+  end_time: string
+  is_available?: boolean
 }
 
 export type ProductSubscriptionInterval = "day" | "week" | "month" | "year"
@@ -336,6 +348,17 @@ export interface Product {
   options?: ProductGenerationOption[]
   primary_image_media?: ProductMediaRef | null
   gallery?: ProductGalleryItem[]
+  videos?: {
+    id?: number
+    video_url: string
+    video_id?: string | null
+    title?: string | null
+    description?: string | null
+    sort_order?: number
+    is_primary?: boolean
+    thumbnail_url?: string | null
+    embed_url?: string | null
+  }[]
   default_variant?: ProductVariant | null
   variants?: ProductVariant[]
   variants_count?: number

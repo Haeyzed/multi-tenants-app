@@ -39,6 +39,16 @@ type ProductServiceSectionProps = {
   product: Product
 }
 
+const DAY_OPTIONS = [
+  { value: 0, label: "Sunday" },
+  { value: 1, label: "Monday" },
+  { value: 2, label: "Tuesday" },
+  { value: 3, label: "Wednesday" },
+  { value: 4, label: "Thursday" },
+  { value: 5, label: "Friday" },
+  { value: 6, label: "Saturday" },
+] as const
+
 function defaultServiceValues(product: Product): SyncProductServiceFormValues {
   return {
     service: {
@@ -61,6 +71,25 @@ function defaultServiceValues(product: Product): SyncProductServiceFormValues {
           ? Number(provider.commission_rate)
           : null,
       })) ?? [],
+    schedules:
+      product.service?.schedules?.map((schedule) => ({
+        id: schedule.id,
+        day_of_week: schedule.day_of_week,
+        start_time: schedule.start_time,
+        end_time: schedule.end_time,
+        provider_id: schedule.provider_id ?? null,
+        is_available: schedule.is_available ?? true,
+      })) ?? [],
+  }
+}
+
+function createEmptySchedule(): SyncProductServiceFormValues["schedules"][number] {
+  return {
+    day_of_week: 1,
+    start_time: "09:00",
+    end_time: "17:00",
+    provider_id: null,
+    is_available: true,
   }
 }
 
@@ -109,6 +138,18 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
       ...current,
       providers: current.providers.map((provider, providerIndex) =>
         providerIndex === index ? { ...provider, ...patch } : provider
+      ),
+    }))
+  }
+
+  const updateSchedule = (
+    index: number,
+    patch: Partial<NonNullable<SyncProductServiceFormValues["schedules"]>[number]>
+  ) => {
+    setFormValues((current) => ({
+      ...current,
+      schedules: (current.schedules ?? []).map((schedule, scheduleIndex) =>
+        scheduleIndex === index ? { ...schedule, ...patch } : schedule
       ),
     }))
   }
@@ -399,6 +440,154 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                               ...current,
                               providers: current.providers.filter(
                                 (_, providerIndex) => providerIndex !== index
+                              ),
+                            }))
+                          }
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h3 className="font-medium">Availability schedule</h3>
+              <p className="text-sm text-muted-foreground">
+                Weekly windows when this service can be booked. Used by the storefront booking flow.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() =>
+                setFormValues((current) => ({
+                  ...current,
+                  schedules: [...(current.schedules ?? []), createEmptySchedule()],
+                }))
+              }
+            >
+              <Plus className="mr-1 size-4" />
+              Add window
+            </Button>
+          </div>
+
+          {(formValues.schedules ?? []).length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No schedule windows. Add availability or leave empty for always-on booking rules.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Day</TableHead>
+                  <TableHead>Start</TableHead>
+                  <TableHead>End</TableHead>
+                  <TableHead>Provider</TableHead>
+                  <TableHead>Available</TableHead>
+                  <TableHead className="w-12" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {(formValues.schedules ?? []).map((schedule, index) => {
+                  const selectedDay =
+                    DAY_OPTIONS.find((option) => option.value === schedule.day_of_week) ??
+                    DAY_OPTIONS[1]
+                  const selectedProvider =
+                    teamOptions.find((option) => option.value === schedule.provider_id) ??
+                    null
+
+                  return (
+                    <TableRow key={`schedule-${index}`}>
+                      <TableCell className="min-w-[140px]">
+                        <Combobox
+                          items={[...DAY_OPTIONS]}
+                          itemToStringValue={(item) => item.label}
+                          value={selectedDay}
+                          onValueChange={(item) => {
+                            if (!item) return
+                            updateSchedule(index, { day_of_week: item.value })
+                          }}
+                        >
+                          <ComboboxInput placeholder="Day" />
+                          <ComboboxContent>
+                            <ComboboxList>
+                              {(item) => (
+                                <ComboboxItem key={item.value} value={item}>
+                                  {item.label}
+                                </ComboboxItem>
+                              )}
+                            </ComboboxList>
+                          </ComboboxContent>
+                        </Combobox>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="time"
+                          value={schedule.start_time}
+                          onChange={(event) =>
+                            updateSchedule(index, { start_time: event.target.value })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="time"
+                          value={schedule.end_time}
+                          onChange={(event) =>
+                            updateSchedule(index, { end_time: event.target.value })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell className="min-w-[200px]">
+                        <Combobox
+                          items={teamOptions}
+                          itemToStringValue={(item) => item.label}
+                          value={selectedProvider}
+                          onValueChange={(item) =>
+                            updateSchedule(index, {
+                              provider_id: item ? item.value : null,
+                            })
+                          }
+                        >
+                          <ComboboxInput placeholder="Any provider" />
+                          <ComboboxContent>
+                            <ComboboxEmpty>No team members found.</ComboboxEmpty>
+                            <ComboboxList>
+                              {(item) => (
+                                <ComboboxItem key={item.value} value={item}>
+                                  {item.label}
+                                </ComboboxItem>
+                              )}
+                            </ComboboxList>
+                          </ComboboxContent>
+                        </Combobox>
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={schedule.is_available ?? true}
+                          onCheckedChange={(checked) =>
+                            updateSchedule(index, { is_available: !!checked })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            setFormValues((current) => ({
+                              ...current,
+                              schedules: (current.schedules ?? []).filter(
+                                (_, scheduleIndex) => scheduleIndex !== index
                               ),
                             }))
                           }

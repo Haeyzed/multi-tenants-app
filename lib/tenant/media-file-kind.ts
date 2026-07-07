@@ -87,6 +87,36 @@ export function isMediaImage(item: MediaFileLike): boolean {
   return item.mime_type?.startsWith("image/") ?? false
 }
 
+export function mediaMatchesAccept(
+  item: MediaFileLike,
+  accept?: string
+): boolean {
+  if (!accept) {
+    return true
+  }
+
+  const mime = item.mime_type?.toLowerCase() ?? ""
+  const extension = getMediaFileExtension(item)
+
+  return accept.split(",").some((pattern) => {
+    const trimmed = pattern.trim().toLowerCase()
+    if (!trimmed) {
+      return false
+    }
+
+    if (trimmed.endsWith("/*")) {
+      const prefix = trimmed.slice(0, -1)
+      return mime.startsWith(prefix)
+    }
+
+    if (trimmed.startsWith(".")) {
+      return extension === trimmed.slice(1)
+    }
+
+    return mime === trimmed
+  })
+}
+
 export function isMediaPreviewable(item: MediaFileLike): boolean {
   if (isMediaImage(item)) return true
 

@@ -16,6 +16,9 @@ type ProductsDialogType =
   | "view"
   | "bulkStatus"
   | "bulkVisibility"
+  | "manageFaqs"
+  | "manageReviews"
+  | "manageQuestions"
 
 type BulkUpdateSelection = {
   ids: number[]

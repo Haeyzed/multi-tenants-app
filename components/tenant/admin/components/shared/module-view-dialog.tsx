@@ -28,6 +28,7 @@ type ModuleViewDialogProps = {
   description?: string
   fields: ModuleViewField[]
   footer?: React.ReactNode
+  contentClassName?: string
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -56,10 +57,13 @@ export function ModuleViewDialog({
   description,
   fields,
   footer,
+  contentClassName,
 }: ModuleViewDialogProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+      <ResponsiveDialogContent
+        className={contentClassName ?? "max-h-[90vh] overflow-y-auto sm:max-w-lg"}
+      >
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
           {description ? (
@@ -68,7 +72,7 @@ export function ModuleViewDialog({
         </ResponsiveDialogHeader>
 
         <div className="space-y-4 py-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {fields.map((field) => (
               <DetailItem key={field.label} {...field} />
             ))}

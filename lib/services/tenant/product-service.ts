@@ -35,6 +35,21 @@ import {
   UpdateProductFormValues,
   UpdateProductVariantFormValues,
 } from "@/schemas/tenant/product-schema"
+import {
+  type AnswerProductQuestionFormValues,
+  type StoreProductDocumentFormValues,
+  type StoreProductFaqFormValues,
+  type UpdateProductDocumentFormValues,
+  type UpdateProductFaqFormValues,
+  type UpdateProductReviewFormValues,
+  type ProductVideoFormValues,
+} from "@/schemas/tenant/product-nested-schema"
+import {
+  type ProductDocument,
+  type ProductFaq,
+  type ProductQuestion,
+  type ProductReview,
+} from "@/types/tenant/product-nested"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 
 interface ApiResponse<T> {
@@ -417,6 +432,174 @@ export const deleteProductVariant = async (
   await tenantApiClient.delete<ApiResponse<void>>(
     `/products/${productId}/variants/${variantId}`
   )
+}
+
+export const duplicateProduct = async (
+  productId: number
+): Promise<ApiMutationResult<Product>> => {
+  const response = await tenantApiClient.post<ApiResponse<Product>>(
+    `/products/${productId}/duplicate`,
+    {}
+  )
+  return {
+    message: response.message,
+    data: normalizeProduct(response.data),
+  }
+}
+
+export const getProductFaqs = async (productId: number): Promise<ProductFaq[]> => {
+  const response = await tenantApiClient.get<ApiResponse<ProductFaq[]>>(
+    `/products/${productId}/faqs`
+  )
+  return response.data
+}
+
+export const createProductFaq = async (
+  productId: number,
+  payload: StoreProductFaqFormValues
+): Promise<ApiMutationResult<ProductFaq>> => {
+  const response = await tenantApiClient.post<ApiResponse<ProductFaq>>(
+    `/products/${productId}/faqs`,
+    payload
+  )
+  return { message: response.message, data: response.data }
+}
+
+export const updateProductFaq = async (
+  productId: number,
+  faqId: number,
+  payload: UpdateProductFaqFormValues
+): Promise<ApiMutationResult<ProductFaq>> => {
+  const response = await tenantApiClient.put<ApiResponse<ProductFaq>>(
+    `/products/${productId}/faqs/${faqId}`,
+    payload
+  )
+  return { message: response.message, data: response.data }
+}
+
+export const deleteProductFaq = async (
+  productId: number,
+  faqId: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<null>>(
+    `/products/${productId}/faqs/${faqId}`
+  )
+  return { message: response.message, data: null }
+}
+
+export const getProductDocuments = async (
+  productId: number
+): Promise<ProductDocument[]> => {
+  const response = await tenantApiClient.get<ApiResponse<ProductDocument[]>>(
+    `/products/${productId}/documents`
+  )
+  return response.data
+}
+
+export const createProductDocument = async (
+  productId: number,
+  payload: StoreProductDocumentFormValues
+): Promise<ApiMutationResult<ProductDocument>> => {
+  const response = await tenantApiClient.post<ApiResponse<ProductDocument>>(
+    `/products/${productId}/documents`,
+    payload
+  )
+  return { message: response.message, data: response.data }
+}
+
+export const updateProductDocument = async (
+  productId: number,
+  documentId: number,
+  payload: UpdateProductDocumentFormValues
+): Promise<ApiMutationResult<ProductDocument>> => {
+  const response = await tenantApiClient.put<ApiResponse<ProductDocument>>(
+    `/products/${productId}/documents/${documentId}`,
+    payload
+  )
+  return { message: response.message, data: response.data }
+}
+
+export const deleteProductDocument = async (
+  productId: number,
+  documentId: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<null>>(
+    `/products/${productId}/documents/${documentId}`
+  )
+  return { message: response.message, data: null }
+}
+
+export const getProductReviews = async (
+  productId: number
+): Promise<ProductReview[]> => {
+  const response = await tenantApiClient.get<ApiResponse<ProductReview[]>>(
+    `/products/${productId}/reviews`
+  )
+  return response.data
+}
+
+export const updateProductReview = async (
+  productId: number,
+  reviewId: number,
+  payload: UpdateProductReviewFormValues
+): Promise<ApiMutationResult<ProductReview>> => {
+  const response = await tenantApiClient.put<ApiResponse<ProductReview>>(
+    `/products/${productId}/reviews/${reviewId}`,
+    payload
+  )
+  return { message: response.message, data: response.data }
+}
+
+export const deleteProductReview = async (
+  productId: number,
+  reviewId: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<null>>(
+    `/products/${productId}/reviews/${reviewId}`
+  )
+  return { message: response.message, data: null }
+}
+
+export const getProductQuestions = async (
+  productId: number
+): Promise<ProductQuestion[]> => {
+  const response = await tenantApiClient.get<ApiResponse<ProductQuestion[]>>(
+    `/products/${productId}/questions`
+  )
+  return response.data
+}
+
+export const answerProductQuestion = async (
+  productId: number,
+  questionId: number,
+  payload: AnswerProductQuestionFormValues
+): Promise<ApiMutationResult<ProductQuestion>> => {
+  const response = await tenantApiClient.put<ApiResponse<ProductQuestion>>(
+    `/products/${productId}/questions/${questionId}`,
+    payload
+  )
+  return { message: response.message, data: response.data }
+}
+
+export const deleteProductQuestion = async (
+  productId: number,
+  questionId: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<null>>(
+    `/products/${productId}/questions/${questionId}`
+  )
+  return { message: response.message, data: null }
+}
+
+export const syncProductVideos = async (
+  productId: number,
+  videos: ProductVideoFormValues[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.put<ApiResponse<null>>(
+    `/products/${productId}/videos`,
+    { videos }
+  )
+  return { message: response.message, data: null }
 }
 
 export type { ProductApiPayload }

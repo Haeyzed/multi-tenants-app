@@ -204,8 +204,6 @@ export function MediaLibraryPanel({
     per_page: perPage,
     search: search || undefined,
     folder_id: folderId ?? undefined,
-    mime_type: accept?.startsWith("image") ? "image" : undefined,
-    root_only: folderId === null && !search,
   })
   const uploadMutation = useBulkUploadMedia()
   const deleteMediaMutation = useDeleteMedia()
@@ -280,7 +278,10 @@ export function MediaLibraryPanel({
       uploadMutation.mutate(
         { files, meta: { folder_id: folderId } },
         {
-          onSuccess: (result) => {
+          onSuccess: async (result) => {
+            setPage(1)
+            setSelectedIds([])
+            await queryClient.refetchQueries({ queryKey: ["media"] })
             toast.success(`${result.uploaded} file(s) uploaded successfully`)
           },
           onError: (error) => {
@@ -289,7 +290,7 @@ export function MediaLibraryPanel({
         }
       )
     },
-    [folderId, uploadMutation]
+    [folderId, queryClient, uploadMutation]
   )
 
   const items: MediaItem[] = mediaQuery.data?.data ?? []
@@ -518,6 +519,7 @@ export function MediaLibraryPanel({
     folders,
     items,
     mode,
+    accept,
     selectedIds,
     pickerValue,
     onOpenFolder: openFolder,

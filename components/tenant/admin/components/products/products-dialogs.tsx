@@ -21,6 +21,9 @@ import { ProductsImportDialog } from "./products-import-dialog"
 import { ProductsMultiDeleteDialog } from "./products-multi-delete-dialog"
 import { ProductsBulkUpdateDialog } from "./products-bulk-update-dialog"
 import { ProductsViewDialog } from "./products-view-dialog"
+import { ProductsManageFaqsDialog } from "./products-manage-faqs-dialog"
+import { ProductsManageReviewsDialog } from "./products-manage-reviews-dialog"
+import { ProductsManageQuestionsDialog } from "./products-manage-questions-dialog"
 import { useProducts } from "./products-provider"
 
 export function ProductsDialogs() {
@@ -136,6 +139,48 @@ export function ProductsDialogs() {
           setBulkUpdateSelection(null)
         }}
       />
+
+      {currentRow && (
+        <ProductsManageFaqsDialog
+          key={`products-faqs-${currentRow.id}`}
+          open={open === "manageFaqs"}
+          onOpenChange={(val) => {
+            if (!val) {
+              setOpen(null)
+              setTimeout(() => setCurrentRow(null), 500)
+            }
+          }}
+          product={currentRow}
+        />
+      )}
+
+      {currentRow && (
+        <ProductsManageReviewsDialog
+          key={`products-reviews-${currentRow.id}`}
+          open={open === "manageReviews"}
+          onOpenChange={(val) => {
+            if (!val) {
+              setOpen(null)
+              setTimeout(() => setCurrentRow(null), 500)
+            }
+          }}
+          product={currentRow}
+        />
+      )}
+
+      {currentRow && (
+        <ProductsManageQuestionsDialog
+          key={`products-questions-${currentRow.id}`}
+          open={open === "manageQuestions"}
+          onOpenChange={(val) => {
+            if (!val) {
+              setOpen(null)
+              setTimeout(() => setCurrentRow(null), 500)
+            }
+          }}
+          product={currentRow}
+        />
+      )}
 
       {currentRow && (
         <ProductsViewDialog

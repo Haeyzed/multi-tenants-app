@@ -15,9 +15,20 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
 import { Spinner } from "@/components/ui/spinner"
+import { MediaPickerField } from "@/components/tenant/admin/components/media/media-picker-field"
 import { handleFormApiError } from "@/lib/form-api-errors"
+import { useGetUnitOptions } from "@/hooks/tenant/use-unit-query"
 import {
   useCreateProductVariant,
   useUpdateProductVariant,
@@ -29,6 +40,8 @@ import {
   type UpdateProductVariantFormValues,
 } from "@/schemas/tenant/product-schema"
 import { type ProductVariant } from "@/types/tenant/product"
+import { type UnitOption } from "@/types/tenant/unit"
+import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { FieldError } from "./product-form-shared"
 
 type ProductVariantMutateDialogProps = {
@@ -48,6 +61,18 @@ export function ProductVariantMutateDialog({
   const createVariant = useCreateProductVariant(productId)
   const updateVariant = useUpdateProductVariant(productId)
   const isSubmitting = createVariant.isPending || updateVariant.isPending
+  const { data: unitOptions = [] } = useGetUnitOptions()
+
+  const weightUnits = (unitOptions as UnitOption[]).filter(
+    (unit) => unit.type === "weight"
+  )
+  const dimensionUnits = (unitOptions as UnitOption[]).filter(
+    (unit) => unit.type === "length"
+  )
+
+  const [imagePreviewUrl, setImagePreviewUrl] = React.useState<string | null>(
+    null
+  )
 
   const form = useForm<StoreProductVariantFormValues | UpdateProductVariantFormValues>({
     resolver: zodResolver(
@@ -61,14 +86,33 @@ export function ProductVariantMutateDialog({
       cost_price: null,
       barcode: null,
       is_default: false,
+      weight: null,
+      length: null,
+      width: null,
+      height: null,
+      weight_unit_id: null,
+      dimension_unit_id: null,
+      image_media_id: null,
       inventory: { quantity: 0 },
     },
   })
+
+  const weightUnitId = form.watch("weight_unit_id")
+  const dimensionUnitId = form.watch("dimension_unit_id")
+  const selectedWeightUnit =
+    weightUnits.find((unit) => unit.value === weightUnitId) ?? null
+  const selectedDimensionUnit =
+    dimensionUnits.find((unit) => unit.value === dimensionUnitId) ?? null
 
   React.useEffect(() => {
     if (!open) return
 
     if (variant) {
+      setImagePreviewUrl(
+        variant.image_media?.url
+          ? resolveTenantMediaUrl(variant.image_media)
+          : null
+      )
       form.reset({
         title: variant.title,
         sku: variant.sku,
@@ -79,6 +123,13 @@ export function ProductVariantMutateDialog({
         cost_price: variant.cost_price ? Number(variant.cost_price) : null,
         barcode: variant.barcode ?? null,
         is_default: variant.is_default ?? false,
+        weight: variant.weight ? Number(variant.weight) : null,
+        length: variant.length ? Number(variant.length) : null,
+        width: variant.width ? Number(variant.width) : null,
+        height: variant.height ? Number(variant.height) : null,
+        weight_unit_id: variant.weight_unit_id ?? null,
+        dimension_unit_id: variant.dimension_unit_id ?? null,
+        image_media_id: variant.image_media_id ?? null,
         inventory: {
           quantity: variant.inventories?.[0]?.quantity ?? 0,
           reorder_level: variant.inventories?.[0]?.reorder_level ?? null,
@@ -87,6 +138,7 @@ export function ProductVariantMutateDialog({
       return
     }
 
+    setImagePreviewUrl(null)
     form.reset({
       title: "",
       sku: "",
@@ -95,6 +147,13 @@ export function ProductVariantMutateDialog({
       cost_price: null,
       barcode: null,
       is_default: false,
+      weight: null,
+      length: null,
+      width: null,
+      height: null,
+      weight_unit_id: null,
+      dimension_unit_id: null,
+      image_media_id: null,
       inventory: { quantity: 0 },
     })
   }, [open, variant, form])
@@ -129,13 +188,14 @@ export function ProductVariantMutateDialog({
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="sm:max-w-lg">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>
             {isUpdate ? "Edit variant" : "Add variant"}
           </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Configure sellable variant details including SKU, pricing, and stock.
+            Configure sellable variant details including SKU, pricing, image,
+            shipping, and stock.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
@@ -169,7 +229,7 @@ export function ProductVariantMutateDialog({
             </Field>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <Field>
               <FieldLabel>Compare-at price</FieldLabel>
               <FieldContent>
@@ -177,6 +237,19 @@ export function ProductVariantMutateDialog({
                   type="number"
                   step="0.01"
                   {...form.register("compare_at_price", {
+                    setValueAs: (value) =>
+                      value === "" || value === null ? null : Number(value),
+                  })}
+                />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Cost price</FieldLabel>
+              <FieldContent>
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...form.register("cost_price", {
                     setValueAs: (value) =>
                       value === "" || value === null ? null : Number(value),
                   })}
@@ -195,6 +268,141 @@ export function ProductVariantMutateDialog({
               </FieldContent>
             </Field>
           </div>
+
+          <MediaPickerField
+            label="Variant image"
+            value={form.watch("image_media_id") ?? null}
+            previewUrl={imagePreviewUrl}
+            onChange={(mediaId, media) => {
+              form.setValue("image_media_id", mediaId, { shouldDirty: true })
+              setImagePreviewUrl(
+                media?.url ? resolveTenantMediaUrl(media) : null
+              )
+            }}
+            accept="image/*"
+          />
+
+          <Card>
+            <CardHeader className="py-3">
+              <CardTitle className="text-base">Shipping</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <Field>
+                  <FieldLabel>Weight</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      {...form.register("weight", {
+                        setValueAs: (value) =>
+                          value === "" || value === null ? null : Number(value),
+                      })}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Weight unit</FieldLabel>
+                  <FieldContent>
+                    <Combobox
+                      items={weightUnits}
+                      itemToStringValue={(item) => `${item.label} (${item.symbol})`}
+                      value={selectedWeightUnit}
+                      onValueChange={(item) => {
+                        form.setValue(
+                          "weight_unit_id",
+                          item ? item.value : null,
+                          { shouldDirty: true }
+                        )
+                      }}
+                    >
+                      <ComboboxInput placeholder="Select unit..." />
+                      <ComboboxContent>
+                        <ComboboxEmpty>No units found.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(item) => (
+                            <ComboboxItem key={item.value} value={item}>
+                              {item.label} ({item.symbol})
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
+                  </FieldContent>
+                </Field>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <Field>
+                  <FieldLabel>Length</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      {...form.register("length", {
+                        setValueAs: (value) =>
+                          value === "" || value === null ? null : Number(value),
+                      })}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Width</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      {...form.register("width", {
+                        setValueAs: (value) =>
+                          value === "" || value === null ? null : Number(value),
+                      })}
+                    />
+                  </FieldContent>
+                </Field>
+                <Field>
+                  <FieldLabel>Height</FieldLabel>
+                  <FieldContent>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      {...form.register("height", {
+                        setValueAs: (value) =>
+                          value === "" || value === null ? null : Number(value),
+                      })}
+                    />
+                  </FieldContent>
+                </Field>
+              </div>
+              <Field>
+                <FieldLabel>Dimension unit</FieldLabel>
+                <FieldContent>
+                  <Combobox
+                    items={dimensionUnits}
+                    itemToStringValue={(item) => `${item.label} (${item.symbol})`}
+                    value={selectedDimensionUnit}
+                    onValueChange={(item) => {
+                      form.setValue(
+                        "dimension_unit_id",
+                        item ? item.value : null,
+                        { shouldDirty: true }
+                      )
+                    }}
+                  >
+                    <ComboboxInput placeholder="Select unit..." />
+                    <ComboboxContent>
+                      <ComboboxEmpty>No units found.</ComboboxEmpty>
+                      <ComboboxList>
+                        {(item) => (
+                          <ComboboxItem key={item.value} value={item}>
+                            {item.label} ({item.symbol})
+                          </ComboboxItem>
+                        )}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+                </FieldContent>
+              </Field>
+            </CardContent>
+          </Card>
 
           <div className="flex items-center space-x-2">
             <Checkbox

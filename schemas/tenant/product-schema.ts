@@ -72,6 +72,19 @@ export const productPriceTierSchema = z.object({
   ends_at: z.string().nullable().optional(),
 })
 
+const productVideoFormSchema = z.object({
+  video_url: z
+    .string()
+    .min(1)
+    .regex(
+      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)[a-zA-Z0-9_-]{11}.*/
+    ),
+  title: z.string().max(255).nullable().optional(),
+  description: z.string().max(1000).nullable().optional(),
+  sort_order: z.coerce.number().int().min(0).optional(),
+  is_primary: z.boolean().optional(),
+})
+
 export const defaultVariantSchema = z.object({
   id: z.number().optional(),
   title: z.string().max(255).optional(),
@@ -82,6 +95,13 @@ export const defaultVariantSchema = z.object({
   barcode: z.string().max(100).nullable().optional(),
   gtin: z.string().max(14).nullable().optional(),
   mpn: z.string().max(100).nullable().optional(),
+  weight: z.coerce.number().min(0).nullable().optional(),
+  length: z.coerce.number().min(0).nullable().optional(),
+  width: z.coerce.number().min(0).nullable().optional(),
+  height: z.coerce.number().min(0).nullable().optional(),
+  weight_unit_id: z.number().nullable().optional(),
+  dimension_unit_id: z.number().nullable().optional(),
+  image_media_id: z.number().nullable().optional(),
   inventory: defaultVariantInventorySchema.optional(),
   price_tiers: z.array(productPriceTierSchema).optional(),
 })
@@ -110,6 +130,7 @@ const baseProductSchema = z.object({
   collection_ids: z.array(z.number()).optional(),
   primary_image_media_id: z.number().nullable().optional(),
   gallery: z.array(galleryItemSchema).optional(),
+  videos: z.array(productVideoFormSchema).optional(),
   default_variant: defaultVariantSchema.optional(),
   meta_title: z.string().max(255).nullable().optional(),
   meta_description: z.string().nullable().optional(),
@@ -179,6 +200,7 @@ export type ProductApiPayload = {
   collection_ids?: number[]
   primary_image_media_id?: number | null
   gallery?: StoreProductFormValues["gallery"]
+  videos?: StoreProductFormValues["videos"]
   default_variant?: {
     id?: number
     title?: string
@@ -189,6 +211,13 @@ export type ProductApiPayload = {
     barcode?: string | null
     gtin?: string | null
     mpn?: string | null
+    weight?: number | null
+    length?: number | null
+    width?: number | null
+    height?: number | null
+    weight_unit_id?: number | null
+    dimension_unit_id?: number | null
+    image_media_id?: number | null
     inventory?: {
       warehouse_id?: number | null
       quantity?: number
@@ -233,6 +262,7 @@ export function mapProductFormToApiPayload(
     collection_ids: data.collection_ids,
     primary_image_media_id: data.primary_image_media_id ?? null,
     gallery: data.gallery,
+    videos: data.videos,
     meta_title: data.meta_title || null,
     meta_description: data.meta_description || null,
     meta_keywords: data.meta_keywords || null,
@@ -264,7 +294,7 @@ export function mapProductFormToApiPayload(
   const productType = data.type ?? "simple"
 
   if (defaultVariant && !VARIANT_PRODUCT_TYPES.includes(productType)) {
-    payload.default_variant = {
+    const variantPayload = {
       id: defaultVariant.id,
       title: defaultVariant.title || data.name || undefined,
       sku: defaultVariant.sku,
@@ -274,7 +304,16 @@ export function mapProductFormToApiPayload(
       barcode: defaultVariant.barcode || null,
       gtin: defaultVariant.gtin || null,
       mpn: defaultVariant.mpn || null,
+      weight: defaultVariant.weight ?? null,
+      length: defaultVariant.length ?? null,
+      width: defaultVariant.width ?? null,
+      height: defaultVariant.height ?? null,
+      weight_unit_id: defaultVariant.weight_unit_id ?? null,
+      dimension_unit_id: defaultVariant.dimension_unit_id ?? null,
+      image_media_id: defaultVariant.image_media_id ?? null,
     }
+
+    payload.default_variant = variantPayload
 
     if (defaultVariant.price_tiers?.length) {
       payload.default_variant.price_tiers = defaultVariant.price_tiers.map(
@@ -327,6 +366,7 @@ export function getDefaultProductFormValues(): StoreProductFormValues {
     collection_ids: [],
     primary_image_media_id: null,
     gallery: [],
+    videos: [],
     default_variant: {
       title: "",
       sku: "",
@@ -336,6 +376,13 @@ export function getDefaultProductFormValues(): StoreProductFormValues {
       barcode: null,
       gtin: null,
       mpn: null,
+      weight: null,
+      length: null,
+      width: null,
+      height: null,
+      weight_unit_id: null,
+      dimension_unit_id: null,
+      image_media_id: null,
       inventory: {
         warehouse_id: null,
         quantity: 0,
@@ -416,6 +463,14 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
         caption: item.caption ?? null,
         is_primary: item.is_primary,
       })) ?? [],
+    videos:
+      product.videos?.map((video, index) => ({
+        video_url: video.video_url,
+        title: video.title ?? null,
+        description: video.description ?? null,
+        sort_order: video.sort_order ?? index,
+        is_primary: video.is_primary ?? index === 0,
+      })) ?? [],
     default_variant: {
       id: defaultVariant?.id,
       title: defaultVariant?.title ?? product.name,
@@ -430,6 +485,13 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
       barcode: defaultVariant?.barcode ?? null,
       gtin: defaultVariant?.gtin ?? null,
       mpn: defaultVariant?.mpn ?? null,
+      weight: defaultVariant?.weight ? Number(defaultVariant.weight) : null,
+      length: defaultVariant?.length ? Number(defaultVariant.length) : null,
+      width: defaultVariant?.width ? Number(defaultVariant.width) : null,
+      height: defaultVariant?.height ? Number(defaultVariant.height) : null,
+      weight_unit_id: defaultVariant?.weight_unit_id ?? null,
+      dimension_unit_id: defaultVariant?.dimension_unit_id ?? null,
+      image_media_id: defaultVariant?.image_media_id ?? null,
       inventory: {
         warehouse_id: variantInventory?.warehouse_id ?? null,
         quantity: variantInventory?.quantity ?? 0,
@@ -576,9 +638,19 @@ export const productProviderSchema = z.object({
   commission_rate: z.coerce.number().min(0).max(100).nullable().optional(),
 })
 
+export const productServiceScheduleSchema = z.object({
+  id: z.number().optional(),
+  day_of_week: z.coerce.number().int().min(0).max(6),
+  start_time: z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format"),
+  end_time: z.string().regex(/^\d{2}:\d{2}$/, "Use HH:MM format"),
+  provider_id: z.number().nullable().optional(),
+  is_available: z.boolean().optional(),
+})
+
 export const syncProductServiceSchema = z.object({
   service: productServiceConfigSchema,
   providers: z.array(productProviderSchema),
+  schedules: z.array(productServiceScheduleSchema).optional(),
 })
 
 export const productSubscriptionConfigSchema = z.object({
@@ -604,6 +676,13 @@ export const storeProductVariantSchema = z.object({
   cost_price: z.coerce.number().min(0).nullable().optional(),
   barcode: z.string().max(100).nullable().optional(),
   is_default: z.boolean().optional(),
+  weight: z.coerce.number().min(0).nullable().optional(),
+  length: z.coerce.number().min(0).nullable().optional(),
+  width: z.coerce.number().min(0).nullable().optional(),
+  height: z.coerce.number().min(0).nullable().optional(),
+  weight_unit_id: z.number().nullable().optional(),
+  dimension_unit_id: z.number().nullable().optional(),
+  image_media_id: z.number().nullable().optional(),
   option_value_ids: z.array(z.number()).optional(),
   inventory: defaultVariantInventorySchema.optional(),
   price_tiers: z.array(productPriceTierSchema).optional(),

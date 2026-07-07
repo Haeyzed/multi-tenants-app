@@ -21,6 +21,7 @@ import {
   getMediaFileExtension,
   isMediaImage,
   isMediaPreviewable,
+  mediaMatchesAccept,
 } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import { MediaAiContextMenuSub,
@@ -70,6 +71,7 @@ interface MediaGridProps {
   folders: MediaBrowserFolder[]
   items: MediaItem[]
   mode: "manage" | "picker"
+  accept?: string
   selectedIds: number[]
   pickerValue?: number | null
   onOpenFolder?: (folderId: number) => void
@@ -319,6 +321,7 @@ export function MediaGrid({
   folders,
   items,
   mode,
+  accept,
   selectedIds,
   pickerValue,
   onOpenFolder,
@@ -430,6 +433,7 @@ export function MediaGrid({
       {items.map((item) => {
         const isImage = isMediaImage(item)
         const extension = getMediaFileExtension(item)
+        const isPickable = mode !== "picker" || mediaMatchesAccept(item, accept)
         const isSelected =
           mode === "picker"
             ? pickerValue === item.id
@@ -441,10 +445,14 @@ export function MediaGrid({
             data-media-item
             className={cn(
               "group relative w-full overflow-hidden rounded-md border bg-card text-left transition-colors hover:border-primary/40",
-              isSelected && "border-primary ring-2 ring-primary/20"
+              isSelected && "border-primary ring-2 ring-primary/20",
+              mode === "picker" && !isPickable && "cursor-not-allowed opacity-50"
             )}
             onClick={() => {
               if (mode === "picker") {
+                if (!isPickable) {
+                  return
+                }
                 onPick?.(item)
                 return
               }
