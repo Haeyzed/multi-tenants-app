@@ -59,16 +59,32 @@ interface ApiResponse<T> {
   meta?: PaginatedResponse<unknown>["meta"]
 }
 
-function normalizeVariantMedia(variant: Product["default_variant"]) {
-  if (!variant?.image_media) {
+function normalizeVariantMedia(
+  variant: ProductVariant | null | undefined
+): ProductVariant | null | undefined {
+  if (!variant) {
     return variant
+  }
+
+  const legacyImage = (variant as ProductVariant & { image?: Product["primary_image_media"] })
+    .image
+  const imageMedia = variant.image_media ?? legacyImage ?? null
+  const imageMediaId = variant.image_media_id ?? imageMedia?.id ?? null
+
+  if (!imageMedia) {
+    return {
+      ...variant,
+      image_media_id: imageMediaId,
+      image_media: null,
+    }
   }
 
   return {
     ...variant,
+    image_media_id: imageMediaId,
     image_media: {
-      ...variant.image_media,
-      url: resolveTenantMediaUrl(variant.image_media),
+      ...imageMedia,
+      url: resolveTenantMediaUrl(imageMedia),
     },
   }
 }

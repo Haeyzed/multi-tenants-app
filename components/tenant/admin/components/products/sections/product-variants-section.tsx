@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Layers, Package, Plus, Sparkles, Trash2 } from "lucide-react"
@@ -40,7 +41,8 @@ import {
   generateProductVariantsSchema,
   type GenerateProductVariantsFormValues,
 } from "@/schemas/tenant/product-schema"
-import { type Product } from "@/types/tenant/product"
+import { type Product, type ProductVariant } from "@/types/tenant/product"
+import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { ProductVariantMutateDialog } from "./product-variant-mutate-dialog"
 import { ProductVariantInventoryDialog } from "./product-variant-inventory-dialog"
 import { ProductVariantPriceTiersDialog } from "./product-variant-price-tiers-dialog"
@@ -59,6 +61,19 @@ function formatOptionValues(product: Product, variantId: number) {
   return variant.option_values
     .map((value) => value.value)
     .join(" / ")
+}
+
+function resolveVariantImageUrl(variant: ProductVariant) {
+  const media =
+    variant.image_media ??
+    (variant as ProductVariant & { image?: ProductVariant["image_media"] }).image ??
+    null
+
+  if (!media?.url) {
+    return null
+  }
+
+  return resolveTenantMediaUrl(media)
 }
 
 export function ProductVariantsSection({ product }: ProductVariantsSectionProps) {
@@ -155,6 +170,7 @@ export function ProductVariantsSection({ product }: ProductVariantsSectionProps)
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[72px]">Image</TableHead>
                   <TableHead>Title</TableHead>
                   <TableHead>SKU</TableHead>
                   <TableHead>Options</TableHead>
@@ -164,8 +180,28 @@ export function ProductVariantsSection({ product }: ProductVariantsSectionProps)
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {product.variants.map((variant) => (
+                {product.variants.map((variant) => {
+                  const imageUrl = resolveVariantImageUrl(variant)
+
+                  return (
                   <TableRow key={variant.id}>
+                    <TableCell>
+                      {imageUrl ? (
+                        <div className="relative size-12 overflow-hidden rounded-md border">
+                          <Image
+                            src={imageUrl}
+                            alt={variant.title}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex size-12 items-center justify-center rounded-md border bg-muted text-[10px] text-muted-foreground">
+                          —
+                        </div>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <span>{variant.title}</span>
@@ -248,7 +284,8 @@ export function ProductVariantsSection({ product }: ProductVariantsSectionProps)
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                  )
+                })}
               </TableBody>
             </Table>
           ) : (

@@ -7,7 +7,7 @@ import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Button } from "@/components/ui/button"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
-import { isMediaImage } from "@/lib/tenant/media-file-kind"
+import { isMediaImage, type MediaFileLike } from "@/lib/tenant/media-file-kind"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import type { MediaItem } from "@/types/tenant/media"
 
@@ -36,12 +36,18 @@ export function MediaPickerField({
     : selectedMedia?.url
       ? resolveTenantMediaUrl(selectedMedia)
       : null
-  const previewItem = selectedMedia ?? (displayUrl ? { url: displayUrl, name: previewTitle ?? undefined } : null)
+  const previewItem =
+    selectedMedia ?? (displayUrl ? { url: displayUrl, name: previewTitle ?? undefined } : null)
   const previewLabel =
     previewTitle ??
     (selectedMedia ? (selectedMedia.title ?? selectedMedia.name) : previewTitle) ??
     previewItem?.name
-  const showImagePreview = Boolean(previewItem && isMediaImage(previewItem))
+  const showImagePreview = Boolean(
+    displayUrl &&
+      (accept?.startsWith("image") ||
+        !previewItem ||
+        isMediaImage(previewItem as MediaFileLike))
+  )
 
   return (
     <>

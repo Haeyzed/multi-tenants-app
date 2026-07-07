@@ -108,10 +108,13 @@ export function ProductVariantMutateDialog({
     if (!open) return
 
     if (variant) {
+      const variantImage =
+        variant.image_media ??
+        (variant as ProductVariant & { image?: ProductVariant["image_media"] }).image ??
+        null
+
       setImagePreviewUrl(
-        variant.image_media?.url
-          ? resolveTenantMediaUrl(variant.image_media)
-          : null
+        variantImage?.url ? resolveTenantMediaUrl(variantImage) : null
       )
       form.reset({
         title: variant.title,
@@ -129,7 +132,7 @@ export function ProductVariantMutateDialog({
         height: variant.height ? Number(variant.height) : null,
         weight_unit_id: variant.weight_unit_id ?? null,
         dimension_unit_id: variant.dimension_unit_id ?? null,
-        image_media_id: variant.image_media_id ?? null,
+        image_media_id: variant.image_media_id ?? variantImage?.id ?? null,
         inventory: {
           quantity: variant.inventories?.[0]?.quantity ?? 0,
           reorder_level: variant.inventories?.[0]?.reorder_level ?? null,
@@ -272,7 +275,13 @@ export function ProductVariantMutateDialog({
           <MediaPickerField
             label="Variant image"
             value={form.watch("image_media_id") ?? null}
-            previewUrl={imagePreviewUrl}
+            previewUrl={
+              imagePreviewUrl ??
+              (variant?.image_media?.url
+                ? resolveTenantMediaUrl(variant.image_media)
+                : null)
+            }
+            previewTitle={variant?.image_media?.name ?? variant?.title ?? null}
             onChange={(mediaId, media) => {
               form.setValue("image_media_id", mediaId, { shouldDirty: true })
               setImagePreviewUrl(
