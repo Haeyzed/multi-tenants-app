@@ -60,6 +60,7 @@ type CategoriesFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Category
+  onCreated?: (category: Category) => void
 }
 
 const noneParentOption: CategoryOption = { label: "None (root category)", value: 0 }
@@ -73,6 +74,7 @@ export function CategoriesFormDialog({
   open,
   onOpenChange,
   currentRow,
+  onCreated,
 }: CategoriesFormDialogProps) {
   const isUpdate = !!currentRow
   const createCategory = useCreateCategory()
@@ -220,8 +222,9 @@ export function CategoriesFormDialog({
       )
     } else {
       createCategory.mutate(payload as StoreCategoryFormValues, {
-        onSuccess: () => {
+        onSuccess: (created) => {
           toast.success("Category created successfully")
+          onCreated?.(created)
           onOpenChange(false)
           form.reset()
         },

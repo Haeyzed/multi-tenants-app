@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Edit, MoreHorizontal, Trash2 } from "lucide-react"
+import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -37,6 +37,15 @@ export function DataTableRowActions<TData>({
         }
       />
       <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuItem
+          onClick={() => {
+            setCurrentRow(product)
+            setOpen("view")
+          }}
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          View
+        </DropdownMenuItem>
         <TenantAdminAuthGuard permissions="products.update">
           <DropdownMenuItem
             render={<Link href={`/admin/products/${product.id}/edit`} />}

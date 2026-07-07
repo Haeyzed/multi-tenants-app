@@ -1,4 +1,5 @@
 import {
+  BookmarkIcon,
   FolderOpenIcon,
   GalleryVerticalEndIcon,
   ImageIcon,
@@ -81,6 +82,11 @@ export const sidebarData: SidebarData = {
           title: "Tags",
           url: "/admin/tags",
           icon: TagIcon,
+        },
+        {
+          title: "Product Labels",
+          url: "/admin/product-labels",
+          icon: BookmarkIcon,
         },
         {
           title: "Attributes",

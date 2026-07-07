@@ -116,6 +116,12 @@ export type TagStatistics = {
   hidden: number
 }
 
+export type ProductLabelStatistics = {
+  total: number
+  active: number
+  inactive: number
+}
+
 export type AttributeStatistics = {
   total: number
   filterable: number

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -63,19 +63,19 @@ export function ProductVariantPriceTiersDialog({
         payload: { price_tiers: tiers },
       },
       {
-        onSuccess: () => {
-          toast.success("Price tiers saved")
+        onSuccess: (response) => {
+          toastApiSuccess(response.message, "Price tiers saved")
           onOpenChange(false)
         },
-        onError: () => toast.error("Failed to save price tiers"),
+        onError: (error) => toastApiError(error, "Failed to save price tiers"),
       }
     )
   }
 
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="max-w-4xl">
-        <ResponsiveDialogHeader>
+      <ResponsiveDialogContent className="flex max-h-[min(90dvh,800px)] flex-col overflow-hidden sm:max-w-4xl">
+        <ResponsiveDialogHeader className="shrink-0">
           <ResponsiveDialogTitle>
             Price tiers{variant ? ` — ${variant.title}` : ""}
           </ResponsiveDialogTitle>
@@ -84,9 +84,11 @@ export function ProductVariantPriceTiersDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <ProductPriceTiersEditor tiers={tiers} onChange={setTiers} />
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <ProductPriceTiersEditor tiers={tiers} onChange={setTiers} />
+        </div>
 
-        <ResponsiveDialogFooter>
+        <ResponsiveDialogFooter className="shrink-0">
           <Button
             type="button"
             variant="outline"

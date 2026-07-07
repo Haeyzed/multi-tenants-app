@@ -4,12 +4,24 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox"
+import { useGetTaxClassOptions } from "@/hooks/tenant/use-tax-class-query"
 import { PRICING_PRODUCT_TYPES } from "@/schemas/tenant/product-schema"
 import { FieldError, type ProductFormSectionProps } from "./product-form-shared"
 import { ProductPriceTiersEditor } from "./product-price-tiers-editor"
 
 export function ProductPricingSection({ form }: ProductFormSectionProps) {
   const productType = form.watch("type")
+  const isTaxable = form.watch("is_taxable")
+  const taxClassId = form.watch("tax_class_id")
+  const { data: taxClassOptions = [] } = useGetTaxClassOptions()
 
   if (!PRICING_PRODUCT_TYPES.includes(productType)) {
     return null
@@ -17,6 +29,8 @@ export function ProductPricingSection({ form }: ProductFormSectionProps) {
 
   const defaultVariantErrors = form.formState.errors.default_variant
   const priceTiers = form.watch("default_variant.price_tiers") ?? []
+  const selectedTaxClass =
+    taxClassOptions.find((item) => item.value === taxClassId) ?? null
 
   return (
     <Card>
@@ -100,7 +114,7 @@ export function ProductPricingSection({ form }: ProductFormSectionProps) {
         <div className="flex items-center space-x-2">
           <Checkbox
             id="is_taxable"
-            checked={form.watch("is_taxable")}
+            checked={isTaxable}
             onCheckedChange={(checked) =>
               form.setValue("is_taxable", !!checked)
             }
@@ -109,6 +123,39 @@ export function ProductPricingSection({ form }: ProductFormSectionProps) {
             Charge tax on this product
           </label>
         </div>
+
+        {isTaxable && (
+          <Field>
+            <FieldLabel>Tax class</FieldLabel>
+            <FieldContent>
+              <Combobox
+                items={taxClassOptions}
+                itemToStringValue={(item) => item.label}
+                value={selectedTaxClass}
+                onValueChange={(item) => {
+                  form.setValue("tax_class_id", item ? item.value : null, {
+                    shouldDirty: true,
+                  })
+                }}
+              >
+                <ComboboxInput placeholder="Select tax class..." />
+                <ComboboxContent>
+                  <ComboboxEmpty>No tax classes found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Determines which tax rates apply when this product is taxable.
+              </p>
+            </FieldContent>
+          </Field>
+        )}
 
         <ProductPriceTiersEditor
           tiers={priceTiers}

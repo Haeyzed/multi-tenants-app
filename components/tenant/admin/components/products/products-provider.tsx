@@ -8,7 +8,19 @@ import {
   type ExportSelection,
 } from "@/types/tenant/export"
 
-type ProductsDialogType = "delete" | "export" | "import" | "deleteMany"
+type ProductsDialogType =
+  | "delete"
+  | "export"
+  | "import"
+  | "deleteMany"
+  | "view"
+  | "bulkStatus"
+  | "bulkVisibility"
+
+type BulkUpdateSelection = {
+  ids: number[]
+  onComplete?: () => void
+}
 
 type ProductsContextType = {
   open: ProductsDialogType | null
@@ -20,6 +32,10 @@ type ProductsContextType = {
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
+  >
+  bulkUpdateSelection: BulkUpdateSelection | null
+  setBulkUpdateSelection: React.Dispatch<
+    React.SetStateAction<BulkUpdateSelection | null>
   >
 }
 
@@ -33,6 +49,8 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
   )
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
+  const [bulkUpdateSelection, setBulkUpdateSelection] =
+    useState<BulkUpdateSelection | null>(null)
 
   return (
     <ProductsContext
@@ -45,6 +63,8 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
         setExportSelection,
         deleteManySelection,
         setDeleteManySelection,
+        bulkUpdateSelection,
+        setBulkUpdateSelection,
       }}
     >
       {children}

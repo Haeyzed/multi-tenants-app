@@ -221,6 +221,18 @@ export const TAG_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "created_at", label: "Created At" },
 ]
 
+export const PRODUCT_LABEL_EXPORT_COLUMNS: ExportColumnOption[] = [
+  { key: "id", label: "ID" },
+  { key: "name", label: "Name" },
+  { key: "slug", label: "Slug" },
+  { key: "color", label: "Color" },
+  { key: "background_color", label: "Background Color" },
+  { key: "icon", label: "Icon" },
+  { key: "is_active", label: "Active" },
+  { key: "sort_order", label: "Sort Order" },
+  { key: "created_at", label: "Created At" },
+]
+
 export const ATTRIBUTE_EXPORT_COLUMNS: ExportColumnOption[] = [
   { key: "id", label: "ID" },
   { key: "name", label: "Name" },

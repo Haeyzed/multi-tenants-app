@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { ArrowRightLeft, History, Package } from "lucide-react"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -112,8 +112,18 @@ export function ProductVariantInventoryDialog({
       setActiveTab("levels")
       adjustForm.reset({ quantity_change: 0, reason: "" })
       transferForm.reset({ destination_warehouse_id: 0, quantity: 1, reason: "" })
+      return
     }
-  }, [open, adjustForm, transferForm])
+
+    if (inventories.length > 0) {
+      setSelectedInventory((current) => {
+        if (current && inventories.some((item) => item.id === current.id)) {
+          return current
+        }
+        return inventories[0]
+      })
+    }
+  }, [open, inventories, adjustForm, transferForm])
 
   const handleReorderLevelSave = (inventory: InventoryRecord, value: string) => {
     const reorderLevel = value === "" ? null : Number(value)
@@ -124,8 +134,8 @@ export function ProductVariantInventoryDialog({
         payload: { reorder_level: reorderLevel },
       },
       {
-        onSuccess: () => toast.success("Reorder level updated"),
-        onError: () => toast.error("Failed to update reorder level"),
+        onSuccess: () => toastApiSuccess(undefined, "Reorder level updated"),
+        onError: (error) => toastApiError(error, "Failed to update reorder level"),
       }
     )
   }
@@ -140,10 +150,10 @@ export function ProductVariantInventoryDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Inventory adjusted")
+          toastApiSuccess(undefined, "Inventory adjusted")
           adjustForm.reset({ quantity_change: 0, reason: "" })
         },
-        onError: () => toast.error("Failed to adjust inventory"),
+        onError: (error) => toastApiError(error, "Failed to adjust inventory"),
       }
     )
   }
@@ -158,10 +168,10 @@ export function ProductVariantInventoryDialog({
       },
       {
         onSuccess: () => {
-          toast.success("Inventory transferred")
+          toastApiSuccess(undefined, "Inventory transferred")
           transferForm.reset({ destination_warehouse_id: 0, quantity: 1, reason: "" })
         },
-        onError: () => toast.error("Failed to transfer inventory"),
+        onError: (error) => toastApiError(error, "Failed to transfer inventory"),
       }
     )
   }
@@ -255,7 +265,11 @@ export function ProductVariantInventoryDialog({
           </TabsContent>
 
           <TabsContent value="adjust">
-            {!selectedInventory ? (
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <Spinner />
+              </div>
+            ) : !selectedInventory ? (
               <p className="text-sm text-muted-foreground">
                 Select a warehouse row in Stock levels first.
               </p>
@@ -300,7 +314,11 @@ export function ProductVariantInventoryDialog({
           </TabsContent>
 
           <TabsContent value="transfer">
-            {!selectedInventory ? (
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <Spinner />
+              </div>
+            ) : !selectedInventory ? (
               <p className="text-sm text-muted-foreground">
                 Select a source warehouse row in Stock levels first.
               </p>

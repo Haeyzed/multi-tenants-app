@@ -44,6 +44,7 @@ type CollectionsFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Collection
+  onCreated?: (collection: Collection) => void
 }
 
 const TYPE_OPTIONS: { label: string; value: CollectionType }[] = [
@@ -84,6 +85,7 @@ export function CollectionsFormDialog({
   open,
   onOpenChange,
   currentRow,
+  onCreated,
 }: CollectionsFormDialogProps) {
   const isUpdate = !!currentRow
   const createCollection = useCreateCollection()
@@ -193,8 +195,9 @@ export function CollectionsFormDialog({
       )
     } else {
       createCollection.mutate(payload as StoreCollectionFormValues, {
-        onSuccess: () => {
+        onSuccess: (created) => {
           toast.success("Collection created successfully")
+          onCreated?.(created)
           onOpenChange(false)
           form.reset()
         },

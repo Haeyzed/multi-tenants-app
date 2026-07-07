@@ -56,3 +56,12 @@ export const statusOptions: Option<StoreProductFormValues["status"]>[] = [
   { label: "Active", value: "active" },
   { label: "Archived", value: "archived" },
 ]
+
+export const serviceLocationTypeOptions: Option<
+  "any" | "in_person" | "online" | "hybrid"
+>[] = [
+  { label: "Any", value: "any" },
+  { label: "In person", value: "in_person" },
+  { label: "Online", value: "online" },
+  { label: "Hybrid", value: "hybrid" },
+]

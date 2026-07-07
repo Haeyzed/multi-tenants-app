@@ -106,6 +106,7 @@ const baseProductSchema = z.object({
   category_ids: z.array(z.number()).optional(),
   primary_category_id: z.number().nullable().optional(),
   tag_ids: z.array(z.number()).optional(),
+  label_ids: z.array(z.number()).optional(),
   collection_ids: z.array(z.number()).optional(),
   primary_image_media_id: z.number().nullable().optional(),
   gallery: z.array(galleryItemSchema).optional(),
@@ -174,6 +175,7 @@ export type ProductApiPayload = {
   category_ids?: number[]
   primary_category_id?: number | null
   tag_ids?: number[]
+  label_ids?: number[]
   collection_ids?: number[]
   primary_image_media_id?: number | null
   gallery?: StoreProductFormValues["gallery"]
@@ -227,6 +229,7 @@ export function mapProductFormToApiPayload(
     category_ids: data.category_ids ?? [],
     primary_category_id: data.primary_category_id ?? null,
     tag_ids: data.tag_ids ?? [],
+    label_ids: data.label_ids ?? [],
     collection_ids: data.collection_ids,
     primary_image_media_id: data.primary_image_media_id ?? null,
     gallery: data.gallery,
@@ -320,6 +323,7 @@ export function getDefaultProductFormValues(): StoreProductFormValues {
     category_ids: [],
     primary_category_id: null,
     tag_ids: [],
+    label_ids: [],
     collection_ids: [],
     primary_image_media_id: null,
     gallery: [],
@@ -385,7 +389,7 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
     description: product.description ?? "",
     type,
     condition,
-    status: product.status,
+    status: resolveProductEnumValue(product.status, "draft"),
     visibility,
     is_featured: product.is_featured,
     is_taxable: product.is_taxable ?? true,
@@ -398,6 +402,7 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
     primary_category_id:
       product.primary_category_id ?? primaryCategory?.id ?? null,
     tag_ids: product.tags?.map((tag) => tag.id) ?? [],
+    label_ids: product.labels?.map((label) => label.id) ?? [],
     collection_ids:
       product.collection_ids ?? product.collections?.map((collection) => collection.id) ?? [],
     primary_image_media_id: product.primary_image_media?.id ?? null,

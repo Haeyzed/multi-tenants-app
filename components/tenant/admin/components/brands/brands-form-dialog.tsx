@@ -36,6 +36,7 @@ type BrandsFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Brand
+  onCreated?: (brand: Brand) => void
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -47,6 +48,7 @@ export function BrandsFormDialog({
   open,
   onOpenChange,
   currentRow,
+  onCreated,
 }: BrandsFormDialogProps) {
   const isUpdate = !!currentRow
   const createBrand = useCreateBrand()
@@ -161,8 +163,9 @@ export function BrandsFormDialog({
       )
     } else {
       createBrand.mutate(payload as StoreBrandFormValues, {
-        onSuccess: () => {
+        onSuccess: (created) => {
           toast.success("Brand created successfully")
+          onCreated?.(created)
           onOpenChange(false)
           form.reset()
         },

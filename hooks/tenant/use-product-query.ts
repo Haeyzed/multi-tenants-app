@@ -4,6 +4,7 @@ import {
   deleteManyProducts,
   deleteProduct,
   exportProducts,
+  bulkUpdateProducts,
   getProduct,
   getProductOptions,
   getProducts,
@@ -13,7 +14,7 @@ import {
 } from "@/lib/services/tenant/product-service"
 import { type ExportParams } from "@/types/tenant/export"
 import {
-  type Product,
+  type ProductStatus,
   type ProductTypeValue,
   type ProductVisibilityValue,
 } from "@/types/tenant/product"
@@ -24,7 +25,7 @@ import {
 
 export const useGetProducts = (params?: {
   search?: string
-  status?: Product["status"][]
+  status?: ProductStatus[]
   visibility?: ProductVisibilityValue[]
   type?: ProductTypeValue[]
   is_featured?: ("featured" | "not_featured")[]
@@ -130,6 +131,21 @@ export const useImportProducts = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
       queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+    },
+  })
+}
+
+export const useBulkUpdateProducts = () => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: {
+      ids: number[]
+      status?: ProductStatus
+      visibility?: ProductVisibilityValue
+    }) => bulkUpdateProducts(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
     },
   })
 }

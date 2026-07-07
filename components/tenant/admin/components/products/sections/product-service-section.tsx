@@ -2,20 +2,12 @@
 
 import * as React from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Combobox,
   ComboboxContent,
@@ -40,7 +32,8 @@ import {
   type SyncProductServiceFormValues,
 } from "@/schemas/tenant/product-schema"
 import { type Product } from "@/types/tenant/product"
-import { FieldError } from "./product-form-shared"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
+import { FieldError, serviceLocationTypeOptions } from "./product-form-shared"
 
 type ProductServiceSectionProps = {
   product: Product
@@ -90,6 +83,15 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
   const [formValues, setFormValues] = React.useState(() => defaultServiceValues(product))
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
+  React.useEffect(() => {
+    setFormValues(defaultServiceValues(product))
+  }, [product])
+
+  const selectedLocationType =
+    serviceLocationTypeOptions.find(
+      (option) => option.value === (formValues.service.location_type ?? "any")
+    ) ?? serviceLocationTypeOptions[0]
+
   const updateService = (
     patch: Partial<SyncProductServiceFormValues["service"]>
   ) => {
@@ -125,8 +127,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
 
     setErrors({})
     syncService.mutate(result.data, {
-      onSuccess: () => toast.success("Service settings saved"),
-      onError: () => toast.error("Failed to save service settings"),
+      onSuccess: (response) =>
+        toastApiSuccess(response.message, "Service settings saved"),
+      onError: (error) => toastApiError(error, "Failed to save service settings"),
     })
   }
 
@@ -205,24 +208,27 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
           <Field>
             <FieldLabel>Location type</FieldLabel>
             <FieldContent>
-              <Select
-                value={formValues.service.location_type ?? "any"}
-                onValueChange={(value) =>
-                  updateService({
-                    location_type: value as SyncProductServiceFormValues["service"]["location_type"],
-                  })
-                }
+              <Combobox
+                items={serviceLocationTypeOptions}
+                itemToStringValue={(item) => item.label}
+                value={selectedLocationType}
+                onValueChange={(item) => {
+                  if (!item) return
+                  updateService({ location_type: item.value })
+                }}
               >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">Any</SelectItem>
-                  <SelectItem value="in_person">In person</SelectItem>
-                  <SelectItem value="online">Online</SelectItem>
-                  <SelectItem value="hybrid">Hybrid</SelectItem>
-                </SelectContent>
-              </Select>
+                <ComboboxInput placeholder="Select location type..." />
+                <ComboboxContent>
+                  <ComboboxEmpty>No options found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
             </FieldContent>
           </Field>
           <Field>
@@ -327,72 +333,82 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {formValues.providers.map((provider, index) => (
-                  <TableRow key={`provider-${index}`}>
-                    <TableCell className="min-w-[240px]">
-                      <Combobox
-                        value={provider.provider_id || null}
-                        onValueChange={(value) =>
-                          updateProvider(index, { provider_id: Number(value) })
-                        }
-                      >
-                        <ComboboxInput placeholder="Select team member" />
-                        <ComboboxContent>
-                          <ComboboxList>
+                {formValues.providers.map((provider, index) => {
+                  const selectedMember =
+                    teamOptions.find((option) => option.value === provider.provider_id) ??
+                    null
+
+                  return (
+                    <TableRow key={`provider-${index}`}>
+                      <TableCell className="min-w-[240px]">
+                        <Combobox
+                          items={teamOptions}
+                          itemToStringValue={(item) => item.label}
+                          value={selectedMember}
+                          onValueChange={(item) =>
+                            updateProvider(index, {
+                              provider_id: item ? item.value : 0,
+                            })
+                          }
+                        >
+                          <ComboboxInput placeholder="Select team member" />
+                          <ComboboxContent>
                             <ComboboxEmpty>No team members found.</ComboboxEmpty>
-                            {teamOptions.map((option) => (
-                              <ComboboxItem key={option.value} value={option.value}>
-                                {option.label}
-                              </ComboboxItem>
-                            ))}
-                          </ComboboxList>
-                        </ComboboxContent>
-                      </Combobox>
-                      <FieldError message={errors[`providers.${index}.provider_id`]} />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={provider.commission_rate ?? ""}
-                        onChange={(event) =>
-                          updateProvider(index, {
-                            commission_rate: event.target.value
-                              ? Number(event.target.value)
-                              : null,
-                          })
-                        }
-                        placeholder="—"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Checkbox
-                        checked={provider.is_primary ?? false}
-                        onCheckedChange={(checked) =>
-                          updateProvider(index, { is_primary: !!checked })
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          setFormValues((current) => ({
-                            ...current,
-                            providers: current.providers.filter(
-                              (_, providerIndex) => providerIndex !== index
-                            ),
-                          }))
-                        }
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                            <ComboboxList>
+                              {(item) => (
+                                <ComboboxItem key={item.value} value={item}>
+                                  {item.label}
+                                </ComboboxItem>
+                              )}
+                            </ComboboxList>
+                          </ComboboxContent>
+                        </Combobox>
+                        <FieldError message={errors[`providers.${index}.provider_id`]} />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={100}
+                          value={provider.commission_rate ?? ""}
+                          onChange={(event) =>
+                            updateProvider(index, {
+                              commission_rate: event.target.value
+                                ? Number(event.target.value)
+                                : null,
+                            })
+                          }
+                          placeholder="—"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={provider.is_primary ?? false}
+                          onCheckedChange={(checked) =>
+                            updateProvider(index, { is_primary: !!checked })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() =>
+                            setFormValues((current) => ({
+                              ...current,
+                              providers: current.providers.filter(
+                                (_, providerIndex) => providerIndex !== index
+                              ),
+                            }))
+                          }
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           )}

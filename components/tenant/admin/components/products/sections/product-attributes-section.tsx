@@ -2,8 +2,22 @@
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import { cn } from "@/lib/utils"
+import {
+  ColorPicker,
+  ColorPickerAlphaSlider,
+  ColorPickerArea,
+  ColorPickerContent,
+  ColorPickerEyeDropper,
+  ColorPickerFormatSelect,
+  ColorPickerHueSlider,
+  ColorPickerInput,
+  ColorPickerSwatch,
+  ColorPickerTrigger,
+} from "@/components/ui/color-picker"
 import {
   Combobox,
   ComboboxContent,
@@ -65,6 +79,123 @@ function AttributeValueField({
   if (usesPredefinedValues(attribute.type)) {
     const selected =
       options.find((item) => item.id === value?.attribute_value_id) ?? null
+
+    if (attribute.type === "color" && attribute.display_type === "swatch") {
+      return (
+        <div className="flex flex-wrap gap-2">
+          {options.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              title={option.value}
+              className={cn(
+                "size-9 rounded-full border-2 transition",
+                selected?.id === option.id
+                  ? "border-primary ring-2 ring-primary/30"
+                  : "border-muted"
+              )}
+              style={{ backgroundColor: option.color_hex ?? "#d4d4d8" }}
+              onClick={() =>
+                onChange({
+                  attribute_id: attribute.id,
+                  attribute_value_id: option.id,
+                  custom_value: null,
+                })
+              }
+            />
+          ))}
+        </div>
+      )
+    }
+
+    if (attribute.type === "color") {
+      const currentColor =
+        value?.custom_value ?? selected?.color_hex ?? "#3b82f6"
+
+      return (
+        <div className="space-y-3">
+          {options.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {options.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  title={option.value}
+                  className={cn(
+                    "size-8 rounded-full border-2 transition",
+                    selected?.id === option.id
+                      ? "border-primary ring-2 ring-primary/30"
+                      : "border-muted"
+                  )}
+                  style={{ backgroundColor: option.color_hex ?? "#d4d4d8" }}
+                  onClick={() =>
+                    onChange({
+                      attribute_id: attribute.id,
+                      attribute_value_id: option.id,
+                      custom_value: null,
+                    })
+                  }
+                />
+              ))}
+            </div>
+          ) : null}
+          <ColorPicker
+            value={currentColor}
+            onValueChange={(hex) => {
+              const matched = options.find(
+                (option) =>
+                  option.color_hex?.toLowerCase() === hex?.toLowerCase()
+              )
+
+              if (matched) {
+                onChange({
+                  attribute_id: attribute.id,
+                  attribute_value_id: matched.id,
+                  custom_value: null,
+                })
+                return
+              }
+
+              onChange({
+                attribute_id: attribute.id,
+                attribute_value_id: null,
+                custom_value: hex || null,
+              })
+            }}
+            defaultFormat="hex"
+          >
+            <div className="flex items-center gap-3">
+              <ColorPickerTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center gap-2 px-3"
+                  >
+                    <ColorPickerSwatch className="size-4" />
+                    {currentColor}
+                  </Button>
+                }
+              />
+            </div>
+            <ColorPickerContent>
+              <ColorPickerArea />
+              <div className="flex items-center gap-2">
+                <ColorPickerEyeDropper />
+                <div className="flex flex-1 flex-col gap-2">
+                  <ColorPickerHueSlider />
+                  <ColorPickerAlphaSlider />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <ColorPickerFormatSelect />
+                <ColorPickerInput />
+              </div>
+            </ColorPickerContent>
+          </ColorPicker>
+        </div>
+      )
+    }
 
     return (
       <Combobox

@@ -125,10 +125,11 @@ export function AttributeSetsManageAttributesDialog({
                 return (
                   <div
                     key={option.value}
-                    className="flex items-center space-x-3 rounded-md px-1 py-2 hover:bg-muted/50"
+                    className="flex items-center gap-3 rounded-md px-1 py-2 hover:bg-muted/50"
                   >
                     <Checkbox
                       id={checkboxId}
+                      className="shrink-0"
                       checked={isChecked}
                       onCheckedChange={(checked) =>
                         toggleAttribute(option.value, !!checked)

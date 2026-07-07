@@ -4,8 +4,10 @@ import {
   ProductDownload,
   ProductGenerationOption,
   ProductProviderAssignment,
+  ProductRelationRef,
   ProductServiceConfig,
   ProductStatistics,
+  ProductStatus,
   ProductSubscriptionConfig,
   ProductSupplierAssignment,
   ProductTypeValue,
@@ -13,6 +15,7 @@ import {
   ProductVisibilityValue,
   resolveProductEnumValue,
 } from "@/types/tenant/product"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { ExportParams, ImportSummary } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -59,6 +62,7 @@ function normalizeProduct(product: Product): Product {
   const type = resolveProductEnumValue(product.type, "simple")
   const visibility = resolveProductEnumValue(product.visibility, "visible")
   const condition = resolveProductEnumValue(product.condition, "new")
+  const status = resolveProductEnumValue(product.status, "draft")
 
   const apiImages = (
     product as Product & {
@@ -89,6 +93,7 @@ function normalizeProduct(product: Product): Product {
     type,
     visibility,
     condition,
+    status,
     default_variant: product.default_variant
       ? normalizeVariantMedia(product.default_variant) ?? undefined
       : undefined,
@@ -107,12 +112,43 @@ function normalizeProduct(product: Product): Product {
         ? { ...item.media, url: resolveTenantMediaUrl(item.media) }
         : item.media,
     })),
+    related_products: product.related_products?.map((related) =>
+      normalizeRelatedProduct(related)
+    ),
+    cross_sell_products: product.cross_sell_products?.map((related) =>
+      normalizeRelatedProduct(related)
+    ),
+    up_sell_products: product.up_sell_products?.map((related) =>
+      normalizeRelatedProduct(related)
+    ),
+  }
+}
+
+function normalizeRelatedProduct(
+  related: ProductRelationRef | Product
+): ProductRelationRef {
+  const item = related as Product
+  const gallery = item.gallery
+  const primaryImage =
+    item.primary_image_media ??
+    gallery?.find((entry) => entry.is_primary)?.media ??
+    gallery?.[0]?.media ??
+    null
+
+  return {
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+    sku: item.default_variant?.sku ?? null,
+    primary_image_media: primaryImage
+      ? { ...primaryImage, url: resolveTenantMediaUrl(primaryImage) }
+      : null,
   }
 }
 
 export const getProducts = async (params?: {
   search?: string
-  status?: Product["status"][]
+  status?: ProductStatus[]
   visibility?: ProductVisibilityValue[]
   type?: ProductTypeValue[]
   is_featured?: ("featured" | "not_featured")[]
@@ -145,33 +181,49 @@ export const getProduct = async (id: number): Promise<Product> => {
 
 export const createProduct = async (
   product: StoreProductFormValues
-): Promise<Product> => {
+): Promise<ApiMutationResult<Product>> => {
   const payload = mapProductFormToApiPayload(product)
   const response = await tenantApiClient.post<ApiResponse<Product>>(
     "/products",
     payload
   )
-  return normalizeProduct(response.data)
+  return {
+    data: normalizeProduct(response.data),
+    message: response.message,
+  }
 }
 
 export const updateProduct = async (
   id: number,
   product: UpdateProductFormValues
-): Promise<Product> => {
+): Promise<ApiMutationResult<Product>> => {
   const payload = mapProductFormToApiPayload(product)
   const response = await tenantApiClient.put<ApiResponse<Product>>(
     `/products/${id}`,
     payload
   )
-  return normalizeProduct(response.data)
+  return {
+    data: normalizeProduct(response.data),
+    message: response.message,
+  }
 }
 
 export const deleteProduct = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/products/${id}`)
 }
 
-export const deleteManyProducts = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/products/bulk", { ids })
+export const deleteManyProducts = async (ids: number[]): Promise<{ message: string }> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>("/products/bulk", { ids })
+  return { message: response.message }
+}
+
+export const bulkUpdateProducts = async (payload: {
+  ids: number[]
+  status?: ProductStatus
+  visibility?: ProductVisibilityValue
+}): Promise<{ message: string }> => {
+  const response = await tenantApiClient.patch<ApiResponse<void>>("/products/bulk", payload)
+  return { message: response.message }
 }
 
 export const getProductStatistics = async (): Promise<ProductStatistics> => {
@@ -182,10 +234,10 @@ export const getProductStatistics = async (): Promise<ProductStatistics> => {
 }
 
 export const getProductOptions = async (): Promise<
-  { label: string; value: number }[]
+  { label: string; value: number; image_url?: string | null }[]
 > => {
   const response = await tenantApiClient.get<
-    ApiResponse<{ label: string; value: number }[]>
+    ApiResponse<{ label: string; value: number; image_url?: string | null }[]>
   >("/products/options")
   return response.data
 }
@@ -241,83 +293,85 @@ export const importProducts = async (
 export const syncProductOptions = async (
   productId: number,
   payload: SyncProductOptionsFormValues
-): Promise<ProductGenerationOption[]> => {
+): Promise<ApiMutationResult<ProductGenerationOption[]>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductGenerationOption[]>>(
     `/products/${productId}/options`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const syncProductSuppliers = async (
   productId: number,
   payload: SyncProductSuppliersFormValues
-): Promise<ProductSupplierAssignment[]> => {
+): Promise<ApiMutationResult<ProductSupplierAssignment[]>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductSupplierAssignment[]>>(
     `/products/${productId}/suppliers`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const syncProductRelations = async (
   productId: number,
   payload: SyncProductRelationsFormValues
-): Promise<SyncProductRelationsFormValues> => {
+): Promise<ApiMutationResult<SyncProductRelationsFormValues>> => {
   const response = await tenantApiClient.put<ApiResponse<SyncProductRelationsFormValues>>(
     `/products/${productId}/relations`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const syncProductDownloads = async (
   productId: number,
   payload: SyncProductDownloadsFormValues
-): Promise<ProductDownload[]> => {
+): Promise<ApiMutationResult<ProductDownload[]>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductDownload[]>>(
     `/products/${productId}/downloads`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const syncProductBundleItems = async (
   productId: number,
   payload: SyncProductBundleItemsFormValues
-): Promise<ProductBundleItem[]> => {
+): Promise<ApiMutationResult<ProductBundleItem[]>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductBundleItem[]>>(
     `/products/${productId}/bundle-items`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const syncProductService = async (
   productId: number,
   payload: SyncProductServiceFormValues
-): Promise<{
-  service: ProductServiceConfig
-  providers: ProductProviderAssignment[]
-}> => {
+): Promise<
+  ApiMutationResult<{
+    service: ProductServiceConfig
+    providers: ProductProviderAssignment[]
+  }>
+> => {
   const response = await tenantApiClient.put<
     ApiResponse<{
       service: ProductServiceConfig
       providers: ProductProviderAssignment[]
     }>
   >(`/products/${productId}/service`, payload)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const syncProductSubscription = async (
   productId: number,
   payload: SyncProductSubscriptionFormValues
-): Promise<ProductSubscriptionConfig> => {
+): Promise<ApiMutationResult<ProductSubscriptionConfig>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductSubscriptionConfig>>(
     `/products/${productId}/subscription`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const generateProductVariants = async (

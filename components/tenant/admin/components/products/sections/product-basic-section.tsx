@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import {
@@ -158,10 +159,12 @@ export function ProductBasicSection({
         <Field>
           <FieldLabel>Description</FieldLabel>
           <FieldContent>
-            <Textarea
-              className="min-h-32"
+            <RichTextEditor
+              value={form.watch("description") ?? ""}
+              onChange={(html) =>
+                form.setValue("description", html || null, { shouldDirty: true })
+              }
               placeholder="Full product description..."
-              {...form.register("description")}
             />
           </FieldContent>
         </Field>

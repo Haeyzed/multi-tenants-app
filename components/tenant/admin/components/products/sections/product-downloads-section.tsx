@@ -2,7 +2,9 @@
 
 import * as React from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
+import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
+import { type MediaItem } from "@/types/tenant/media"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -59,6 +61,32 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
   const syncDownloads = useSyncProductDownloads(product.id)
   const [downloads, setDownloads] = React.useState(() => mapProductDownloads(product))
   const [errors, setErrors] = React.useState<Record<string, string>>({})
+  const [mediaPreviews, setMediaPreviews] = React.useState<
+    Record<number, { url: string; name?: string | null }>
+  >(() => {
+    const previews: Record<number, { url: string; name?: string | null }> = {}
+    for (const download of product.downloads ?? []) {
+      if (!download.media_id || !download.media?.url) continue
+      previews[download.media_id] = {
+        url: resolveTenantMediaUrl(download.media),
+        name: download.media.name ?? download.display_name,
+      }
+    }
+    return previews
+  })
+
+  React.useEffect(() => {
+    setDownloads(mapProductDownloads(product))
+    const previews: Record<number, { url: string; name?: string | null }> = {}
+    for (const download of product.downloads ?? []) {
+      if (!download.media_id || !download.media?.url) continue
+      previews[download.media_id] = {
+        url: resolveTenantMediaUrl(download.media),
+        name: download.media.name ?? download.display_name,
+      }
+    }
+    setMediaPreviews(previews)
+  }, [product])
 
   const updateDownload = (
     index: number,
@@ -86,8 +114,9 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
 
     setErrors({})
     syncDownloads.mutate(result.data, {
-      onSuccess: () => toast.success("Downloads saved"),
-      onError: () => toast.error("Failed to save downloads"),
+      onSuccess: (response) =>
+        toastApiSuccess(response.message, "Downloads saved"),
+      onError: (error) => toastApiError(error, "Failed to save downloads"),
     })
   }
 
@@ -132,19 +161,32 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
                     <MediaPickerField
                       label=""
                       value={download.media_id || null}
-                      previewUrl={product.downloads?.[index]?.media?.url}
+                      previewUrl={
+                        mediaPreviews[download.media_id]?.url ??
+                        product.downloads?.[index]?.media?.url
+                      }
                       previewTitle={
+                        mediaPreviews[download.media_id]?.name ??
                         product.downloads?.[index]?.media?.name ??
                         download.display_name ??
                         "Download"
                       }
                       accept="*/*"
-                      onChange={(mediaId, media) =>
+                      onChange={(mediaId, media: MediaItem | null | undefined) => {
                         updateDownload(index, {
                           media_id: mediaId ?? 0,
                           file_name: media?.file_name ?? media?.name ?? undefined,
                         })
-                      }
+                        if (mediaId && media) {
+                          setMediaPreviews((current) => ({
+                            ...current,
+                            [mediaId]: {
+                              url: resolveTenantMediaUrl(media),
+                              name: media.title ?? media.name,
+                            },
+                          }))
+                        }
+                      }}
                     />
                     <FieldError message={errors[`downloads.${index}.media_id`]} />
                   </TableCell>

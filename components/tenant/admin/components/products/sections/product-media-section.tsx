@@ -1,11 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { GripVertical, Trash2 } from "lucide-react"
+import Image from "next/image"
+import { Plus, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FieldLabel } from "@/components/ui/field"
+import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item"
+import { MediaPickerDialog } from "@/components/tenant/admin/components/media/media-picker-dialog"
 import { MediaPickerField } from "@/components/tenant/admin/components/media/media-picker-field"
-import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { type MediaItem } from "@/types/tenant/media"
 import { type StoreProductFormValues } from "@/schemas/tenant/product-schema"
@@ -43,6 +53,7 @@ export function ProductMediaSection({ form, product }: ProductMediaSectionProps)
   })
 
   const gallery = form.watch("gallery") || []
+  const [galleryPickerOpen, setGalleryPickerOpen] = React.useState(false)
 
   const addGalleryItem = (mediaId: number | null, media?: MediaItem | null) => {
     if (!mediaId || !media) return
@@ -86,7 +97,7 @@ export function ProductMediaSection({ form, product }: ProductMediaSectionProps)
       <CardHeader>
         <CardTitle>Media</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         <MediaPickerField
           label="Primary image"
           value={form.watch("primary_image_media_id") ?? null}
@@ -102,60 +113,84 @@ export function ProductMediaSection({ form, product }: ProductMediaSectionProps)
           accept="image/*"
         />
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <FieldLabel>Gallery</FieldLabel>
-            <MediaPickerField
-              label=""
-              value={null}
-              onChange={(mediaId, media) => addGalleryItem(mediaId, media)}
-              accept="image/*"
-            />
-          </div>
-          {gallery.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              No gallery images yet.
-            </p>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              {gallery.map((item, index) => (
-                <div
-                  key={`${item.media_id}-${index}`}
-                  className="relative rounded-lg border p-2"
-                >
-                  <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1">
-                      <GripVertical className="size-3" />
-                      #{index + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeGalleryItem(index)}
-                      className="text-destructive"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  </div>
-                  <MediaThumbnail
-                    media={
-                      galleryPreviews[item.media_id]
-                        ? {
-                            url: galleryPreviews[item.media_id].url,
-                            name:
-                              galleryPreviews[item.media_id].name ??
-                              item.alt_text,
-                          }
-                        : null
-                    }
-                    alt={item.alt_text ?? "Gallery image"}
-                    size="md"
-                    zoomable={false}
-                  />
-                </div>
-              ))}
+        <Field>
+          <FieldLabel>Gallery</FieldLabel>
+          <FieldContent>
+            <div className="mb-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setGalleryPickerOpen(true)}
+              >
+                <Plus className="mr-1 size-3.5" />
+                Add image
+              </Button>
             </div>
-          )}
-        </div>
+            {gallery.length === 0 ? (
+              <p className="text-sm text-muted-foreground">
+                No gallery images yet.
+              </p>
+            ) : (
+              <ItemGroup className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                {gallery.map((item, index) => {
+                  const preview = galleryPreviews[item.media_id]
+                  return (
+                    <Item
+                      key={`${item.media_id}-${index}`}
+                      variant="outline"
+                      size="sm"
+                      className="relative"
+                    >
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-xs"
+                        className="absolute top-2 right-2 z-10 size-7 text-destructive"
+                        onClick={() => removeGalleryItem(index)}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                      <ItemHeader>
+                        {preview?.url ? (
+                          <Image
+                            src={preview.url}
+                            alt={item.alt_text ?? preview.name ?? "Gallery image"}
+                            width={72}
+                            height={72}
+                            className="aspect-square w-full rounded-sm object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <div className="flex aspect-square w-full items-center justify-center rounded-sm bg-muted text-[10px] text-muted-foreground">
+                            No image
+                          </div>
+                        )}
+                      </ItemHeader>
+                      <ItemContent>
+                        <ItemTitle className="text-xs">#{index + 1}</ItemTitle>
+                        <ItemDescription className="line-clamp-2 text-[10px]">
+                          {preview?.name ?? item.alt_text ?? "Gallery image"}
+                        </ItemDescription>
+                      </ItemContent>
+                    </Item>
+                  )
+                })}
+              </ItemGroup>
+            )}
+          </FieldContent>
+        </Field>
+
+        <MediaPickerDialog
+          open={galleryPickerOpen}
+          onOpenChange={setGalleryPickerOpen}
+          value={null}
+          onSelect={(item) => {
+            addGalleryItem(item?.id ?? null, item)
+            setGalleryPickerOpen(false)
+          }}
+          accept="image/*"
+        />
       </CardContent>
     </Card>
   )

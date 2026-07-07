@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -66,7 +66,9 @@ function mapBundleItems(product: Product): SyncProductBundleItemsFormValues["bun
 export function ProductBundleSection({ product }: ProductBundleSectionProps) {
   const syncBundleItems = useSyncProductBundleItems(product.id)
   const { data: productOptions = [] } = useGetProductOptions()
-  const availableProducts = productOptions.filter((option) => option.value !== product.id)
+  const availableProducts = productOptions.filter(
+    (option: { label: string; value: number }) => option.value !== product.id
+  )
   const [bundleItems, setBundleItems] = React.useState(() => mapBundleItems(product))
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
@@ -96,8 +98,9 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
 
     setErrors({})
     syncBundleItems.mutate(result.data, {
-      onSuccess: () => toast.success("Bundle items saved"),
-      onError: () => toast.error("Failed to save bundle items"),
+      onSuccess: (response) =>
+        toastApiSuccess(response.message, "Bundle items saved"),
+      onError: (error) => toastApiError(error, "Failed to save bundle items"),
     })
   }
 
@@ -136,24 +139,36 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bundleItems.map((item, index) => (
+              {bundleItems.map((item, index) => {
+                const selectedProduct =
+                  availableProducts.find(
+                    (option) => option.value === item.included_product_id
+                  ) ?? null
+
+                return (
                 <TableRow key={`bundle-item-${index}`}>
                   <TableCell className="min-w-[240px]">
                     <Combobox
-                      value={item.included_product_id || null}
-                      onValueChange={(value) =>
-                        updateItem(index, { included_product_id: Number(value) })
+                      items={availableProducts}
+                      itemToStringValue={(option: { label: string; value: number }) =>
+                        option.label
+                      }
+                      value={selectedProduct}
+                      onValueChange={(option) =>
+                        updateItem(index, {
+                          included_product_id: option ? option.value : 0,
+                        })
                       }
                     >
                       <ComboboxInput placeholder="Select product" />
                       <ComboboxContent>
+                        <ComboboxEmpty>No products found.</ComboboxEmpty>
                         <ComboboxList>
-                          <ComboboxEmpty>No products found.</ComboboxEmpty>
-                          {availableProducts.map((option) => (
-                            <ComboboxItem key={option.value} value={option.value}>
+                          {(option) => (
+                            <ComboboxItem key={option.value} value={option}>
                               {option.label}
                             </ComboboxItem>
-                          ))}
+                          )}
                         </ComboboxList>
                       </ComboboxContent>
                     </Combobox>
@@ -223,7 +238,8 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
                     </Button>
                   </TableCell>
                 </TableRow>
-              ))}
+                )
+              })}
             </TableBody>
           </Table>
         )}

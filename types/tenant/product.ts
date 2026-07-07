@@ -311,6 +311,14 @@ export interface Product {
   categories?: ProductCategoryRef[]
   primary_category?: ProductCategoryRef | null
   tags?: { id: number; name: string }[]
+  labels?: {
+    id: number
+    name: string
+    slug?: string
+    color?: string | null
+    background_color?: string | null
+  }[]
+  label_ids?: number[]
   collections?: ProductCollectionRef[]
   collection_ids?: number[]
   suppliers?: ProductSupplierAssignment[]

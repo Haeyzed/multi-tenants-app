@@ -44,6 +44,7 @@ type TagsFormDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   currentRow?: Tag
+  onCreated?: (tag: Tag) => void
 }
 
 function FieldError({ message }: { message?: string }) {
@@ -55,6 +56,7 @@ export function TagsFormDialog({
   open,
   onOpenChange,
   currentRow,
+  onCreated,
 }: TagsFormDialogProps) {
   const isUpdate = !!currentRow
   const createTag = useCreateTag()
@@ -120,8 +122,9 @@ export function TagsFormDialog({
       )
     } else {
       createTag.mutate(payload as StoreTagFormValues, {
-        onSuccess: () => {
+        onSuccess: (created) => {
           toast.success("Tag created successfully")
+          onCreated?.(created)
           onOpenChange(false)
           form.reset()
         },

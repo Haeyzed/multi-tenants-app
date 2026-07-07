@@ -1,11 +1,20 @@
 "use client"
 
 import * as React from "react"
+import Image from "next/image"
 import { toast } from "sonner"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 import { useGetProductOptions } from "@/hooks/tenant/use-product-query"
 import { useSyncProductRelations } from "@/hooks/tenant/use-product-variant-query"
@@ -13,7 +22,9 @@ import {
   syncProductRelationsSchema,
   type SyncProductRelationsFormValues,
 } from "@/schemas/tenant/product-schema"
-import { type Product } from "@/types/tenant/product"
+import { type Product, type ProductRelationRef } from "@/types/tenant/product"
+import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 
 type ProductRelatedSectionProps = {
   product: Product
@@ -32,8 +43,85 @@ type RelationListProps = {
   label: string
   description: string
   selectedIds: number[]
-  options: { label: string; value: number }[]
+  options: ProductOption[]
+  relatedProducts?: ProductRelationRef[]
   onToggle: (productId: number, checked: boolean) => void
+}
+
+type ProductOption = {
+  label: string
+  value: number
+  image_url?: string | null
+}
+
+function resolveRelationImageUrl(
+  related: ProductRelationRef | undefined,
+  option: ProductOption | undefined
+) {
+  if (related?.primary_image_media?.url) {
+    return resolveTenantMediaUrl(related.primary_image_media)
+  }
+
+  if (option?.image_url) {
+    return resolveTenantMediaUrl({ url: option.image_url, path: null })
+  }
+
+  return null
+}
+
+function RelationPreviewGrid({
+  selectedIds,
+  options,
+  relatedProducts = [],
+}: {
+  selectedIds: number[]
+  options: ProductOption[]
+  relatedProducts?: ProductRelationRef[]
+}) {
+  if (selectedIds.length === 0) return null
+
+  const items = selectedIds.map((id) => {
+    const related = relatedProducts.find((item) => item.id === id)
+    const option = options.find((item) => item.value === id)
+
+    return {
+      id,
+      name: related?.name ?? option?.label ?? `Product #${id}`,
+      sku: related?.sku ?? null,
+      imageUrl: resolveRelationImageUrl(related, option),
+    }
+  })
+
+  return (
+    <ItemGroup className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+      {items.map((item) => (
+        <Item key={item.id} variant="outline" size="sm">
+          <ItemHeader>
+            {item.imageUrl ? (
+              <Image
+                src={item.imageUrl}
+                alt={item.name}
+                width={72}
+                height={72}
+                className="aspect-square w-full rounded-sm object-cover"
+                unoptimized
+              />
+            ) : (
+              <div className="flex aspect-square w-full items-center justify-center rounded-sm bg-muted text-[10px] text-muted-foreground">
+                No image
+              </div>
+            )}
+          </ItemHeader>
+          <ItemContent>
+            <ItemTitle className="line-clamp-2 text-xs">{item.name}</ItemTitle>
+            <ItemDescription className="text-[10px]">
+              {item.sku ?? "—"}
+            </ItemDescription>
+          </ItemContent>
+        </Item>
+      ))}
+    </ItemGroup>
+  )
 }
 
 function RelationList({
@@ -41,6 +129,7 @@ function RelationList({
   description,
   selectedIds,
   options,
+  relatedProducts,
   onToggle,
 }: RelationListProps) {
   return (
@@ -55,9 +144,10 @@ function RelationList({
             </p>
           ) : (
             options.map((option) => (
-              <div key={option.value} className="flex items-center space-x-2">
+              <div key={option.value} className="flex items-center gap-2">
                 <Checkbox
                   id={`${label}-${option.value}`}
+                  className="shrink-0"
                   checked={selectedIds.includes(option.value)}
                   onCheckedChange={(checked) =>
                     onToggle(option.value, !!checked)
@@ -70,6 +160,11 @@ function RelationList({
             ))
           )}
         </div>
+        <RelationPreviewGrid
+          selectedIds={selectedIds}
+          options={options}
+          relatedProducts={relatedProducts}
+        />
       </FieldContent>
     </Field>
   )
@@ -117,8 +212,9 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
     }
 
     syncRelations.mutate(parsed.data, {
-      onSuccess: () => toast.success("Product relations saved"),
-      onError: () => toast.error("Failed to save product relations"),
+      onSuccess: (response) =>
+        toastApiSuccess(response.message, "Product relations saved"),
+      onError: (error) => toastApiError(error, "Failed to save product relations"),
     })
   }
 
@@ -133,6 +229,7 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
           description="Shown as similar items on the product page."
           selectedIds={relations.related_product_ids}
           options={availableOptions}
+          relatedProducts={product.related_products}
           onToggle={(productId, checked) =>
             toggleIds("related_product_ids", productId, checked)
           }
@@ -143,6 +240,7 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
           description="Suggested add-ons in cart or checkout."
           selectedIds={relations.cross_sell_product_ids}
           options={availableOptions}
+          relatedProducts={product.cross_sell_products}
           onToggle={(productId, checked) =>
             toggleIds("cross_sell_product_ids", productId, checked)
           }
@@ -153,6 +251,7 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
           description="Higher-value alternatives to recommend."
           selectedIds={relations.up_sell_product_ids}
           options={availableOptions}
+          relatedProducts={product.up_sell_products}
           onToggle={(productId, checked) =>
             toggleIds("up_sell_product_ids", productId, checked)
           }

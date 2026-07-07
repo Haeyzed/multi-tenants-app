@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -52,6 +52,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const updateProduct = useUpdateProduct()
   const isSubmitting = createProduct.isPending || updateProduct.isPending
   const [slugManual, setSlugManual] = React.useState(false)
+  const stayOnPageRef = React.useRef(false)
 
   const form = useForm<StoreProductFormValues>({
     resolver: zodResolver(storeProductSchema) as Resolver<StoreProductFormValues>,
@@ -76,13 +77,18 @@ export function ProductForm({ product }: ProductFormProps) {
   }, [nameValue, isUpdate, slugManual, form])
 
   const onSubmit = (data: StoreProductFormValues) => {
+    const stayOnPage = stayOnPageRef.current
+    stayOnPageRef.current = false
+
     if (isUpdate && product) {
       updateProduct.mutate(
         { id: product.id, product: data },
         {
-          onSuccess: () => {
-            toast.success("Product updated successfully")
-            router.push("/admin/products")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Product updated successfully")
+            if (!stayOnPage) {
+              router.push("/admin/products")
+            }
           },
           onError: (error) => {
             handleFormApiError(error, form.setError, "Failed to update product")
@@ -91,8 +97,12 @@ export function ProductForm({ product }: ProductFormProps) {
       )
     } else {
       createProduct.mutate(data, {
-        onSuccess: () => {
-          toast.success("Product created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Product created successfully")
+          if (stayOnPage) {
+            router.push(`/admin/products/${result.data.id}/edit`)
+            return
+          }
           router.push("/admin/products")
         },
         onError: (error) => {
@@ -100,6 +110,11 @@ export function ProductForm({ product }: ProductFormProps) {
         },
       })
     }
+  }
+
+  const submitAndContinue = () => {
+    stayOnPageRef.current = true
+    form.handleSubmit(onSubmit)()
   }
 
   return (
@@ -138,8 +153,17 @@ export function ProductForm({ product }: ProductFormProps) {
             {isSubmitting
               ? "Saving..."
               : isUpdate
-                ? "Save product"
+                ? "Update product"
                 : "Create product"}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={isSubmitting}
+            onClick={submitAndContinue}
+          >
+            {isSubmitting && <Spinner />}
+            {isUpdate ? "Update and continue" : "Save and continue"}
           </Button>
         </div>
       </div>

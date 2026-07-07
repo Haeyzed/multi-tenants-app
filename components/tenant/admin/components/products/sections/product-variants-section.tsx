@@ -6,6 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Layers, Package, Plus, Sparkles, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -179,39 +184,67 @@ export function ProductVariantsSection({ product }: ProductVariantsSectionProps)
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openPriceTiers(variant.id)}
-                        >
-                          <Layers className="size-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openInventory(variant.id)}
-                        >
-                          <Package className="size-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEdit(variant.id)}
-                        >
-                          <Edit className="size-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(variant.id)}
-                          disabled={deleteVariant.isPending}
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openPriceTiers(variant.id)}
+                              >
+                                <Layers className="size-4" />
+                              </Button>
+                            }
+                          />
+                          <TooltipContent>Manage price tiers</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openInventory(variant.id)}
+                              >
+                                <Package className="size-4" />
+                              </Button>
+                            }
+                          />
+                          <TooltipContent>Manage inventory</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => openEdit(variant.id)}
+                              >
+                                <Edit className="size-4" />
+                              </Button>
+                            }
+                          />
+                          <TooltipContent>Edit variant</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger
+                            render={
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDelete(variant.id)}
+                                disabled={deleteVariant.isPending}
+                              >
+                                <Trash2 className="size-4" />
+                              </Button>
+                            }
+                          />
+                          <TooltipContent>Delete variant</TooltipContent>
+                        </Tooltip>
                       </div>
                     </TableCell>
                   </TableRow>

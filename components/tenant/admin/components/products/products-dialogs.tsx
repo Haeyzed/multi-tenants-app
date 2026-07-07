@@ -19,6 +19,8 @@ import { PRODUCT_EXPORT_COLUMNS } from "@/lib/export-columns"
 import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
 import { ProductsImportDialog } from "./products-import-dialog"
 import { ProductsMultiDeleteDialog } from "./products-multi-delete-dialog"
+import { ProductsBulkUpdateDialog } from "./products-bulk-update-dialog"
+import { ProductsViewDialog } from "./products-view-dialog"
 import { useProducts } from "./products-provider"
 
 export function ProductsDialogs() {
@@ -31,6 +33,8 @@ export function ProductsDialogs() {
     setExportSelection,
     deleteManySelection,
     setDeleteManySelection,
+    bulkUpdateSelection,
+    setBulkUpdateSelection,
   } = useProducts()
   const deleteProduct = useDeleteProduct()
   const [isDeleting, setIsDeleting] = React.useState(false)
@@ -98,6 +102,56 @@ export function ProductsDialogs() {
           setDeleteManySelection(null)
         }}
       />
+
+      <ProductsBulkUpdateDialog
+        key="products-bulk-status"
+        open={open === "bulkStatus"}
+        onOpenChange={(val) => {
+          if (!val) {
+            setOpen(null)
+            setBulkUpdateSelection(null)
+          }
+        }}
+        ids={(bulkUpdateSelection?.ids ?? []) as number[]}
+        field="status"
+        onComplete={() => {
+          bulkUpdateSelection?.onComplete?.()
+          setBulkUpdateSelection(null)
+        }}
+      />
+
+      <ProductsBulkUpdateDialog
+        key="products-bulk-visibility"
+        open={open === "bulkVisibility"}
+        onOpenChange={(val) => {
+          if (!val) {
+            setOpen(null)
+            setBulkUpdateSelection(null)
+          }
+        }}
+        ids={(bulkUpdateSelection?.ids ?? []) as number[]}
+        field="visibility"
+        onComplete={() => {
+          bulkUpdateSelection?.onComplete?.()
+          setBulkUpdateSelection(null)
+        }}
+      />
+
+      {currentRow && (
+        <ProductsViewDialog
+          key={`products-view-${currentRow.id}`}
+          open={open === "view"}
+          onOpenChange={(val) => {
+            if (!val) {
+              setOpen(null)
+              setTimeout(() => {
+                setCurrentRow(null)
+              }, 500)
+            }
+          }}
+          product={currentRow}
+        />
+      )}
 
       {currentRow && (
         <ResponsiveDialog

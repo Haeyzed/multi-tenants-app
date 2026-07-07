@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { type Table } from "@tanstack/react-table"
-import { Trash2, Download, CheckCircle2, EyeOff } from "lucide-react"
+import { Trash2, Download } from "lucide-react"
 import {
   ActionBar,
   ActionBarGroup,
@@ -10,18 +10,18 @@ import {
   ActionBarSelection,
   ActionBarClose,
 } from "@/components/ui/action-bar"
-import { type Product } from "@/types/tenant/product"
-import { useProducts } from "./products-provider"
+import { type ProductLabel } from "@/types/tenant/product-label"
+import { useProductLabels } from "./product-labels-provider"
 
-type ProductsBulkActionsProps<TData> = {
+type ProductLabelsBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function ProductsBulkActions<TData>({
+export function ProductLabelsBulkActions<TData>({
   table,
-}: ProductsBulkActionsProps<TData>) {
-  const { setOpen, setExportSelection, setDeleteManySelection, setBulkUpdateSelection } =
-    useProducts()
+}: ProductLabelsBulkActionsProps<TData>) {
+  const { setOpen, setExportSelection, setDeleteManySelection } =
+    useProductLabels()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const onOpenChange = React.useCallback(
@@ -33,52 +33,28 @@ export function ProductsBulkActions<TData>({
     [table]
   )
 
-  const selectedIds = selectedRows.map((row) => (row.original as Product).id)
-
   const handleExport = () => {
+    const ids = selectedRows.map((row) => (row.original as ProductLabel).id)
     setExportSelection({
-      ids: selectedIds,
+      ids,
       onComplete: () => table.resetRowSelection(),
     })
     setOpen("export")
   }
 
   const handleDeleteMany = () => {
+    const ids = selectedRows.map((row) => (row.original as ProductLabel).id)
     setDeleteManySelection({
-      ids: selectedIds,
+      ids,
       onComplete: () => table.resetRowSelection(),
     })
     setOpen("deleteMany")
-  }
-
-  const handleBulkStatus = () => {
-    setBulkUpdateSelection({
-      ids: selectedIds,
-      onComplete: () => table.resetRowSelection(),
-    })
-    setOpen("bulkStatus")
-  }
-
-  const handleBulkVisibility = () => {
-    setBulkUpdateSelection({
-      ids: selectedIds,
-      onComplete: () => table.resetRowSelection(),
-    })
-    setOpen("bulkVisibility")
   }
 
   return (
     <ActionBar open={selectedRows.length > 0} onOpenChange={onOpenChange}>
       <ActionBarGroup>
         <ActionBarSelection>{selectedRows.length} selected</ActionBarSelection>
-        <ActionBarItem onClick={handleBulkStatus}>
-          <CheckCircle2 className="size-4" />
-          Set status
-        </ActionBarItem>
-        <ActionBarItem onClick={handleBulkVisibility}>
-          <EyeOff className="size-4" />
-          Set visibility
-        </ActionBarItem>
         <ActionBarItem onClick={handleExport}>
           <Download className="size-4" />
           Export
