@@ -33,11 +33,16 @@ function getAttributeViewFields(attribute: Attribute): ModuleViewField[] {
     { label: "Code", value: attribute.code || "—" },
     {
       label: "Type",
-      value: <Badge variant="outline" className="capitalize">{attribute.type}</Badge>,
+      value: (
+        <Badge variant="outline" className="capitalize">
+          {attribute.type}
+        </Badge>
+      ),
     },
     {
       label: "Display type",
-      value: DISPLAY_TYPE_LABELS[attribute.display_type] ?? attribute.display_type,
+      value:
+        DISPLAY_TYPE_LABELS[attribute.display_type] ?? attribute.display_type,
     },
     {
       label: "Description",

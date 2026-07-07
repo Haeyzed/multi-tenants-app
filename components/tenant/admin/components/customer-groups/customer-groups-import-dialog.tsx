@@ -2,19 +2,19 @@
 
 import { z } from "zod"
 import * as React from "react"
-import { useForm, Controller } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import {
   FileUpload,
@@ -77,7 +77,9 @@ export function CustomerGroupsImportDialog({
         if ((result.summary.failed ?? 0) > 0) {
           toast.warning(result.message)
         } else {
-          toast.success(result.message || "Customer groups imported successfully")
+          toast.success(
+            result.message || "Customer groups imported successfully"
+          )
         }
         onOpenChange(false)
         form.reset()

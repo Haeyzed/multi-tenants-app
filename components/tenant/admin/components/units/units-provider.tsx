@@ -3,7 +3,10 @@
 import React, { useState } from "react"
 import useDialogState from "@/hooks/use-dialog-state"
 import { type Unit } from "@/types/tenant/unit"
-import { type BulkDeleteSelection, type ExportSelection } from "@/types/tenant/export"
+import {
+  type BulkDeleteSelection,
+  type ExportSelection,
+} from "@/types/tenant/export"
 
 type UnitsDialogType =
   | "create"
@@ -20,7 +23,9 @@ type UnitsContextType = {
   currentRow: Unit | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Unit | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -32,9 +37,8 @@ const UnitsContext = React.createContext<UnitsContextType | null>(null)
 export function UnitsProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<UnitsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Unit | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

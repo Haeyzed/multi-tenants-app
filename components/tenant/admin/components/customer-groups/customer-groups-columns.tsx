@@ -7,7 +7,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { type CustomerGroup } from "@/types/tenant/customer-group"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, Text, XCircle } from "lucide-react"
 
 export const columns: ColumnDef<CustomerGroup>[] = [
   {
@@ -64,8 +64,7 @@ export const columns: ColumnDef<CustomerGroup>[] = [
   },
   {
     id: "discount_percentage",
-    accessorFn: (row) =>
-      row.discount_percentage ?? row.discount_percent ?? "0",
+    accessorFn: (row) => row.discount_percentage ?? row.discount_percent ?? "0",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} label="Discount %" />
     ),

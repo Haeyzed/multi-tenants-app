@@ -28,7 +28,8 @@ export const logout = async () => {
 }
 
 export const getProfile = async (): Promise<TenantUser> => {
-  const response = await tenantApiClient.get<ApiResponse<TenantUser>>("/auth/me")
+  const response =
+    await tenantApiClient.get<ApiResponse<TenantUser>>("/auth/me")
   return response.data
 }
 

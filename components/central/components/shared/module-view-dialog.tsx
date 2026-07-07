@@ -85,11 +85,7 @@ export function ModuleViewDialog({
   )
 }
 
-export function ModuleViewVisibility({
-  isVisible,
-}: {
-  isVisible: boolean
-}) {
+export function ModuleViewVisibility({ isVisible }: { isVisible: boolean }) {
   return (
     <Status variant={isVisible ? "success" : "default"}>
       <StatusIndicator />

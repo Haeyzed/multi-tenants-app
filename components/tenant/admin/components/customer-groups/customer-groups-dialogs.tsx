@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { useDeleteCustomerGroup } from "@/hooks/tenant/use-customer-group-query"
 import { exportCustomerGroups } from "@/lib/services/tenant/customer-group-service"

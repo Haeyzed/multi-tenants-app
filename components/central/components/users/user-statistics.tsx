@@ -2,7 +2,7 @@
 
 import { useGetUserStatistics } from "@/hooks/central/use-user-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, Users, XCircle } from "lucide-react"
 
 export function UserStatistics() {
   const { data: stats, isLoading } = useGetUserStatistics()

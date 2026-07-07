@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,10 +24,10 @@ import { handleFormApiError } from "@/lib/form-api-errors"
 import { useCreateUser, useUpdateUser } from "@/hooks/central/use-user-query"
 import { type User } from "@/types/central/user"
 import {
-  storeUserSchema,
-  updateUserSchema,
   type StoreUserFormValues,
+  storeUserSchema,
   type UpdateUserFormValues,
+  updateUserSchema,
 } from "@/schemas/central/user-schema"
 
 type UsersMutateDialogProps = {
@@ -190,9 +190,7 @@ export function UsersMutateDialog({
           </Field>
 
           <Field>
-            <FieldLabel>
-              {isUpdate ? "New Password" : "Password *"}
-            </FieldLabel>
+            <FieldLabel>{isUpdate ? "New Password" : "Password *"}</FieldLabel>
             <FieldContent>
               <PasswordInput
                 placeholder={

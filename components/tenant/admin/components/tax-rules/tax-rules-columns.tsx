@@ -12,7 +12,7 @@ import {
   type TaxRuleType,
 } from "@/types/tenant/tax-rule"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, CheckCircle, XCircle } from "lucide-react"
+import { CheckCircle, Text, XCircle } from "lucide-react"
 
 const APPLICABLE_TYPE_LABELS: Record<TaxRuleApplicableType, string> = {
   product: "Product",
@@ -96,9 +96,7 @@ export const columns: ColumnDef<TaxRule>[] = [
     ),
     cell: ({ row }) => {
       const type = row.getValue<TaxRuleType>("rule_type")
-      return (
-        <Badge variant="secondary">{RULE_TYPE_LABELS[type] ?? type}</Badge>
-      )
+      return <Badge variant="secondary">{RULE_TYPE_LABELS[type] ?? type}</Badge>
     },
   },
   {

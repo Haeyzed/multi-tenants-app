@@ -1,18 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -43,10 +42,10 @@ import { useGetPlanOptions } from "@/hooks/central/use-plan-query"
 import { type PlanOption } from "@/types/central/plan"
 import { type Tenant, type TenantStatus } from "@/types/central/tenant"
 import {
-  tenantSchema,
-  updateTenantSchema,
   type StoreTenantFormValues,
+  tenantSchema,
   type UpdateTenantFormValues,
+  updateTenantSchema,
 } from "@/schemas/central/tenant-schema"
 
 type TenantsMutateDialogProps = {
@@ -145,8 +144,7 @@ export function TenantsMutateDialog({
   }, [nameValue, isUpdate, form])
 
   const planId = form.watch("plan_id")
-  const selectedPlan =
-    planOptions.find((plan) => plan.value === planId) ?? null
+  const selectedPlan = planOptions.find((plan) => plan.value === planId) ?? null
 
   const status = form.watch("status")
   const selectedStatus =
@@ -155,9 +153,7 @@ export function TenantsMutateDialog({
   const trialEndsAt = form.watch("trial_ends_at")
   const selectedTrialEndsAt = parseDateString(trialEndsAt)
 
-  const onSubmit = (
-    data: StoreTenantFormValues | UpdateTenantFormValues
-  ) => {
+  const onSubmit = (data: StoreTenantFormValues | UpdateTenantFormValues) => {
     const payload = {
       ...data,
       email: data.email || null,
@@ -176,11 +172,7 @@ export function TenantsMutateDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(
-              error,
-              form.setError,
-              "Failed to update tenant"
-            )
+            handleFormApiError(error, form.setError, "Failed to update tenant")
           },
         }
       )
@@ -192,11 +184,7 @@ export function TenantsMutateDialog({
           form.reset()
         },
         onError: (error) => {
-          handleFormApiError(
-            error,
-            form.setError,
-            "Failed to create tenant"
-          )
+          handleFormApiError(error, form.setError, "Failed to create tenant")
         },
       })
     }

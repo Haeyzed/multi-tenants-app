@@ -62,7 +62,10 @@ export function ProductsTable() {
 
   return (
     <div className="data-table-container space-y-4">
-      <DataTable table={table} actionBar={<ProductsBulkActions table={table} />}>
+      <DataTable
+        table={table}
+        actionBar={<ProductsBulkActions table={table} />}
+      >
         <DataTableToolbar table={table} />
       </DataTable>
     </div>

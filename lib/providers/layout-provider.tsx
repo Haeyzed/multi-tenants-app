@@ -1,17 +1,17 @@
-import { createContext, useContext, useState } from 'react'
-import { getCookie, setCookie } from '@/lib/cookies'
+import { createContext, useContext, useState } from "react"
+import { getCookie, setCookie } from "@/lib/cookies"
 
-export type Collapsible = 'offcanvas' | 'icon' | 'none'
-type Variant = 'inset' | 'sidebar' | 'floating'
+export type Collapsible = "offcanvas" | "icon" | "none"
+type Variant = "inset" | "sidebar" | "floating"
 
 // Cookie constants following the pattern from sidebar.tsx
-const LAYOUT_COLLAPSIBLE_COOKIE_NAME = 'layout_collapsible'
-const LAYOUT_VARIANT_COOKIE_NAME = 'layout_variant'
+const LAYOUT_COLLAPSIBLE_COOKIE_NAME = "layout_collapsible"
+const LAYOUT_VARIANT_COOKIE_NAME = "layout_variant"
 const LAYOUT_COOKIE_MAX_AGE = 60 * 60 * 24 * 7 // 7 days
 
 // Default values
-const DEFAULT_VARIANT = 'inset'
-const DEFAULT_COLLAPSIBLE = 'icon'
+const DEFAULT_VARIANT = "inset"
+const DEFAULT_COLLAPSIBLE = "icon"
 
 type LayoutContextType = {
   resetLayout: () => void
@@ -79,7 +79,7 @@ export function LayoutProvider({ children }: LayoutProviderProps) {
 export function useLayout() {
   const context = useContext(LayoutContext)
   if (!context) {
-    throw new Error('useLayout must be used within a LayoutProvider')
+    throw new Error("useLayout must be used within a LayoutProvider")
   }
   return context
 }

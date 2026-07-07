@@ -2,7 +2,11 @@ import {
   CustomerGroup,
   CustomerGroupOption,
 } from "@/types/tenant/customer-group"
-import { CustomerGroupStatistics, ExportParams, ImportSummary } from "@/types/tenant/export"
+import {
+  CustomerGroupStatistics,
+  ExportParams,
+  ImportSummary,
+} from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -70,25 +74,34 @@ export const deleteCustomerGroup = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/customer-groups/${id}`)
 }
 
-export const getCustomerGroupOptions = async (): Promise<CustomerGroupOption[]> => {
-  const response = await tenantApiClient.get<ApiResponse<CustomerGroupOption[]>>(
-    "/customer-groups/options"
-  )
+export const getCustomerGroupOptions = async (): Promise<
+  CustomerGroupOption[]
+> => {
+  const response = await tenantApiClient.get<
+    ApiResponse<CustomerGroupOption[]>
+  >("/customer-groups/options")
   return response.data
 }
 
-export const getCustomerGroupStatistics = async (): Promise<CustomerGroupStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<CustomerGroupStatistics>>(
-    "/customer-groups/statistics"
-  )
-  return response.data
+export const getCustomerGroupStatistics =
+  async (): Promise<CustomerGroupStatistics> => {
+    const response = await tenantApiClient.get<
+      ApiResponse<CustomerGroupStatistics>
+    >("/customer-groups/statistics")
+    return response.data
+  }
+
+export const deleteManyCustomerGroups = async (
+  ids: number[]
+): Promise<void> => {
+  await tenantApiClient.delete<ApiResponse<void>>("/customer-groups/bulk", {
+    ids,
+  })
 }
 
-export const deleteManyCustomerGroups = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/customer-groups/bulk", { ids })
-}
-
-export const exportCustomerGroups = async (params: ExportParams): Promise<void> => {
+export const exportCustomerGroups = async (
+  params: ExportParams
+): Promise<void> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -99,7 +112,10 @@ export const exportCustomerGroups = async (params: ExportParams): Promise<void> 
     columns: params.columns,
   }
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/customer-groups/export", body)
+    await tenantApiClient.post<ApiResponse<void>>(
+      "/customer-groups/export",
+      body
+    )
     return
   }
   const extension = body.type === "csv" ? "csv" : "xlsx"

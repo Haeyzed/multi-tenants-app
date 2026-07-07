@@ -2,7 +2,7 @@
 
 import { useGetTaxRuleStatistics } from "@/hooks/tenant/use-tax-rule-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Scale, CheckCircle, XCircle, Replace } from "lucide-react"
+import { CheckCircle, Replace, Scale, XCircle } from "lucide-react"
 
 export function TaxRuleStatistics() {
   const { data: stats, isLoading } = useGetTaxRuleStatistics()

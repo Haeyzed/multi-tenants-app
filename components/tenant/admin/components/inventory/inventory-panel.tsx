@@ -86,7 +86,10 @@ export function InventoryPanel() {
             <TableBody>
               {inventories.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-muted-foreground"
+                  >
                     No inventory records found.
                   </TableCell>
                 </TableRow>
@@ -94,7 +97,9 @@ export function InventoryPanel() {
                 inventories.map((record) => (
                   <TableRow key={record.id}>
                     <TableCell>
-                      {record.variant?.product?.name ?? record.product?.name ?? "—"}
+                      {record.variant?.product?.name ??
+                        record.product?.name ??
+                        "—"}
                     </TableCell>
                     <TableCell>{record.variant?.sku ?? "—"}</TableCell>
                     <TableCell>{record.warehouse?.name ?? "—"}</TableCell>
@@ -159,7 +164,10 @@ export function InventoryPanel() {
             <TableBody>
               {(movementsQuery.data?.data ?? []).length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-muted-foreground"
+                  >
                     No movements recorded yet.
                   </TableCell>
                 </TableRow>
@@ -174,7 +182,9 @@ export function InventoryPanel() {
                         movement.inventory?.variant?.sku ??
                         "—"}
                     </TableCell>
-                    <TableCell className="capitalize">{movement.type}</TableCell>
+                    <TableCell className="capitalize">
+                      {movement.type}
+                    </TableCell>
                     <TableCell>
                       {movement.quantity_change > 0
                         ? `+${movement.quantity_change}`
@@ -204,7 +214,10 @@ export function InventoryPanel() {
             <TableBody>
               {(alertsQuery.data?.data ?? []).length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell
+                    colSpan={4}
+                    className="text-center text-muted-foreground"
+                  >
                     No pending back-in-stock subscriptions.
                   </TableCell>
                 </TableRow>
@@ -212,9 +225,7 @@ export function InventoryPanel() {
                 alertsQuery.data?.data.map((alert) => (
                   <TableRow key={alert.id}>
                     <TableCell>{alert.email}</TableCell>
-                    <TableCell>
-                      {alert.variant?.product?.name ?? "—"}
-                    </TableCell>
+                    <TableCell>{alert.variant?.product?.name ?? "—"}</TableCell>
                     <TableCell>{alert.variant?.sku ?? "—"}</TableCell>
                     <TableCell>
                       {new Date(alert.created_at).toLocaleString()}

@@ -23,7 +23,9 @@ type TagsContextType = {
   currentRow: Tag | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Tag | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -35,9 +37,8 @@ const TagsContext = React.createContext<TagsContextType | null>(null)
 export function TagsProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<TagsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Tag | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

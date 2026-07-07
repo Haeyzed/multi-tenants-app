@@ -23,7 +23,10 @@ type ProductShippingSectionProps = ProductFormSectionProps & {
   product?: Product
 }
 
-export function ProductShippingSection({ form, product }: ProductShippingSectionProps) {
+export function ProductShippingSection({
+  form,
+  product,
+}: ProductShippingSectionProps) {
   const productType = form.watch("type")
   const { data: unitOptions = [] } = useGetUnitOptions()
   const weightUnitId = form.watch("default_variant.weight_unit_id")

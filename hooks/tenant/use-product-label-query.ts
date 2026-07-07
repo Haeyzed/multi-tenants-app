@@ -39,7 +39,8 @@ export const useGetProductLabelStatistics = () => {
 export const useCreateProductLabel = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (label: StoreProductLabelFormValues) => createProductLabel(label),
+    mutationFn: (label: StoreProductLabelFormValues) =>
+      createProductLabel(label),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })

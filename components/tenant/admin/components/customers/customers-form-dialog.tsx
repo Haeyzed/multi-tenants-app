@@ -8,12 +8,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -43,10 +43,10 @@ import {
   type CustomerGroupOption,
 } from "@/types/tenant/customer-group"
 import {
-  storeCustomerSchema,
-  updateCustomerSchema,
   type StoreCustomerFormValues,
+  storeCustomerSchema,
   type UpdateCustomerFormValues,
+  updateCustomerSchema,
 } from "@/schemas/tenant/customer-schema"
 
 type CustomersFormDialogProps = {
@@ -193,11 +193,7 @@ export function CustomersFormDialog({
           form.reset()
         },
         onError: (error) => {
-          handleFormApiError(
-            error,
-            form.setError,
-            "Failed to create customer"
-          )
+          handleFormApiError(error, form.setError, "Failed to create customer")
         },
       })
     }
@@ -205,220 +201,220 @@ export function CustomersFormDialog({
 
   return (
     <>
-    <ResponsiveDialog
-      open={open}
-      onOpenChange={(val) => {
-        onOpenChange(val)
-        if (!val) {
-          form.reset()
-          setGroupDialogOpen(false)
-        }
-      }}
-    >
-      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>
-            {isUpdate ? "Update" : "Create"} Customer
-          </ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
-            {isUpdate
-              ? "Update the customer by providing necessary info."
-              : "Add a new customer by providing necessary info."}{" "}
-            Click save when you&apos;re done.
-          </ResponsiveDialogDescription>
-        </ResponsiveDialogHeader>
+      <ResponsiveDialog
+        open={open}
+        onOpenChange={(val) => {
+          onOpenChange(val)
+          if (!val) {
+            form.reset()
+            setGroupDialogOpen(false)
+          }
+        }}
+      >
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
+              {isUpdate ? "Update" : "Create"} Customer
+            </ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
+              {isUpdate
+                ? "Update the customer by providing necessary info."
+                : "Add a new customer by providing necessary info."}{" "}
+              Click save when you&apos;re done.
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
 
-        <form
-          id="customers-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <form
+            id="customers-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field>
+                <FieldLabel>First Name *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="First name"
+                    {...form.register("first_name")}
+                  />
+                  <FieldError
+                    message={form.formState.errors.first_name?.message}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Last Name *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="Last name"
+                    {...form.register("last_name")}
+                  />
+                  <FieldError
+                    message={form.formState.errors.last_name?.message}
+                  />
+                </FieldContent>
+              </Field>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field>
+                <FieldLabel>Email</FieldLabel>
+                <FieldContent>
+                  <Input
+                    type="email"
+                    placeholder="email@example.com"
+                    {...form.register("email")}
+                  />
+                  <FieldError message={form.formState.errors.email?.message} />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Phone</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="Phone number"
+                    {...form.register("phone")}
+                  />
+                  <FieldError message={form.formState.errors.phone?.message} />
+                </FieldContent>
+              </Field>
+            </div>
+
             <Field>
-              <FieldLabel>First Name *</FieldLabel>
+              <FieldLabel>Customer Group</FieldLabel>
               <FieldContent>
-                <Input
-                  placeholder="First name"
-                  {...form.register("first_name")}
-                />
+                <div className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <Combobox
+                      items={groupItems}
+                      itemToStringValue={(item) => item.label}
+                      value={selectedGroup}
+                      onValueChange={(item) => {
+                        if (!item) return
+                        form.setValue(
+                          "customer_group_id",
+                          item.value === 0 ? null : item.value
+                        )
+                      }}
+                    >
+                      <ComboboxInput placeholder="Select customer group..." />
+                      <ComboboxContent>
+                        <ComboboxEmpty>No groups found.</ComboboxEmpty>
+                        <ComboboxList>
+                          {(item) => (
+                            <ComboboxItem key={item.value} value={item}>
+                              {item.label}
+                            </ComboboxItem>
+                          )}
+                        </ComboboxList>
+                      </ComboboxContent>
+                    </Combobox>
+                  </div>
+                  <TenantAdminAuthGuard permissions="customers.manage">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="shrink-0"
+                      onClick={() => setGroupDialogOpen(true)}
+                      aria-label="Create customer group"
+                    >
+                      <Plus className="size-4" />
+                    </Button>
+                  </TenantAdminAuthGuard>
+                </div>
                 <FieldError
-                  message={form.formState.errors.first_name?.message}
+                  message={form.formState.errors.customer_group_id?.message}
                 />
               </FieldContent>
             </Field>
-            <Field>
-              <FieldLabel>Last Name *</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="Last name"
-                  {...form.register("last_name")}
-                />
-                <FieldError
-                  message={form.formState.errors.last_name?.message}
-                />
-              </FieldContent>
-            </Field>
-          </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field>
-              <FieldLabel>Email</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="email"
-                  placeholder="email@example.com"
-                  {...form.register("email")}
-                />
-                <FieldError message={form.formState.errors.email?.message} />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Phone</FieldLabel>
-              <FieldContent>
-                <Input
-                  placeholder="Phone number"
-                  {...form.register("phone")}
-                />
-                <FieldError message={form.formState.errors.phone?.message} />
-              </FieldContent>
-            </Field>
-          </div>
-
-          <Field>
-            <FieldLabel>Customer Group</FieldLabel>
-            <FieldContent>
-              <div className="flex items-center gap-2">
-                <div className="min-w-0 flex-1">
-                  <Combobox
-                    items={groupItems}
-                    itemToStringValue={(item) => item.label}
-                    value={selectedGroup}
-                    onValueChange={(item) => {
-                      if (!item) return
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field>
+                <FieldLabel>Date of Birth</FieldLabel>
+                <FieldContent>
+                  <DatePicker
+                    selected={selectedDateOfBirth}
+                    onSelect={(date) => {
                       form.setValue(
-                        "customer_group_id",
-                        item.value === 0 ? null : item.value
+                        "date_of_birth",
+                        date ? format(date, "yyyy-MM-dd") : null
                       )
                     }}
+                    placeholder="Pick date of birth"
+                    maxDate={new Date()}
+                  />
+                  <FieldError
+                    message={form.formState.errors.date_of_birth?.message}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Gender</FieldLabel>
+                <FieldContent>
+                  <Combobox
+                    items={genderOptions}
+                    itemToStringValue={(item) => item.label}
+                    value={selectedGender}
+                    onValueChange={(item) => {
+                      if (!item) return
+                      form.setValue("gender", item.value || null)
+                    }}
                   >
-                    <ComboboxInput placeholder="Select customer group..." />
+                    <ComboboxInput placeholder="Select gender..." />
                     <ComboboxContent>
-                      <ComboboxEmpty>No groups found.</ComboboxEmpty>
+                      <ComboboxEmpty>No options found.</ComboboxEmpty>
                       <ComboboxList>
                         {(item) => (
-                          <ComboboxItem key={item.value} value={item}>
+                          <ComboboxItem key={item.value || "none"} value={item}>
                             {item.label}
                           </ComboboxItem>
                         )}
                       </ComboboxList>
                     </ComboboxContent>
                   </Combobox>
-                </div>
-                <TenantAdminAuthGuard permissions="customers.manage">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="shrink-0"
-                    onClick={() => setGroupDialogOpen(true)}
-                    aria-label="Create customer group"
-                  >
-                    <Plus className="size-4" />
-                  </Button>
-                </TenantAdminAuthGuard>
-              </div>
-              <FieldError
-                message={form.formState.errors.customer_group_id?.message}
+                  <FieldError message={form.formState.errors.gender?.message} />
+                </FieldContent>
+              </Field>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_active"
+                checked={form.watch("is_active")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_active", !!checked)
+                }
               />
-            </FieldContent>
-          </Field>
+              <label htmlFor="is_active" className="text-sm font-medium">
+                Active
+              </label>
+            </div>
+          </form>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field>
-              <FieldLabel>Date of Birth</FieldLabel>
-              <FieldContent>
-                <DatePicker
-                  selected={selectedDateOfBirth}
-                  onSelect={(date) => {
-                    form.setValue(
-                      "date_of_birth",
-                      date ? format(date, "yyyy-MM-dd") : null
-                    )
-                  }}
-                  placeholder="Pick date of birth"
-                  maxDate={new Date()}
-                />
-                <FieldError
-                  message={form.formState.errors.date_of_birth?.message}
-                />
-              </FieldContent>
-            </Field>
-            <Field>
-              <FieldLabel>Gender</FieldLabel>
-              <FieldContent>
-                <Combobox
-                  items={genderOptions}
-                  itemToStringValue={(item) => item.label}
-                  value={selectedGender}
-                  onValueChange={(item) => {
-                    if (!item) return
-                    form.setValue("gender", item.value || null)
-                  }}
-                >
-                  <ComboboxInput placeholder="Select gender..." />
-                  <ComboboxContent>
-                    <ComboboxEmpty>No options found.</ComboboxEmpty>
-                    <ComboboxList>
-                      {(item) => (
-                        <ComboboxItem key={item.value || "none"} value={item}>
-                          {item.label}
-                        </ComboboxItem>
-                      )}
-                    </ComboboxList>
-                  </ComboboxContent>
-                </Combobox>
-                <FieldError message={form.formState.errors.gender?.message} />
-              </FieldContent>
-            </Field>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="is_active"
-              checked={form.watch("is_active")}
-              onCheckedChange={(checked) =>
-                form.setValue("is_active", !!checked)
-              }
+          <ResponsiveDialogFooter>
+            <ResponsiveDialogClose
+              render={<Button variant="outline">Close</Button>}
             />
-            <label htmlFor="is_active" className="text-sm font-medium">
-              Active
-            </label>
-          </div>
-        </form>
+            <Button type="submit" form="customers-form" disabled={isSubmitting}>
+              {isSubmitting && <Spinner />}
+              {isSubmitting
+                ? "Saving..."
+                : isUpdate
+                  ? "Update Customer"
+                  : "Create Customer"}
+            </Button>
+          </ResponsiveDialogFooter>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
 
-        <ResponsiveDialogFooter>
-          <ResponsiveDialogClose
-            render={<Button variant="outline">Close</Button>}
-          />
-          <Button type="submit" form="customers-form" disabled={isSubmitting}>
-            {isSubmitting && <Spinner />}
-            {isSubmitting
-              ? "Saving..."
-              : isUpdate
-                ? "Update Customer"
-                : "Create Customer"}
-          </Button>
-        </ResponsiveDialogFooter>
-      </ResponsiveDialogContent>
-    </ResponsiveDialog>
-
-    <CustomerGroupsFormDialog
-      open={groupDialogOpen}
-      onOpenChange={setGroupDialogOpen}
-      onSuccess={(group: CustomerGroup) => {
-        form.setValue("customer_group_id", group.id)
-      }}
-    />
+      <CustomerGroupsFormDialog
+        open={groupDialogOpen}
+        onOpenChange={setGroupDialogOpen}
+        onSuccess={(group: CustomerGroup) => {
+          form.setValue("customer_group_id", group.id)
+        }}
+      />
     </>
   )
 }

@@ -42,7 +42,9 @@ export function MediaMoveDialog({
   mode,
   onSuccess,
 }: MediaMoveDialogProps) {
-  const [targetFolderId, setTargetFolderId] = React.useState<number | null>(null)
+  const [targetFolderId, setTargetFolderId] = React.useState<number | null>(
+    null
+  )
   const [folderDialogOpen, setFolderDialogOpen] = React.useState(false)
   const moveMedia = useMoveMedia()
   const copyMedia = useCopyMedia()
@@ -69,7 +71,10 @@ export function MediaMoveDialog({
     try {
       if (mode === "move") {
         if (mediaIds.length > 0) {
-          await moveMedia.mutateAsync({ ids: mediaIds, folderId: targetFolderId })
+          await moveMedia.mutateAsync({
+            ids: mediaIds,
+            folderId: targetFolderId,
+          })
         }
 
         for (const folder of folders) {
@@ -80,7 +85,10 @@ export function MediaMoveDialog({
         }
       } else {
         if (mediaIds.length > 0) {
-          await copyMedia.mutateAsync({ ids: mediaIds, folderId: targetFolderId })
+          await copyMedia.mutateAsync({
+            ids: mediaIds,
+            folderId: targetFolderId,
+          })
         }
 
         for (const folder of folders) {
@@ -93,15 +101,15 @@ export function MediaMoveDialog({
       }
 
       toast.success(
-        mode === "move"
-          ? "Moved successfully"
-          : "Copied successfully"
+        mode === "move" ? "Moved successfully" : "Copied successfully"
       )
       onSuccess?.()
       onOpenChange(false)
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Unable to complete this action"
+        error instanceof Error
+          ? error.message
+          : "Unable to complete this action"
       )
     }
   }
@@ -130,7 +138,11 @@ export function MediaMoveDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-        <form id="media-move-form" className="space-y-4" onSubmit={handleSubmit}>
+        <form
+          id="media-move-form"
+          className="space-y-4"
+          onSubmit={handleSubmit}
+        >
           {treeQuery.isLoading ? (
             <p className="text-sm text-muted-foreground">Loading folders...</p>
           ) : (

@@ -44,7 +44,11 @@ export function MediaFolderDeleteDialog({
           <ResponsiveDialogClose
             render={<Button variant="outline">Cancel</Button>}
           />
-          <Button variant="destructive" onClick={onConfirm} disabled={isDeleting}>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            disabled={isDeleting}
+          >
             {isDeleting && <Spinner />}
             Delete
           </Button>

@@ -55,7 +55,11 @@ export async function TenantLandingPage({ subdomain }: TenantLandingPageProps) {
               <LogIn className="mr-2 size-4" />
               Customer sign in
             </Button>
-            <Button size="lg" variant="secondary" render={<Link href="/admin/login" />}>
+            <Button
+              size="lg"
+              variant="secondary"
+              render={<Link href="/admin/login" />}
+            >
               <Store className="mr-2 size-4" />
               Store admin
             </Button>

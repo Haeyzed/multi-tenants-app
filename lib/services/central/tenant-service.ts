@@ -180,7 +180,11 @@ export const exportTenants = async (params: ExportParams): Promise<void> => {
 export const downloadTenantsImportSample = async (
   type: "xlsx" | "csv" = "xlsx"
 ): Promise<void> => {
-  await apiClient.getFileDownload("/tenants/import/sample", { type }, `tenants-import-sample.${type}`)
+  await apiClient.getFileDownload(
+    "/tenants/import/sample",
+    { type },
+    `tenants-import-sample.${type}`
+  )
 }
 
 export const importTenants = async (file: File): Promise<void> => {

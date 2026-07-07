@@ -17,7 +17,9 @@ export function CentralLandingPage() {
             <Button variant="ghost" render={<Link href="/central/login" />}>
               Sign in
             </Button>
-            <Button render={<Link href="/central/register" />}>Get started</Button>
+            <Button render={<Link href="/central/register" />}>
+              Get started
+            </Button>
           </div>
         </div>
       </header>
@@ -49,7 +51,10 @@ export function CentralLandingPage() {
 
       <footer className="border-t py-6 text-center text-sm text-muted-foreground">
         Platform administration ·{" "}
-        <Link href="/central/dashboard" className="underline underline-offset-4">
+        <Link
+          href="/central/dashboard"
+          className="underline underline-offset-4"
+        >
           <LayoutDashboard className="mr-1 inline size-3.5" />
           Dashboard
         </Link>

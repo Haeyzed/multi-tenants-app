@@ -94,7 +94,9 @@ export function ProductPriceTiersEditor({
       </div>
 
       {tiers.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No price tiers configured.</p>
+        <p className="text-sm text-muted-foreground">
+          No price tiers configured.
+        </p>
       ) : (
         <>
           <div className="space-y-4 md:hidden">
@@ -145,7 +147,9 @@ export function ProductPriceTiersEditor({
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-muted-foreground">Price</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      Price
+                    </p>
                     <Input
                       type="number"
                       step="0.01"
@@ -173,7 +177,10 @@ export function ProductPriceTiersEditor({
                         })
                       }}
                     >
-                      <ComboboxInput placeholder="All customers" className="w-full" />
+                      <ComboboxInput
+                        placeholder="All customers"
+                        className="w-full"
+                      />
                       <ComboboxContent>
                         <ComboboxEmpty>No groups found.</ComboboxEmpty>
                         <ComboboxList>
@@ -188,7 +195,9 @@ export function ProductPriceTiersEditor({
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">Starts</p>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Starts
+                      </p>
                       <DatePicker
                         selected={parseTierDate(tier.starts_at)}
                         onSelect={(date) =>
@@ -202,7 +211,9 @@ export function ProductPriceTiersEditor({
                       />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs font-medium text-muted-foreground">Ends</p>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Ends
+                      </p>
                       <DatePicker
                         selected={parseTierDate(tier.ends_at)}
                         onSelect={(date) =>
@@ -233,134 +244,135 @@ export function ProductPriceTiersEditor({
           </div>
 
           <div className="hidden overflow-x-auto md:block">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Min qty</TableHead>
-              <TableHead>Max qty</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Customer group</TableHead>
-              <TableHead>Starts</TableHead>
-              <TableHead>Ends</TableHead>
-              <TableHead className="w-[60px]" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {tiers.map((tier, index) => {
-              const selectedGroup =
-                groupOptions.find(
-                  (option) =>
-                    option.value === (tier.customer_group_id ?? 0)
-                ) ?? noneGroupOption
-
-              return (
-                <TableRow key={`price-tier-${index}`}>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={tier.min_quantity}
-                      onChange={(event) =>
-                        updateTier(index, {
-                          min_quantity: Number(event.target.value) || 1,
-                        })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={tier.max_quantity ?? ""}
-                      onChange={(event) =>
-                        updateTier(index, {
-                          max_quantity:
-                            event.target.value === ""
-                              ? null
-                              : Number(event.target.value),
-                        })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min={0}
-                      value={tier.price}
-                      onChange={(event) =>
-                        updateTier(index, {
-                          price: Number(event.target.value) || 0,
-                        })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Combobox
-                      items={groupOptions}
-                      itemToStringValue={(item) => item.label}
-                      value={selectedGroup}
-                      onValueChange={(item) => {
-                        updateTier(index, {
-                          customer_group_id:
-                            !item || item.value === 0 ? null : item.value,
-                        })
-                      }}
-                    >
-                      <ComboboxInput placeholder="All customers" />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No groups found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(item) => (
-                            <ComboboxItem key={item.value} value={item}>
-                              {item.label}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                  </TableCell>
-                  <TableCell>
-                    <DatePicker
-                      selected={parseTierDate(tier.starts_at)}
-                      onSelect={(date) =>
-                        updateTier(index, {
-                          starts_at: date ? format(date, "yyyy-MM-dd") : null,
-                        })
-                      }
-                      placeholder="Start date"
-                      minDate={new Date("1900-01-01")}
-                      maxDate={new Date("2099-12-31")}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <DatePicker
-                      selected={parseTierDate(tier.ends_at)}
-                      onSelect={(date) =>
-                        updateTier(index, {
-                          ends_at: date ? format(date, "yyyy-MM-dd") : null,
-                        })
-                      }
-                      placeholder="End date"
-                      minDate={new Date("1900-01-01")}
-                      maxDate={new Date("2099-12-31")}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeTier(index)}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </TableCell>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Min qty</TableHead>
+                  <TableHead>Max qty</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead>Customer group</TableHead>
+                  <TableHead>Starts</TableHead>
+                  <TableHead>Ends</TableHead>
+                  <TableHead className="w-[60px]" />
                 </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+              </TableHeader>
+              <TableBody>
+                {tiers.map((tier, index) => {
+                  const selectedGroup =
+                    groupOptions.find(
+                      (option) => option.value === (tier.customer_group_id ?? 0)
+                    ) ?? noneGroupOption
+
+                  return (
+                    <TableRow key={`price-tier-${index}`}>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min={1}
+                          value={tier.min_quantity}
+                          onChange={(event) =>
+                            updateTier(index, {
+                              min_quantity: Number(event.target.value) || 1,
+                            })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min={1}
+                          value={tier.max_quantity ?? ""}
+                          onChange={(event) =>
+                            updateTier(index, {
+                              max_quantity:
+                                event.target.value === ""
+                                  ? null
+                                  : Number(event.target.value),
+                            })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          value={tier.price}
+                          onChange={(event) =>
+                            updateTier(index, {
+                              price: Number(event.target.value) || 0,
+                            })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Combobox
+                          items={groupOptions}
+                          itemToStringValue={(item) => item.label}
+                          value={selectedGroup}
+                          onValueChange={(item) => {
+                            updateTier(index, {
+                              customer_group_id:
+                                !item || item.value === 0 ? null : item.value,
+                            })
+                          }}
+                        >
+                          <ComboboxInput placeholder="All customers" />
+                          <ComboboxContent>
+                            <ComboboxEmpty>No groups found.</ComboboxEmpty>
+                            <ComboboxList>
+                              {(item) => (
+                                <ComboboxItem key={item.value} value={item}>
+                                  {item.label}
+                                </ComboboxItem>
+                              )}
+                            </ComboboxList>
+                          </ComboboxContent>
+                        </Combobox>
+                      </TableCell>
+                      <TableCell>
+                        <DatePicker
+                          selected={parseTierDate(tier.starts_at)}
+                          onSelect={(date) =>
+                            updateTier(index, {
+                              starts_at: date
+                                ? format(date, "yyyy-MM-dd")
+                                : null,
+                            })
+                          }
+                          placeholder="Start date"
+                          minDate={new Date("1900-01-01")}
+                          maxDate={new Date("2099-12-31")}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <DatePicker
+                          selected={parseTierDate(tier.ends_at)}
+                          onSelect={(date) =>
+                            updateTier(index, {
+                              ends_at: date ? format(date, "yyyy-MM-dd") : null,
+                            })
+                          }
+                          placeholder="End date"
+                          minDate={new Date("1900-01-01")}
+                          maxDate={new Date("2099-12-31")}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeTier(index)}
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
           </div>
         </>
       )}

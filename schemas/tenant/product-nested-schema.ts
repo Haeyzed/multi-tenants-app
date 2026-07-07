@@ -24,10 +24,12 @@ export const storeProductDocumentSchema = z.object({
   is_public: z.boolean().optional(),
 })
 
-export const updateProductDocumentSchema = storeProductDocumentSchema.partial().extend({
-  media_id: z.number().min(1).optional(),
-  title: z.string().min(1).max(255).optional(),
-})
+export const updateProductDocumentSchema = storeProductDocumentSchema
+  .partial()
+  .extend({
+    media_id: z.number().min(1).optional(),
+    title: z.string().min(1).max(255).optional(),
+  })
 
 export const answerProductQuestionSchema = z.object({
   answer: z.string().min(1, "Answer is required"),
@@ -59,8 +61,16 @@ export const syncProductVideosSchema = z.object({
 
 export type StoreProductFaqFormValues = z.infer<typeof storeProductFaqSchema>
 export type UpdateProductFaqFormValues = z.infer<typeof updateProductFaqSchema>
-export type StoreProductDocumentFormValues = z.infer<typeof storeProductDocumentSchema>
-export type UpdateProductDocumentFormValues = z.infer<typeof updateProductDocumentSchema>
-export type AnswerProductQuestionFormValues = z.infer<typeof answerProductQuestionSchema>
-export type UpdateProductReviewFormValues = z.infer<typeof updateProductReviewSchema>
+export type StoreProductDocumentFormValues = z.infer<
+  typeof storeProductDocumentSchema
+>
+export type UpdateProductDocumentFormValues = z.infer<
+  typeof updateProductDocumentSchema
+>
+export type AnswerProductQuestionFormValues = z.infer<
+  typeof answerProductQuestionSchema
+>
+export type UpdateProductReviewFormValues = z.infer<
+  typeof updateProductReviewSchema
+>
 export type ProductVideoFormValues = z.infer<typeof productVideoSchema>

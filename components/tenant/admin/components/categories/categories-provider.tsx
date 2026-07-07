@@ -23,7 +23,9 @@ type CategoriesContextType = {
   currentRow: Category | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Category | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>

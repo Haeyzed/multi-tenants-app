@@ -25,9 +25,9 @@ import {
   ProductApiPayload,
   StoreProductFormValues,
   StoreProductVariantFormValues,
-  SyncProductOptionsFormValues,
   SyncProductBundleItemsFormValues,
   SyncProductDownloadsFormValues,
+  SyncProductOptionsFormValues,
   SyncProductRelationsFormValues,
   SyncProductServiceFormValues,
   SyncProductSubscriptionFormValues,
@@ -37,12 +37,12 @@ import {
 } from "@/schemas/tenant/product-schema"
 import {
   type AnswerProductQuestionFormValues,
+  type ProductVideoFormValues,
   type StoreProductDocumentFormValues,
   type StoreProductFaqFormValues,
   type UpdateProductDocumentFormValues,
   type UpdateProductFaqFormValues,
   type UpdateProductReviewFormValues,
-  type ProductVideoFormValues,
 } from "@/schemas/tenant/product-nested-schema"
 import {
   type ProductDocument,
@@ -66,8 +66,9 @@ function normalizeVariantMedia(
     return variant
   }
 
-  const legacyImage = (variant as ProductVariant & { image?: Product["primary_image_media"] })
-    .image
+  const legacyImage = (
+    variant as ProductVariant & { image?: Product["primary_image_media"] }
+  ).image
   const imageMedia = variant.image_media ?? legacyImage ?? null
   const imageMediaId = variant.image_media_id ?? imageMedia?.id ?? null
 
@@ -126,10 +127,13 @@ function normalizeProduct(product: Product): Product {
     condition,
     status,
     default_variant: product.default_variant
-      ? normalizeVariantMedia(product.default_variant) ?? undefined
+      ? (normalizeVariantMedia(product.default_variant) ?? undefined)
       : undefined,
     variants: product.variants?.map(
-      (variant) => normalizeVariantMedia(variant) as NonNullable<Product["variants"]>[number]
+      (variant) =>
+        normalizeVariantMedia(variant) as NonNullable<
+          Product["variants"]
+        >[number]
     ),
     primary_image_media: primaryImage
       ? {
@@ -243,8 +247,13 @@ export const deleteProduct = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/products/${id}`)
 }
 
-export const deleteManyProducts = async (ids: number[]): Promise<{ message: string }> => {
-  const response = await tenantApiClient.delete<ApiResponse<void>>("/products/bulk", { ids })
+export const deleteManyProducts = async (
+  ids: number[]
+): Promise<{ message: string }> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/products/bulk",
+    { ids }
+  )
   return { message: response.message }
 }
 
@@ -253,7 +262,10 @@ export const bulkUpdateProducts = async (payload: {
   status?: ProductStatus
   visibility?: ProductVisibilityValue
 }): Promise<{ message: string }> => {
-  const response = await tenantApiClient.patch<ApiResponse<void>>("/products/bulk", payload)
+  const response = await tenantApiClient.patch<ApiResponse<void>>(
+    "/products/bulk",
+    payload
+  )
   return { message: response.message }
 }
 
@@ -267,9 +279,10 @@ export const getProductStatistics = async (): Promise<ProductStatistics> => {
 export const getProductOptions = async (): Promise<
   { label: string; value: number; image_url?: string | null }[]
 > => {
-  const response = await tenantApiClient.get<
-    ApiResponse<{ label: string; value: number; image_url?: string | null }[]>
-  >("/products/options")
+  const response =
+    await tenantApiClient.get<
+      ApiResponse<{ label: string; value: number; image_url?: string | null }[]>
+    >("/products/options")
   return response.data
 }
 
@@ -325,10 +338,9 @@ export const syncProductOptions = async (
   productId: number,
   payload: SyncProductOptionsFormValues
 ): Promise<ApiMutationResult<ProductGenerationOption[]>> => {
-  const response = await tenantApiClient.put<ApiResponse<ProductGenerationOption[]>>(
-    `/products/${productId}/options`,
-    payload
-  )
+  const response = await tenantApiClient.put<
+    ApiResponse<ProductGenerationOption[]>
+  >(`/products/${productId}/options`, payload)
   return { data: response.data, message: response.message }
 }
 
@@ -336,10 +348,9 @@ export const syncProductSuppliers = async (
   productId: number,
   payload: SyncProductSuppliersFormValues
 ): Promise<ApiMutationResult<ProductSupplierAssignment[]>> => {
-  const response = await tenantApiClient.put<ApiResponse<ProductSupplierAssignment[]>>(
-    `/products/${productId}/suppliers`,
-    payload
-  )
+  const response = await tenantApiClient.put<
+    ApiResponse<ProductSupplierAssignment[]>
+  >(`/products/${productId}/suppliers`, payload)
   return { data: response.data, message: response.message }
 }
 
@@ -347,10 +358,9 @@ export const syncProductRelations = async (
   productId: number,
   payload: SyncProductRelationsFormValues
 ): Promise<ApiMutationResult<SyncProductRelationsFormValues>> => {
-  const response = await tenantApiClient.put<ApiResponse<SyncProductRelationsFormValues>>(
-    `/products/${productId}/relations`,
-    payload
-  )
+  const response = await tenantApiClient.put<
+    ApiResponse<SyncProductRelationsFormValues>
+  >(`/products/${productId}/relations`, payload)
   return { data: response.data, message: response.message }
 }
 
@@ -398,10 +408,9 @@ export const syncProductSubscription = async (
   productId: number,
   payload: SyncProductSubscriptionFormValues
 ): Promise<ApiMutationResult<ProductSubscriptionConfig>> => {
-  const response = await tenantApiClient.put<ApiResponse<ProductSubscriptionConfig>>(
-    `/products/${productId}/subscription`,
-    payload
-  )
+  const response = await tenantApiClient.put<
+    ApiResponse<ProductSubscriptionConfig>
+  >(`/products/${productId}/subscription`, payload)
   return { data: response.data, message: response.message }
 }
 
@@ -463,7 +472,9 @@ export const duplicateProduct = async (
   }
 }
 
-export const getProductFaqs = async (productId: number): Promise<ProductFaq[]> => {
+export const getProductFaqs = async (
+  productId: number
+): Promise<ProductFaq[]> => {
   const response = await tenantApiClient.get<ApiResponse<ProductFaq[]>>(
     `/products/${productId}/faqs`
   )

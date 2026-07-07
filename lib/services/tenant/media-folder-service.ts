@@ -68,7 +68,9 @@ export const deleteMediaFolder = async (id: number): Promise<void> => {
 }
 
 export const deleteManyMediaFolders = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/media-folders/bulk", { ids })
+  await tenantApiClient.delete<ApiResponse<void>>("/media-folders/bulk", {
+    ids,
+  })
 }
 
 export const moveMediaFolder = async (

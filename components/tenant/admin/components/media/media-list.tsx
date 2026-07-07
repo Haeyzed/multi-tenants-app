@@ -6,8 +6,8 @@ import {
   CopyIcon,
   DownloadIcon,
   EyeIcon,
-  FolderInputIcon,
   FolderIcon,
+  FolderInputIcon,
   GripVerticalIcon,
   InfoIcon,
   MoreHorizontalIcon,
@@ -17,7 +17,11 @@ import {
 
 import { cn } from "@/lib/utils"
 import { downloadMediaItem } from "@/lib/tenant/media-download"
-import { isMediaImage, isMediaPreviewable, mediaMatchesAccept } from "@/lib/tenant/media-file-kind"
+import {
+  isMediaImage,
+  isMediaPreviewable,
+  mediaMatchesAccept,
+} from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
 import {
   MediaAiContextMenuSub,
@@ -48,7 +52,10 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 function runMenuAction(action: () => void) {
-  return (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+  return (event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) => {
     event.preventDefault()
     event.stopPropagation()
     action()
@@ -244,7 +251,7 @@ function MediaFileRowActions({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="size-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:opacity-100"
+            className="size-7 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             onClick={(event) => event.stopPropagation()}
           >
             <MoreHorizontalIcon className="size-4" />
@@ -328,7 +335,7 @@ function MediaFolderRowActions({
             type="button"
             variant="ghost"
             size="icon-sm"
-            className="size-7 shrink-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 data-[state=open]:opacity-100"
+            className="size-7 shrink-0 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100"
             onClick={(event) => event.stopPropagation()}
           >
             <MoreHorizontalIcon className="size-4" />
@@ -350,7 +357,9 @@ function MediaFolderRowActions({
           </DropdownMenuItem>
         ) : null}
         {onRenameFolder ? (
-          <DropdownMenuItem onClick={runMenuAction(() => onRenameFolder(folder))}>
+          <DropdownMenuItem
+            onClick={runMenuAction(() => onRenameFolder(folder))}
+          >
             <PencilIcon />
             Rename
           </DropdownMenuItem>

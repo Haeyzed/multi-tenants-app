@@ -5,8 +5,8 @@ import { format } from "date-fns"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import {
   ModuleViewDialog,
-  ModuleViewVisibility,
   type ModuleViewField,
+  ModuleViewVisibility,
 } from "@/components/tenant/admin/components/shared/module-view-dialog"
 import { type Brand } from "@/types/tenant/brand"
 
@@ -70,9 +70,7 @@ function getBrandViewFields(brand: Brand): ModuleViewField[] {
     },
     {
       label: "Created",
-      value: brand.created_at
-        ? format(new Date(brand.created_at), "PPP")
-        : "—",
+      value: brand.created_at ? format(new Date(brand.created_at), "PPP") : "—",
     },
   ]
 }

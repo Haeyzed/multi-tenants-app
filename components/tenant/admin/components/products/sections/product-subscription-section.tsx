@@ -17,8 +17,8 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { useSyncProductSubscription } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductSubscriptionSchema,
   type SyncProductSubscriptionFormValues,
+  syncProductSubscriptionSchema,
 } from "@/schemas/tenant/product-schema"
 import { type Product } from "@/types/tenant/product"
 import { FieldError } from "./product-form-shared"
@@ -190,7 +190,9 @@ export function ProductSubscriptionSection({
             <Checkbox
               id="subscription-prorate"
               checked={formValues.subscription.prorate ?? true}
-              onCheckedChange={(checked) => updateSubscription({ prorate: !!checked })}
+              onCheckedChange={(checked) =>
+                updateSubscription({ prorate: !!checked })
+              }
             />
             <label htmlFor="subscription-prorate" className="text-sm">
               Prorate plan changes

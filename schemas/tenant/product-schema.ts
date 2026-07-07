@@ -1,8 +1,5 @@
 import { z } from "zod"
-import {
-  type Product,
-  resolveProductEnumValue,
-} from "@/types/tenant/product"
+import { type Product, resolveProductEnumValue } from "@/types/tenant/product"
 
 const productTypeSchema = z.enum([
   "simple",
@@ -155,7 +152,10 @@ export const storeProductSchema = baseProductSchema.superRefine((data, ctx) => {
     })
   }
 
-  if (data.default_variant?.price === undefined || data.default_variant.price < 0) {
+  if (
+    data.default_variant?.price === undefined ||
+    data.default_variant.price < 0
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Price must be at least 0",
@@ -166,10 +166,13 @@ export const storeProductSchema = baseProductSchema.superRefine((data, ctx) => {
 
 export const updateProductSchema = baseProductSchema.partial().extend({
   name: z.string().min(1, "Name is required").max(255).optional(),
-  default_variant: defaultVariantSchema.partial().extend({
-    sku: z.string().min(1).max(100).optional(),
-    price: z.coerce.number().min(0).optional(),
-  }).optional(),
+  default_variant: defaultVariantSchema
+    .partial()
+    .extend({
+      sku: z.string().min(1).max(100).optional(),
+      price: z.coerce.number().min(0).optional(),
+    })
+    .optional(),
 })
 
 export type StoreProductFormValues = z.infer<typeof storeProductSchema>
@@ -409,7 +412,9 @@ export function getDefaultProductFormValues(): StoreProductFormValues {
   }
 }
 
-export function mapProductToFormValues(product: Product): StoreProductFormValues {
+export function mapProductToFormValues(
+  product: Product
+): StoreProductFormValues {
   const type = resolveProductEnumValue(product.type, "simple")
   const condition = resolveProductEnumValue(product.condition, "new")
   const visibility = resolveProductEnumValue(product.visibility, "visible")
@@ -418,13 +423,14 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
     defaultVariant?.inventories?.[0] ?? defaultVariant?.inventory ?? null
 
   const categoryIds =
-    product.category_ids ?? product.categories?.map((category) => category.id) ?? []
+    product.category_ids ??
+    product.categories?.map((category) => category.id) ??
+    []
 
   const primaryCategory =
     product.primary_category ??
     product.categories?.find(
-      (category) =>
-        category.is_primary || category.pivot?.is_primary === true
+      (category) => category.is_primary || category.pivot?.is_primary === true
     ) ??
     null
 
@@ -451,18 +457,20 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
     tag_ids: product.tags?.map((tag) => tag.id) ?? [],
     label_ids: product.labels?.map((label) => label.id) ?? [],
     collection_ids:
-      product.collection_ids ?? product.collections?.map((collection) => collection.id) ?? [],
+      product.collection_ids ??
+      product.collections?.map((collection) => collection.id) ??
+      [],
     primary_image_media_id: product.primary_image_media?.id ?? null,
     gallery:
       product.gallery
         ?.filter((item) => !item.is_primary)
         .map((item, index) => ({
-        media_id: item.media_id ?? item.media?.id ?? 0,
-        sort_order: item.sort_order ?? index,
-        alt_text: item.alt_text ?? null,
-        caption: item.caption ?? null,
-        is_primary: item.is_primary,
-      })) ?? [],
+          media_id: item.media_id ?? item.media?.id ?? 0,
+          sort_order: item.sort_order ?? index,
+          alt_text: item.alt_text ?? null,
+          caption: item.caption ?? null,
+          is_primary: item.is_primary,
+        })) ?? [],
     videos:
       product.videos?.map((video, index) => ({
         video_url: video.video_url,
@@ -530,8 +538,7 @@ export function mapProductToFormValues(product: Product): StoreProductFormValues
       product.attributes?.map((item) => ({
         attribute_id: item.attribute.id,
         attribute_value_id: item.value.id ?? null,
-        custom_value:
-          item.value.id == null ? (item.value.value ?? null) : null,
+        custom_value: item.value.id == null ? (item.value.value ?? null) : null,
       })) ?? [],
     published_at: product.published_at ?? null,
   }
@@ -688,11 +695,13 @@ export const storeProductVariantSchema = z.object({
   price_tiers: z.array(productPriceTierSchema).optional(),
 })
 
-export const updateProductVariantSchema = storeProductVariantSchema.partial().extend({
-  title: z.string().min(1).max(255).optional(),
-  sku: z.string().min(1).max(100).optional(),
-  price: z.coerce.number().min(0).optional(),
-})
+export const updateProductVariantSchema = storeProductVariantSchema
+  .partial()
+  .extend({
+    title: z.string().min(1).max(255).optional(),
+    sku: z.string().min(1).max(100).optional(),
+    price: z.coerce.number().min(0).optional(),
+  })
 
 export const generateProductVariantsSchema = z.object({
   price: z.coerce.number().min(0).optional(),
@@ -702,17 +711,35 @@ export const generateProductVariantsSchema = z.object({
   inventory: defaultVariantInventorySchema.optional(),
 })
 
-export type SyncProductOptionsFormValues = z.infer<typeof syncProductOptionsSchema>
-export type SyncProductSuppliersFormValues = z.infer<typeof syncProductSuppliersSchema>
-export type SyncProductRelationsFormValues = z.infer<typeof syncProductRelationsSchema>
-export type SyncProductDownloadsFormValues = z.infer<typeof syncProductDownloadsSchema>
-export type SyncProductBundleItemsFormValues = z.infer<typeof syncProductBundleItemsSchema>
-export type SyncProductServiceFormValues = z.infer<typeof syncProductServiceSchema>
-export type SyncProductSubscriptionFormValues = z.infer<typeof syncProductSubscriptionSchema>
+export type SyncProductOptionsFormValues = z.infer<
+  typeof syncProductOptionsSchema
+>
+export type SyncProductSuppliersFormValues = z.infer<
+  typeof syncProductSuppliersSchema
+>
+export type SyncProductRelationsFormValues = z.infer<
+  typeof syncProductRelationsSchema
+>
+export type SyncProductDownloadsFormValues = z.infer<
+  typeof syncProductDownloadsSchema
+>
+export type SyncProductBundleItemsFormValues = z.infer<
+  typeof syncProductBundleItemsSchema
+>
+export type SyncProductServiceFormValues = z.infer<
+  typeof syncProductServiceSchema
+>
+export type SyncProductSubscriptionFormValues = z.infer<
+  typeof syncProductSubscriptionSchema
+>
 export type ProductPriceTierFormValues = z.infer<typeof productPriceTierSchema>
 export type ProductSupplierFormValues = z.infer<typeof productSupplierSchema>
-export type StoreProductVariantFormValues = z.infer<typeof storeProductVariantSchema>
-export type UpdateProductVariantFormValues = z.infer<typeof updateProductVariantSchema>
+export type StoreProductVariantFormValues = z.infer<
+  typeof storeProductVariantSchema
+>
+export type UpdateProductVariantFormValues = z.infer<
+  typeof updateProductVariantSchema
+>
 export type GenerateProductVariantsFormValues = z.infer<
   typeof generateProductVariantsSchema
 >

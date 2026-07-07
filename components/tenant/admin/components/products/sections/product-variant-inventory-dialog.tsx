@@ -48,9 +48,12 @@ import { type InventoryRecord } from "@/types/tenant/inventory"
 import { FieldError } from "./product-form-shared"
 
 const adjustSchema = z.object({
-  quantity_change: z.coerce.number().int().refine((value) => value !== 0, {
-    message: "Quantity change cannot be zero",
-  }),
+  quantity_change: z.coerce
+    .number()
+    .int()
+    .refine((value) => value !== 0, {
+      message: "Quantity change cannot be zero",
+    }),
   reason: z.string().max(1000).optional(),
 })
 
@@ -111,7 +114,11 @@ export function ProductVariantInventoryDialog({
       setSelectedInventory(null)
       setActiveTab("levels")
       adjustForm.reset({ quantity_change: 0, reason: "" })
-      transferForm.reset({ destination_warehouse_id: 0, quantity: 1, reason: "" })
+      transferForm.reset({
+        destination_warehouse_id: 0,
+        quantity: 1,
+        reason: "",
+      })
       return
     }
 
@@ -125,7 +132,10 @@ export function ProductVariantInventoryDialog({
     }
   }, [open, inventories, adjustForm, transferForm])
 
-  const handleReorderLevelSave = (inventory: InventoryRecord, value: string) => {
+  const handleReorderLevelSave = (
+    inventory: InventoryRecord,
+    value: string
+  ) => {
     const reorderLevel = value === "" ? null : Number(value)
 
     updateInventory.mutate(
@@ -135,7 +145,8 @@ export function ProductVariantInventoryDialog({
       },
       {
         onSuccess: () => toastApiSuccess(undefined, "Reorder level updated"),
-        onError: (error) => toastApiError(error, "Failed to update reorder level"),
+        onError: (error) =>
+          toastApiError(error, "Failed to update reorder level"),
       }
     )
   }
@@ -169,16 +180,22 @@ export function ProductVariantInventoryDialog({
       {
         onSuccess: () => {
           toastApiSuccess(undefined, "Inventory transferred")
-          transferForm.reset({ destination_warehouse_id: 0, quantity: 1, reason: "" })
+          transferForm.reset({
+            destination_warehouse_id: 0,
+            quantity: 1,
+            reason: "",
+          })
         },
-        onError: (error) => toastApiError(error, "Failed to transfer inventory"),
+        onError: (error) =>
+          toastApiError(error, "Failed to transfer inventory"),
       }
     )
   }
 
   const destinationWarehouseId = transferForm.watch("destination_warehouse_id")
   const selectedDestination =
-    warehouseOptions.find((item) => item.value === destinationWarehouseId) ?? null
+    warehouseOptions.find((item) => item.value === destinationWarehouseId) ??
+    null
 
   const availableDestinations = warehouseOptions.filter(
     (item) => item.value !== selectedInventory?.warehouse_id
@@ -193,8 +210,8 @@ export function ProductVariantInventoryDialog({
             Inventory — {variant.title}
           </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Manage stock levels, adjustments, and transfers across warehouses for SKU{" "}
-            {variant.sku}.
+            Manage stock levels, adjustments, and transfers across warehouses
+            for SKU {variant.sku}.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
@@ -228,7 +245,9 @@ export function ProductVariantInventoryDialog({
                     <TableRow
                       key={inventory.id}
                       className={
-                        selectedInventory?.id === inventory.id ? "bg-muted/50" : ""
+                        selectedInventory?.id === inventory.id
+                          ? "bg-muted/50"
+                          : ""
                       }
                       onClick={() => setSelectedInventory(inventory)}
                     >
@@ -242,7 +261,10 @@ export function ProductVariantInventoryDialog({
                           className="h-8 w-24"
                           defaultValue={inventory.reorder_level ?? ""}
                           onBlur={(event) =>
-                            handleReorderLevelSave(inventory, event.target.value)
+                            handleReorderLevelSave(
+                              inventory,
+                              event.target.value
+                            )
                           }
                         />
                       </TableCell>
@@ -259,7 +281,8 @@ export function ProductVariantInventoryDialog({
               </Table>
             ) : (
               <p className="text-sm text-muted-foreground">
-                No inventory records yet. Adjust stock or set quantity when creating the variant.
+                No inventory records yet. Adjust stock or set quantity when
+                creating the variant.
               </p>
             )}
           </TabsContent>
@@ -279,8 +302,8 @@ export function ProductVariantInventoryDialog({
                 className="space-y-4"
               >
                 <p className="text-sm text-muted-foreground">
-                  Adjusting stock at {selectedInventory.warehouse?.name}. Use negative
-                  values to decrease quantity.
+                  Adjusting stock at {selectedInventory.warehouse?.name}. Use
+                  negative values to decrease quantity.
                 </p>
                 <Field>
                   <FieldLabel>Quantity change</FieldLabel>
@@ -292,7 +315,9 @@ export function ProductVariantInventoryDialog({
                       })}
                     />
                     <FieldError
-                      message={adjustForm.formState.errors.quantity_change?.message}
+                      message={
+                        adjustForm.formState.errors.quantity_change?.message
+                      }
                     />
                   </FieldContent>
                 </Field>
@@ -364,7 +389,9 @@ export function ProductVariantInventoryDialog({
                   <FieldContent>
                     <Input
                       type="number"
-                      {...transferForm.register("quantity", { valueAsNumber: true })}
+                      {...transferForm.register("quantity", {
+                        valueAsNumber: true,
+                      })}
                     />
                   </FieldContent>
                 </Field>
@@ -409,7 +436,9 @@ export function ProductVariantInventoryDialog({
                       <TableCell>
                         {new Date(movement.created_at).toLocaleString()}
                       </TableCell>
-                      <TableCell className="capitalize">{movement.type}</TableCell>
+                      <TableCell className="capitalize">
+                        {movement.type}
+                      </TableCell>
                       <TableCell>
                         {movement.quantity_change > 0 ? "+" : ""}
                         {movement.quantity_change}

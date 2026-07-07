@@ -2,7 +2,7 @@
 
 import { useGetUnitStatistics } from "@/hooks/tenant/use-unit-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Ruler, Star, Layers } from "lucide-react"
+import { Layers, Ruler, Star } from "lucide-react"
 
 export function UnitStatistics() {
   const { data: stats, isLoading } = useGetUnitStatistics()

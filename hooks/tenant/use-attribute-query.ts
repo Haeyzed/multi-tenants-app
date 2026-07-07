@@ -48,7 +48,8 @@ export const useGetAttributeStatistics = () => {
 export const useCreateAttribute = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (attribute: StoreAttributeFormValues) => createAttribute(attribute),
+    mutationFn: (attribute: StoreAttributeFormValues) =>
+      createAttribute(attribute),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-statistics"] })
@@ -160,7 +161,9 @@ export const useCreateAttributeValue = (attributeId: number) => {
     mutationFn: (value: StoreAttributeValueFormValues) =>
       createAttributeValue(attributeId, value),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attribute-values", attributeId] })
+      queryClient.invalidateQueries({
+        queryKey: ["attribute-values", attributeId],
+      })
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
     },
   })
@@ -177,7 +180,9 @@ export const useUpdateAttributeValue = (attributeId: number) => {
       value: UpdateAttributeValueFormValues
     }) => updateAttributeValue(attributeId, valueId, value),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attribute-values", attributeId] })
+      queryClient.invalidateQueries({
+        queryKey: ["attribute-values", attributeId],
+      })
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
     },
   })
@@ -188,7 +193,9 @@ export const useDeleteAttributeValue = (attributeId: number) => {
   return useMutation({
     mutationFn: (valueId: number) => deleteAttributeValue(attributeId, valueId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attribute-values", attributeId] })
+      queryClient.invalidateQueries({
+        queryKey: ["attribute-values", attributeId],
+      })
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
     },
   })

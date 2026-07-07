@@ -23,7 +23,9 @@ type CustomerGroupsContextType = {
   currentRow: CustomerGroup | null
   setCurrentRow: React.Dispatch<React.SetStateAction<CustomerGroup | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -40,9 +42,8 @@ export function CustomerGroupsProvider({
 }) {
   const [open, setOpen] = useDialogState<CustomerGroupsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<CustomerGroup | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

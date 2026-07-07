@@ -2,19 +2,19 @@
 
 import { z } from "zod"
 import * as React from "react"
-import { useForm, Controller } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import {
   FileUpload,
@@ -57,9 +57,9 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export function TaxClassesImportDialog({
-                                         open,
-                                         onOpenChange,
-                                       }: TaxClassesImportDialogProps) {
+  open,
+  onOpenChange,
+}: TaxClassesImportDialogProps) {
   const importTaxClasses = useImportTaxClasses()
   const [isDownloadingSample, setIsDownloadingSample] = React.useState(false)
 
@@ -92,7 +92,7 @@ export function TaxClassesImportDialog({
         if (!val) form.reset()
       }}
     >
-      <ResponsiveDialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>Import Tax Classes</ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
@@ -149,11 +149,11 @@ export function TaxClassesImportDialog({
                     }}
                   >
                     <FileUploadDropzone className="flex-row flex-wrap border-dotted text-center">
-                      <CloudUpload className="size-4 mr-2" />
+                      <CloudUpload className="mr-2 size-4" />
                       Drag and drop or
                       <FileUploadTrigger
                         render={
-                          <Button variant="link" size="sm" className="p-0 mx-1">
+                          <Button variant="link" size="sm" className="mx-1 p-0">
                             choose file
                           </Button>
                         }

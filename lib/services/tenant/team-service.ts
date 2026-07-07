@@ -22,9 +22,12 @@ export const getTeamMembers = async (params?: {
   per_page?: number
   page?: number
 }): Promise<PaginatedResponse<TeamMember>> => {
-  const response = await tenantApiClient.get<ApiResponse<TeamMember[]>>("/team", {
-    params,
-  })
+  const response = await tenantApiClient.get<ApiResponse<TeamMember[]>>(
+    "/team",
+    {
+      params,
+    }
+  )
 
   return {
     data: response.data,

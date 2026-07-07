@@ -7,12 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,10 +32,10 @@ import { handleFormApiError } from "@/lib/form-api-errors"
 import { useCreatePlan, useUpdatePlan } from "@/hooks/central/use-plan-query"
 import { type Plan } from "@/types/central/plan"
 import {
-  storePlanSchema,
-  updatePlanSchema,
   type StorePlanFormValues,
+  storePlanSchema,
   type UpdatePlanFormValues,
+  updatePlanSchema,
 } from "@/schemas/central/plan-schema"
 
 type PlansMutateDialogProps = {
@@ -290,9 +290,7 @@ export function PlansMutateDialog({
                   maxLength={3}
                   {...form.register("currency")}
                 />
-                <FieldError
-                  message={form.formState.errors.currency?.message}
-                />
+                <FieldError message={form.formState.errors.currency?.message} />
               </FieldContent>
             </Field>
             <Field>
@@ -319,9 +317,7 @@ export function PlansMutateDialog({
                     </ComboboxList>
                   </ComboboxContent>
                 </Combobox>
-                <FieldError
-                  message={form.formState.errors.interval?.message}
-                />
+                <FieldError message={form.formState.errors.interval?.message} />
               </FieldContent>
             </Field>
           </div>
@@ -333,9 +329,7 @@ export function PlansMutateDialog({
                 type="number"
                 {...form.register("sort_order", { valueAsNumber: true })}
               />
-              <FieldError
-                message={form.formState.errors.sort_order?.message}
-              />
+              <FieldError message={form.formState.errors.sort_order?.message} />
             </FieldContent>
           </Field>
 

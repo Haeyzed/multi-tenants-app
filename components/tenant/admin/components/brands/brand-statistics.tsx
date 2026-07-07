@@ -2,7 +2,7 @@
 
 import { useGetBrandStatistics } from "@/hooks/tenant/use-brand-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tag, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Tag } from "lucide-react"
 
 export function BrandStatistics() {
   const { data: stats, isLoading } = useGetBrandStatistics()

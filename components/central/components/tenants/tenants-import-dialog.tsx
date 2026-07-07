@@ -7,12 +7,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
@@ -92,7 +92,11 @@ export function TenantsImportDialog({
             database, domain, and owner account (same as Create Tenant).
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <form id="tenants-import-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          id="tenants-import-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <Button
             type="button"
             variant="outline"

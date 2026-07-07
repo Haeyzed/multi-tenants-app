@@ -67,7 +67,9 @@ export function DataTableRowActions<TData>({
               toggleVisibility.mutate(tag.id, {
                 onSuccess: (updated) => {
                   toast.success(
-                    updated.is_visible ? "Tag is now visible" : "Tag is now hidden"
+                    updated.is_visible
+                      ? "Tag is now visible"
+                      : "Tag is now hidden"
                   )
                 },
                 onError: (error) => {

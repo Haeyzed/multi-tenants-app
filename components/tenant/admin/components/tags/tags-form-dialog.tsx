@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,10 +34,10 @@ import { handleFormApiError } from "@/lib/form-api-errors"
 import { useCreateTag, useUpdateTag } from "@/hooks/tenant/use-tag-query"
 import { type Tag } from "@/types/tenant/tag"
 import {
-  storeTagSchema,
-  updateTagSchema,
   type StoreTagFormValues,
+  storeTagSchema,
   type UpdateTagFormValues,
+  updateTagSchema,
 } from "@/schemas/tenant/tag-schema"
 
 type TagsFormDialogProps = {

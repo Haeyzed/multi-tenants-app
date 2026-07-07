@@ -31,7 +31,9 @@ export function TenantsTable() {
   const { data, isLoading, error } = useGetTenants({
     search: name || undefined,
     status:
-      status.length > 0 ? (status as ("pending" | "active" | "suspended")[]) : undefined,
+      status.length > 0
+        ? (status as ("pending" | "active" | "suspended")[])
+        : undefined,
     per_page: perPage,
     page,
   })
@@ -57,7 +59,18 @@ export function TenantsTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "10rem", "8rem", "12rem", "8rem", "8rem", "8rem", "8rem", "8rem", "3rem"]}
+        cellWidths={[
+          "auto",
+          "10rem",
+          "8rem",
+          "12rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "3rem",
+        ]}
       />
     )
   }

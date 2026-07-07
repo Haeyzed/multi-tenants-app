@@ -31,9 +31,7 @@ export function CustomerGroupsTable() {
   const { data, isLoading, error } = useGetCustomerGroups({
     search: name || undefined,
     is_active:
-      isActive.length > 0
-        ? (isActive as ("active" | "inactive")[])
-        : undefined,
+      isActive.length > 0 ? (isActive as ("active" | "inactive")[]) : undefined,
     per_page: perPage,
     page,
   })

@@ -54,9 +54,7 @@ function getProductLabelViewFields(label: ProductLabel): ModuleViewField[] {
     { label: "Sort order", value: String(label.sort_order ?? 0) },
     {
       label: "Created",
-      value: label.created_at
-        ? format(new Date(label.created_at), "PPP")
-        : "—",
+      value: label.created_at ? format(new Date(label.created_at), "PPP") : "—",
     },
   ]
 }

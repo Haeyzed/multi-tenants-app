@@ -23,7 +23,9 @@ type CollectionsContextType = {
   currentRow: Collection | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Collection | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -34,12 +36,15 @@ const CollectionsContext = React.createContext<CollectionsContextType | null>(
   null
 )
 
-export function CollectionsProvider({ children }: { children: React.ReactNode }) {
+export function CollectionsProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [open, setOpen] = useDialogState<CollectionsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Collection | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 
@@ -65,7 +70,9 @@ export const useCollections = () => {
   const collectionsContext = React.useContext(CollectionsContext)
 
   if (!collectionsContext) {
-    throw new Error("useCollections has to be used within <CollectionsProvider>")
+    throw new Error(
+      "useCollections has to be used within <CollectionsProvider>"
+    )
   }
 
   return collectionsContext

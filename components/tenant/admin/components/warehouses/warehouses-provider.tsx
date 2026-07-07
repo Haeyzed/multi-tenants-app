@@ -3,7 +3,10 @@
 import React, { useState } from "react"
 import useDialogState from "@/hooks/use-dialog-state"
 import { type Warehouse } from "@/types/tenant/warehouse"
-import { type BulkDeleteSelection, type ExportSelection } from "@/types/tenant/export"
+import {
+  type BulkDeleteSelection,
+  type ExportSelection,
+} from "@/types/tenant/export"
 
 type WarehousesDialogType =
   | "create"
@@ -23,21 +26,28 @@ type WarehousesContextType = {
   currentRow: Warehouse | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Warehouse | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
   >
 }
 
-const WarehousesContext = React.createContext<WarehousesContextType | null>(null)
+const WarehousesContext = React.createContext<WarehousesContextType | null>(
+  null
+)
 
-export function WarehousesProvider({ children }: { children: React.ReactNode }) {
+export function WarehousesProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [open, setOpen] = useDialogState<WarehousesDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Warehouse | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

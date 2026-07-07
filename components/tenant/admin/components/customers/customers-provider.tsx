@@ -23,7 +23,9 @@ type CustomersContextType = {
   currentRow: Customer | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Customer | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -35,9 +37,8 @@ const CustomersContext = React.createContext<CustomersContextType | null>(null)
 export function CustomersProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<CustomersDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Customer | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

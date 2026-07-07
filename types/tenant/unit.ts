@@ -1,9 +1,4 @@
-export type UnitType =
-  | "weight"
-  | "length"
-  | "volume"
-  | "area"
-  | "count"
+export type UnitType = "weight" | "length" | "volume" | "area" | "count"
 
 export interface Unit {
   id: number

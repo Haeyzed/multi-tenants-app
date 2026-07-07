@@ -7,7 +7,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { type AttributeSet } from "@/types/tenant/attribute-set"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, CheckCircle, XCircle } from "lucide-react"
+import { CheckCircle, Text, XCircle } from "lucide-react"
 
 export const columns: ColumnDef<AttributeSet>[] = [
   {

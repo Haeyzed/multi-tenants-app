@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,10 +38,10 @@ import {
   type AttributeType,
 } from "@/types/tenant/attribute"
 import {
-  storeAttributeSchema,
-  updateAttributeSchema,
   type StoreAttributeFormValues,
+  storeAttributeSchema,
   type UpdateAttributeFormValues,
+  updateAttributeSchema,
 } from "@/schemas/tenant/attribute-schema"
 
 type AttributeTypeOption = { label: string; value: AttributeType }
@@ -153,10 +153,13 @@ export function AttributesFormDialog({
     attributeTypeOptions[0]
 
   const selectedDisplayType =
-    attributeDisplayTypeOptions.find((item) => item.value === displayTypeValue) ??
-    attributeDisplayTypeOptions[0]
+    attributeDisplayTypeOptions.find(
+      (item) => item.value === displayTypeValue
+    ) ?? attributeDisplayTypeOptions[0]
 
-  const onSubmit = (data: StoreAttributeFormValues | UpdateAttributeFormValues) => {
+  const onSubmit = (
+    data: StoreAttributeFormValues | UpdateAttributeFormValues
+  ) => {
     const payload = {
       ...data,
       code: data.code || null,
@@ -180,7 +183,11 @@ export function AttributesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update attribute")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update attribute"
+            )
           },
         }
       )
@@ -311,7 +318,9 @@ export function AttributesFormDialog({
                 placeholder="Attribute description..."
                 {...form.register("description")}
               />
-              <FieldError message={form.formState.errors.description?.message} />
+              <FieldError
+                message={form.formState.errors.description?.message}
+              />
             </FieldContent>
           </Field>
 

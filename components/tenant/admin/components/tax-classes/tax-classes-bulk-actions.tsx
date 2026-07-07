@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import { type Table } from "@tanstack/react-table"
-import { Trash2, Download } from "lucide-react"
+import { Download, Trash2 } from "lucide-react"
 import {
   ActionBar,
+  ActionBarClose,
   ActionBarGroup,
   ActionBarItem,
   ActionBarSelection,
-  ActionBarClose,
 } from "@/components/ui/action-bar"
 import { type TaxClass } from "@/types/tenant/tax-class"
 import { useTaxClasses } from "./tax-classes-provider"
@@ -20,7 +20,8 @@ type TaxClassesBulkActionsProps<TData> = {
 export function TaxClassesBulkActions<TData>({
   table,
 }: TaxClassesBulkActionsProps<TData>) {
-  const { setOpen, setExportSelection, setDeleteManySelection } = useTaxClasses()
+  const { setOpen, setExportSelection, setDeleteManySelection } =
+    useTaxClasses()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const onOpenChange = React.useCallback(

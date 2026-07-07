@@ -6,7 +6,10 @@ const baseTaxClassSchema = z.object({
     .string()
     .min(1, "Code is required")
     .max(50)
-    .regex(/^[a-z0-9_-]+$/, "Code must be lowercase letters, numbers, hyphens, or underscores"),
+    .regex(
+      /^[a-z0-9_-]+$/,
+      "Code must be lowercase letters, numbers, hyphens, or underscores"
+    ),
   description: z.string().nullable().optional(),
   is_default: z.boolean().optional(),
   is_active: z.boolean(),
@@ -21,7 +24,10 @@ export const updateTaxClassSchema = baseTaxClassSchema.partial().extend({
     .string()
     .min(1, "Code is required")
     .max(50)
-    .regex(/^[a-z0-9_-]+$/, "Code must be lowercase letters, numbers, hyphens, or underscores")
+    .regex(
+      /^[a-z0-9_-]+$/,
+      "Code must be lowercase letters, numbers, hyphens, or underscores"
+    )
     .optional(),
 })
 

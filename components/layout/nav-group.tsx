@@ -48,9 +48,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
           const key = `${item.title}-${"url" in item ? item.url : "collapsible"}`
 
           if (!("items" in item) || !item.items) {
-            return (
-              <SidebarMenuLink key={key} item={item} pathname={pathname} />
-            )
+            return <SidebarMenuLink key={key} item={item} pathname={pathname} />
           }
 
           if (state === "collapsed" && !isMobile) {
@@ -64,11 +62,7 @@ export function NavGroup({ title, items }: NavGroupProps) {
           }
 
           return (
-            <SidebarMenuCollapsible
-              key={key}
-              item={item}
-              pathname={pathname}
-            />
+            <SidebarMenuCollapsible key={key} item={item} pathname={pathname} />
           )
         })}
       </SidebarMenu>
@@ -213,8 +207,7 @@ function checkIsActive(pathname: string, item: NavItem, mainNav = false) {
   return (
     pathname === url ||
     pathname.split("?")[0] === url ||
-    (!!("items" in item) &&
-      item.items?.some((i) => i.url === pathname)) ||
+    (!!("items" in item) && item.items?.some((i) => i.url === pathname)) ||
     (mainNav &&
       !!url &&
       pathname.split("/")[1] !== "" &&

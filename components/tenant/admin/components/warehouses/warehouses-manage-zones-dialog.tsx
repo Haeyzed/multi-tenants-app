@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,10 +38,10 @@ import {
 } from "@/hooks/tenant/use-warehouse-query"
 import { type Warehouse, type WarehouseZone } from "@/types/tenant/warehouse"
 import {
-  storeWarehouseZoneSchema,
-  updateWarehouseZoneSchema,
   type StoreWarehouseZoneFormValues,
+  storeWarehouseZoneSchema,
   type UpdateWarehouseZoneFormValues,
+  updateWarehouseZoneSchema,
 } from "@/schemas/tenant/warehouse-schema"
 
 type WarehousesManageZonesDialogProps = {
@@ -68,7 +68,10 @@ export function WarehousesManageZonesDialog({
   onOpenChange,
   warehouse,
 }: WarehousesManageZonesDialogProps) {
-  const { data: zones = [], isLoading } = useGetWarehouseZones(warehouse.id, open)
+  const { data: zones = [], isLoading } = useGetWarehouseZones(
+    warehouse.id,
+    open
+  )
   const createZone = useCreateWarehouseZone(warehouse.id)
   const updateZone = useUpdateWarehouseZone(warehouse.id)
   const deleteZone = useDeleteWarehouseZone(warehouse.id)
@@ -293,69 +296,69 @@ export function WarehousesManageZonesDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-            <form
-              id="warehouse-zone-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              <Field>
-                <FieldLabel>Name *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="Receiving"
-                    {...form.register("name", {
-                      onChange: (event) => {
-                        if (!isUpdate && !form.getValues("code")) {
-                          form.setValue("code", slugifyCode(event.target.value))
-                        }
-                      },
-                    })}
-                  />
-                  <FieldError message={form.formState.errors.name?.message} />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Code *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="receiving"
-                    className="font-mono"
-                    {...form.register("code")}
-                  />
-                  <FieldError message={form.formState.errors.code?.message} />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Zone Type</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="storage, picking, receiving..."
-                    {...form.register("zone_type")}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Sort Order</FieldLabel>
-                <FieldContent>
-                  <Input
-                    type="number"
-                    {...form.register("sort_order", { valueAsNumber: true })}
-                  />
-                </FieldContent>
-              </Field>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="zone_is_active"
-                  checked={form.watch("is_active")}
-                  onCheckedChange={(checked) =>
-                    form.setValue("is_active", !!checked)
-                  }
+          <form
+            id="warehouse-zone-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <Field>
+              <FieldLabel>Name *</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="Receiving"
+                  {...form.register("name", {
+                    onChange: (event) => {
+                      if (!isUpdate && !form.getValues("code")) {
+                        form.setValue("code", slugifyCode(event.target.value))
+                      }
+                    },
+                  })}
                 />
-                <label htmlFor="zone_is_active" className="text-sm font-medium">
-                  Active
-                </label>
-              </div>
-            </form>
+                <FieldError message={form.formState.errors.name?.message} />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Code *</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="receiving"
+                  className="font-mono"
+                  {...form.register("code")}
+                />
+                <FieldError message={form.formState.errors.code?.message} />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Zone Type</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="storage, picking, receiving..."
+                  {...form.register("zone_type")}
+                />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Sort Order</FieldLabel>
+              <FieldContent>
+                <Input
+                  type="number"
+                  {...form.register("sort_order", { valueAsNumber: true })}
+                />
+              </FieldContent>
+            </Field>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="zone_is_active"
+                checked={form.watch("is_active")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_active", !!checked)
+                }
+              />
+              <label htmlFor="zone_is_active" className="text-sm font-medium">
+                Active
+              </label>
+            </div>
+          </form>
 
           <ResponsiveDialogFooter>
             <ResponsiveDialogClose

@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
-  login,
-  register,
-  logout,
-  forgotPassword,
-  resetPassword,
-  getProfile,
-  updateProfile,
   changePassword,
+  forgotPassword,
+  getProfile,
+  login,
+  logout,
+  register,
+  resetPassword,
+  updateProfile,
 } from "@/lib/services/tenant/customer-auth-service"
 import { tenantCustomerApiClient } from "@/lib/services/tenant/api-client"
 

@@ -46,9 +46,7 @@ export const getUser = async (id: number): Promise<User> => {
   return response.data
 }
 
-export const createUser = async (
-  user: StoreUserFormValues
-): Promise<User> => {
+export const createUser = async (user: StoreUserFormValues): Promise<User> => {
   const response = await apiClient.post<ApiResponse<User>>("/users", user)
   return response.data
 }
@@ -66,16 +64,14 @@ export const deleteUser = async (id: number): Promise<void> => {
 }
 
 export const getUserStatistics = async (): Promise<UserStatistics> => {
-  const response = await apiClient.get<ApiResponse<UserStatistics>>(
-    "/users/statistics"
-  )
+  const response =
+    await apiClient.get<ApiResponse<UserStatistics>>("/users/statistics")
   return response.data
 }
 
 export const getUserOptions = async (): Promise<UserOption[]> => {
-  const response = await apiClient.get<ApiResponse<UserOption[]>>(
-    "/users/options"
-  )
+  const response =
+    await apiClient.get<ApiResponse<UserOption[]>>("/users/options")
   return response.data
 }
 
@@ -108,7 +104,11 @@ export const exportUsers = async (params: ExportParams): Promise<void> => {
 export const downloadUsersImportSample = async (
   type: "xlsx" | "csv" = "xlsx"
 ): Promise<void> => {
-  await apiClient.getFileDownload("/users/import/sample", { type }, `users-import-sample.${type}`)
+  await apiClient.getFileDownload(
+    "/users/import/sample",
+    { type },
+    `users-import-sample.${type}`
+  )
 }
 
 export const importUsers = async (file: File): Promise<void> => {

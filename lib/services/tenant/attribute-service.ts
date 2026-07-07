@@ -1,5 +1,9 @@
-import { Attribute, AttributeOption, AttributeValue } from "@/types/tenant/attribute"
-import { ExportParams, AttributeStatistics } from "@/types/tenant/export"
+import {
+  Attribute,
+  AttributeOption,
+  AttributeValue,
+} from "@/types/tenant/attribute"
+import { AttributeStatistics, ExportParams } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -86,7 +90,9 @@ export const toggleAttributeFilterable = async (
   return response.data
 }
 
-export const toggleAttributeVariant = async (id: number): Promise<Attribute> => {
+export const toggleAttributeVariant = async (
+  id: number
+): Promise<Attribute> => {
   const response = await tenantApiClient.post<ApiResponse<Attribute>>(
     `/attributes/${id}/toggle-variant`,
     {}
@@ -101,12 +107,13 @@ export const getAttributeOptions = async (): Promise<AttributeOption[]> => {
   return response.data
 }
 
-export const getAttributeStatistics = async (): Promise<AttributeStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<AttributeStatistics>>(
-    "/attributes/statistics"
-  )
-  return response.data
-}
+export const getAttributeStatistics =
+  async (): Promise<AttributeStatistics> => {
+    const response = await tenantApiClient.get<
+      ApiResponse<AttributeStatistics>
+    >("/attributes/statistics")
+    return response.data
+  }
 
 export const deleteManyAttributes = async (ids: number[]): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>("/attributes/bulk", { ids })
@@ -147,7 +154,10 @@ export const downloadAttributesImportSample = async (
 export const importAttributes = async (file: File): Promise<void> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/attributes/import", formData)
+  await tenantApiClient.upload<ApiResponse<void>>(
+    "/attributes/import",
+    formData
+  )
 }
 
 export const getAttributeValues = async (

@@ -2,7 +2,7 @@
 
 import { useGetCustomerGroupStatistics } from "@/hooks/tenant/use-customer-group-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { UsersRound, CheckCircle2, XCircle } from "lucide-react"
+import { CheckCircle2, UsersRound, XCircle } from "lucide-react"
 
 export function CustomerGroupStatistics() {
   const { data: stats, isLoading } = useGetCustomerGroupStatistics()

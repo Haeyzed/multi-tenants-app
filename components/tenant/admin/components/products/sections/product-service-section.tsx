@@ -28,8 +28,8 @@ import { Spinner } from "@/components/ui/spinner"
 import { useGetTeamMembers } from "@/hooks/tenant/use-team-query"
 import { useSyncProductService } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductServiceSchema,
   type SyncProductServiceFormValues,
+  syncProductServiceSchema,
 } from "@/schemas/tenant/product-schema"
 import { type Product } from "@/types/tenant/product"
 import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
@@ -109,7 +109,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
       label: member.name,
       value: member.id,
     })) ?? []
-  const [formValues, setFormValues] = React.useState(() => defaultServiceValues(product))
+  const [formValues, setFormValues] = React.useState(() =>
+    defaultServiceValues(product)
+  )
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
   React.useEffect(() => {
@@ -144,7 +146,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
 
   const updateSchedule = (
     index: number,
-    patch: Partial<NonNullable<SyncProductServiceFormValues["schedules"]>[number]>
+    patch: Partial<
+      NonNullable<SyncProductServiceFormValues["schedules"]>[number]
+    >
   ) => {
     setFormValues((current) => ({
       ...current,
@@ -170,7 +174,8 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
     syncService.mutate(result.data, {
       onSuccess: (response) =>
         toastApiSuccess(response.message, "Service settings saved"),
-      onError: (error) => toastApiError(error, "Failed to save service settings"),
+      onError: (error) =>
+        toastApiError(error, "Failed to save service settings"),
     })
   }
 
@@ -192,7 +197,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                 min={1}
                 value={formValues.service.duration_minutes}
                 onChange={(event) =>
-                  updateService({ duration_minutes: Number(event.target.value) || 1 })
+                  updateService({
+                    duration_minutes: Number(event.target.value) || 1,
+                  })
                 }
               />
               <FieldError message={errors["service.duration_minutes"]} />
@@ -307,7 +314,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
           <FieldContent>
             <Input
               value={formValues.service.meeting_url ?? ""}
-              onChange={(event) => updateService({ meeting_url: event.target.value })}
+              onChange={(event) =>
+                updateService({ meeting_url: event.target.value })
+              }
               placeholder="https://"
             />
           </FieldContent>
@@ -318,7 +327,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
           <FieldContent>
             <Textarea
               value={formValues.service.instructions ?? ""}
-              onChange={(event) => updateService({ instructions: event.target.value })}
+              onChange={(event) =>
+                updateService({ instructions: event.target.value })
+              }
               rows={3}
             />
           </FieldContent>
@@ -362,7 +373,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
           </div>
 
           {formValues.providers.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No providers assigned.</p>
+            <p className="text-sm text-muted-foreground">
+              No providers assigned.
+            </p>
           ) : (
             <Table>
               <TableHeader>
@@ -376,8 +389,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
               <TableBody>
                 {formValues.providers.map((provider, index) => {
                   const selectedMember =
-                    teamOptions.find((option) => option.value === provider.provider_id) ??
-                    null
+                    teamOptions.find(
+                      (option) => option.value === provider.provider_id
+                    ) ?? null
 
                   return (
                     <TableRow key={`provider-${index}`}>
@@ -394,7 +408,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                         >
                           <ComboboxInput placeholder="Select team member" />
                           <ComboboxContent>
-                            <ComboboxEmpty>No team members found.</ComboboxEmpty>
+                            <ComboboxEmpty>
+                              No team members found.
+                            </ComboboxEmpty>
                             <ComboboxList>
                               {(item) => (
                                 <ComboboxItem key={item.value} value={item}>
@@ -404,7 +420,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                             </ComboboxList>
                           </ComboboxContent>
                         </Combobox>
-                        <FieldError message={errors[`providers.${index}.provider_id`]} />
+                        <FieldError
+                          message={errors[`providers.${index}.provider_id`]}
+                        />
                       </TableCell>
                       <TableCell>
                         <Input
@@ -460,7 +478,8 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
             <div>
               <h3 className="font-medium">Availability schedule</h3>
               <p className="text-sm text-muted-foreground">
-                Weekly windows when this service can be booked. Used by the storefront booking flow.
+                Weekly windows when this service can be booked. Used by the
+                storefront booking flow.
               </p>
             </div>
             <Button
@@ -470,7 +489,10 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
               onClick={() =>
                 setFormValues((current) => ({
                   ...current,
-                  schedules: [...(current.schedules ?? []), createEmptySchedule()],
+                  schedules: [
+                    ...(current.schedules ?? []),
+                    createEmptySchedule(),
+                  ],
                 }))
               }
             >
@@ -481,7 +503,8 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
 
           {(formValues.schedules ?? []).length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              No schedule windows. Add availability or leave empty for always-on booking rules.
+              No schedule windows. Add availability or leave empty for always-on
+              booking rules.
             </p>
           ) : (
             <Table>
@@ -498,11 +521,13 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
               <TableBody>
                 {(formValues.schedules ?? []).map((schedule, index) => {
                   const selectedDay =
-                    DAY_OPTIONS.find((option) => option.value === schedule.day_of_week) ??
-                    DAY_OPTIONS[1]
+                    DAY_OPTIONS.find(
+                      (option) => option.value === schedule.day_of_week
+                    ) ?? DAY_OPTIONS[1]
                   const selectedProvider =
-                    teamOptions.find((option) => option.value === schedule.provider_id) ??
-                    null
+                    teamOptions.find(
+                      (option) => option.value === schedule.provider_id
+                    ) ?? null
 
                   return (
                     <TableRow key={`schedule-${index}`}>
@@ -533,7 +558,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                           type="time"
                           value={schedule.start_time}
                           onChange={(event) =>
-                            updateSchedule(index, { start_time: event.target.value })
+                            updateSchedule(index, {
+                              start_time: event.target.value,
+                            })
                           }
                         />
                       </TableCell>
@@ -542,7 +569,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                           type="time"
                           value={schedule.end_time}
                           onChange={(event) =>
-                            updateSchedule(index, { end_time: event.target.value })
+                            updateSchedule(index, {
+                              end_time: event.target.value,
+                            })
                           }
                         />
                       </TableCell>
@@ -559,7 +588,9 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                         >
                           <ComboboxInput placeholder="Any provider" />
                           <ComboboxContent>
-                            <ComboboxEmpty>No team members found.</ComboboxEmpty>
+                            <ComboboxEmpty>
+                              No team members found.
+                            </ComboboxEmpty>
                             <ComboboxList>
                               {(item) => (
                                 <ComboboxItem key={item.value} value={item}>
@@ -604,7 +635,11 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
         </div>
 
         <div className="flex justify-end">
-          <Button type="button" onClick={handleSave} disabled={syncService.isPending}>
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={syncService.isPending}
+          >
             {syncService.isPending && <Spinner />}
             Save service
           </Button>

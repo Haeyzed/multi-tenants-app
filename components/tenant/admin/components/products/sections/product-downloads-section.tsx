@@ -21,8 +21,8 @@ import {
 import { MediaPickerField } from "@/components/tenant/admin/components/media/media-picker-field"
 import { useSyncProductDownloads } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductDownloadsSchema,
   type SyncProductDownloadsFormValues,
+  syncProductDownloadsSchema,
 } from "@/schemas/tenant/product-schema"
 import { type Product } from "@/types/tenant/product"
 import { FieldError } from "./product-form-shared"
@@ -42,7 +42,9 @@ function createEmptyDownload(): SyncProductDownloadsFormValues["downloads"][numb
   }
 }
 
-function mapProductDownloads(product: Product): SyncProductDownloadsFormValues["downloads"] {
+function mapProductDownloads(
+  product: Product
+): SyncProductDownloadsFormValues["downloads"] {
   return (
     product.downloads?.map((download) => ({
       media_id: download.media_id,
@@ -57,9 +59,13 @@ function mapProductDownloads(product: Product): SyncProductDownloadsFormValues["
   )
 }
 
-export function ProductDownloadsSection({ product }: ProductDownloadsSectionProps) {
+export function ProductDownloadsSection({
+  product,
+}: ProductDownloadsSectionProps) {
   const syncDownloads = useSyncProductDownloads(product.id)
-  const [downloads, setDownloads] = React.useState(() => mapProductDownloads(product))
+  const [downloads, setDownloads] = React.useState(() =>
+    mapProductDownloads(product)
+  )
   const [errors, setErrors] = React.useState<Record<string, string>>({})
   const [mediaPreviews, setMediaPreviews] = React.useState<
     Record<number, { url: string; name?: string | null }>
@@ -133,7 +139,9 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setDownloads((current) => [...current, createEmptyDownload()])}
+          onClick={() =>
+            setDownloads((current) => [...current, createEmptyDownload()])
+          }
         >
           <Plus className="mr-1 size-4" />
           Add file
@@ -141,7 +149,9 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
       </CardHeader>
       <CardContent className="space-y-4">
         {downloads.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No download files yet.</p>
+          <p className="text-sm text-muted-foreground">
+            No download files yet.
+          </p>
         ) : (
           <Table>
             <TableHeader>
@@ -172,10 +182,14 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
                         "Download"
                       }
                       accept="*/*"
-                      onChange={(mediaId, media: MediaItem | null | undefined) => {
+                      onChange={(
+                        mediaId,
+                        media: MediaItem | null | undefined
+                      ) => {
                         updateDownload(index, {
                           media_id: mediaId ?? 0,
-                          file_name: media?.file_name ?? media?.name ?? undefined,
+                          file_name:
+                            media?.file_name ?? media?.name ?? undefined,
                         })
                         if (mediaId && media) {
                           setMediaPreviews((current) => ({
@@ -188,13 +202,17 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
                         }
                       }}
                     />
-                    <FieldError message={errors[`downloads.${index}.media_id`]} />
+                    <FieldError
+                      message={errors[`downloads.${index}.media_id`]}
+                    />
                   </TableCell>
                   <TableCell>
                     <Input
                       value={download.display_name ?? ""}
                       onChange={(event) =>
-                        updateDownload(index, { display_name: event.target.value })
+                        updateDownload(index, {
+                          display_name: event.target.value,
+                        })
                       }
                       placeholder="Customer-facing name"
                     />
@@ -258,7 +276,11 @@ export function ProductDownloadsSection({ product }: ProductDownloadsSectionProp
         )}
 
         <div className="flex justify-end">
-          <Button type="button" onClick={handleSave} disabled={syncDownloads.isPending}>
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={syncDownloads.isPending}
+          >
             {syncDownloads.isPending && <Spinner />}
             Save downloads
           </Button>

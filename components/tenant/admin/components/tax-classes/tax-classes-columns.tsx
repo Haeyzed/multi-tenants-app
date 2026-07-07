@@ -8,7 +8,7 @@ import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { Badge } from "@/components/ui/badge"
 import { type TaxClass } from "@/types/tenant/tax-class"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, CheckCircle, XCircle } from "lucide-react"
+import { CheckCircle, Text, XCircle } from "lucide-react"
 
 export const columns: ColumnDef<TaxClass>[] = [
   {

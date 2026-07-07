@@ -9,9 +9,7 @@ export function PageHeader({ title, description, children }: PageHeaderProps) {
     <div className="flex flex-wrap items-end justify-between gap-2">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
-        {description && (
-          <p className="text-muted-foreground">{description}</p>
-        )}
+        {description && <p className="text-muted-foreground">{description}</p>}
       </div>
       {children}
     </div>

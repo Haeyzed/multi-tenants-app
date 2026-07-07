@@ -1,4 +1,11 @@
-import { Edit, Eye, MoreHorizontal, Trash2, ToggleLeft, ToggleRight } from "lucide-react"
+import {
+  Edit,
+  Eye,
+  MoreHorizontal,
+  ToggleLeft,
+  ToggleRight,
+  Trash2,
+} from "lucide-react"
 import { type Row } from "@tanstack/react-table"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"

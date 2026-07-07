@@ -11,9 +11,15 @@ const baseProductLabelSchema = z.object({
 
 export const storeProductLabelSchema = baseProductLabelSchema
 
-export const updateProductLabelSchema = baseProductLabelSchema.partial().extend({
-  name: z.string().min(1, "Name is required").max(255).optional(),
-})
+export const updateProductLabelSchema = baseProductLabelSchema
+  .partial()
+  .extend({
+    name: z.string().min(1, "Name is required").max(255).optional(),
+  })
 
-export type StoreProductLabelFormValues = z.infer<typeof storeProductLabelSchema>
-export type UpdateProductLabelFormValues = z.infer<typeof updateProductLabelSchema>
+export type StoreProductLabelFormValues = z.infer<
+  typeof storeProductLabelSchema
+>
+export type UpdateProductLabelFormValues = z.infer<
+  typeof updateProductLabelSchema
+>

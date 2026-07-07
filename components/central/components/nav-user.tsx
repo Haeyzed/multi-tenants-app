@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useAuth } from "@/lib/providers/central/auth-provider";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import * as React from "react"
+import { useAuth } from "@/lib/providers/central/auth-provider"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,23 +11,23 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react";
-import { SignOutDialog } from "@/components/central/components/sign-out-dialog";
+} from "@/components/ui/sidebar"
+import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
+import { SignOutDialog } from "@/components/central/components/sign-out-dialog"
 
 export function NavUser() {
-  const { isMobile } = useSidebar();
-  const { user } = useAuth();
-  const [signOutOpen, setSignOutOpen] = React.useState(false);
+  const { isMobile } = useSidebar()
+  const { user } = useAuth()
+  const [signOutOpen, setSignOutOpen] = React.useState(false)
 
   if (!user) {
-    return null;
+    return null
   }
 
   return (
@@ -37,7 +37,10 @@ export function NavUser() {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+                <SidebarMenuButton
+                  size="lg"
+                  className="aria-expanded:bg-muted"
+                />
               }
             >
               <Avatar>
@@ -60,7 +63,10 @@ export function NavUser() {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
                     <Avatar>
-                      <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
+                      <AvatarImage
+                        src={user.avatar ?? undefined}
+                        alt={user.name}
+                      />
                       <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-start text-sm leading-tight">
@@ -85,5 +91,5 @@ export function NavUser() {
 
       <SignOutDialog open={signOutOpen} onOpenChange={setSignOutOpen} />
     </>
-  );
+  )
 }

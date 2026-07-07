@@ -25,9 +25,9 @@ import { MediaFolderTree } from "@/components/tenant/admin/components/media/medi
 import { MediaGrid } from "@/components/tenant/admin/components/media/media-grid"
 import { MediaList } from "@/components/tenant/admin/components/media/media-list"
 import {
+  mediaDragId,
   MediaLibraryDndProvider,
   MediaLibraryFolderDropTarget,
-  mediaDragId,
 } from "@/components/tenant/admin/components/media/media-library-dnd"
 import { MediaMoveDialog } from "@/components/tenant/admin/components/media/media-move-dialog"
 import {
@@ -46,8 +46,8 @@ import {
   useCopyMediaItem,
   useDeleteMedia,
   useDeleteMediaFolder,
-  useGetMediaFolderTree,
   useGetMediaFolders,
+  useGetMediaFolderTree,
   useGetMediaPaginated,
   useMoveMediaFolder,
   useMoveMediaItem,
@@ -131,7 +131,12 @@ function ActionToolbar({
 
       {canUpload ? (
         <>
-          <Button type="button" variant="outline" size="sm" onClick={onImportUrl}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onImportUrl}
+          >
             <LinkIcon />
             Import URL
           </Button>
@@ -188,16 +193,14 @@ export function MediaLibraryPanel({
   const [copyDialogOpen, setCopyDialogOpen] = React.useState(false)
   const [deleteOpen, setDeleteOpen] = React.useState(false)
   const [actionIds, setActionIds] = React.useState<number[]>([])
-  const [actionFolders, setActionFolders] = React.useState<MediaBrowserFolder[]>(
-    []
-  )
+  const [actionFolders, setActionFolders] = React.useState<
+    MediaBrowserFolder[]
+  >([])
   const perPage = 24
 
   const treeQuery = useGetMediaFolderTree()
   const foldersQuery = useGetMediaFolders(
-    search
-      ? { search }
-      : { parent_id: folderId }
+    search ? { search } : { parent_id: folderId }
   )
   const mediaQuery = useGetMediaPaginated({
     page,
@@ -391,7 +394,9 @@ export function MediaLibraryPanel({
     })
   }
 
-  function treeNodeToBrowserFolder(node: MediaFolderTreeNode): MediaBrowserFolder {
+  function treeNodeToBrowserFolder(
+    node: MediaFolderTreeNode
+  ): MediaBrowserFolder {
     return {
       id: node.id,
       name: node.name,
@@ -559,259 +564,265 @@ export function MediaLibraryPanel({
       }
     >
       <div className={className}>
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <aside className="w-full shrink-0 rounded-lg border bg-card p-3 lg:w-64">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="text-sm font-medium">Folders</p>
-            <TenantAdminAuthGuard permissions="settings.update">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setFolderDialogOpen(true)}
-              >
-                <FolderPlusIcon className="size-4" />
-                New folder
-              </Button>
-            </TenantAdminAuthGuard>
-          </div>
-          {treeQuery.isLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton key={index} className="h-8 w-full" />
-              ))}
+        <div className="flex flex-col gap-4 lg:flex-row">
+          <aside className="w-full shrink-0 rounded-lg border bg-card p-3 lg:w-64">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <p className="text-sm font-medium">Folders</p>
+              <TenantAdminAuthGuard permissions="settings.update">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFolderDialogOpen(true)}
+                >
+                  <FolderPlusIcon className="size-4" />
+                  New folder
+                </Button>
+              </TenantAdminAuthGuard>
             </div>
-          ) : (
-            <MediaFolderTree
-              tree={treeQuery.data?.tree ?? []}
-              selectedFolderId={folderId}
-              enableDropTargets={canManage && mode === "manage"}
-              onRenameFolder={
-                canManage
-                  ? (node) => setFolderEditTarget(treeNodeToBrowserFolder(node))
-                  : undefined
-              }
-              onDeleteFolder={
-                canManage
-                  ? (node) =>
-                      setFolderDeleteTarget(treeNodeToBrowserFolder(node))
-                  : undefined
-              }
-              onMoveFolder={
-                canManage
-                  ? (node) =>
-                      openMoveDialog([], [treeNodeToBrowserFolder(node)])
-                  : undefined
-              }
-              onCopyFolder={
-                canManage
-                  ? (node) =>
-                      openCopyDialog([], [treeNodeToBrowserFolder(node)])
-                  : undefined
-              }
-              onSelectFolder={(nextFolderId) => {
-                setFolderId(nextFolderId)
-                setPage(1)
-                setSelectedIds([])
-              }}
-            />
-          )}
-        </aside>
-
-        <div className="min-w-0 flex-1">
-          <div className="mb-3 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-            {breadcrumb.map((crumb, index) => (
-              <React.Fragment key={`${crumb.id ?? "root"}-${index}`}>
-                {index > 0 ? (
-                  <ChevronRightIcon className="size-3.5 shrink-0" />
-                ) : null}
-                <MediaLibraryFolderDropTarget folderId={crumb.id}>
-                  <button
-                    type="button"
-                    className="rounded px-1 hover:text-foreground"
-                    onClick={() => {
-                      setFolderId(crumb.id)
-                      setPage(1)
-                      setSelectedIds([])
-                    }}
-                  >
-                    {crumb.name}
-                  </button>
-                </MediaLibraryFolderDropTarget>
-              </React.Fragment>
-            ))}
-          </div>
-
-          {canManage && mode === "manage" ? (
-            <p className="mb-2 text-xs text-muted-foreground">
-              Drag files or folders onto a folder to move. Hold Alt or Ctrl while
-              dropping to copy.
-            </p>
-          ) : null}
-
-          <MediaUploadZone
-            accept={accept}
-            disabled={!canManage}
-            uploadPending={uploadMutation.isPending}
-            onFilesSelected={handleFilesSelected}
-            className="space-y-4"
-            header={
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="relative max-w-md flex-1">
-                  <SearchIcon className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={search}
-                    onChange={(event) => {
-                      setSearch(event.target.value)
-                      setPage(1)
-                    }}
-                    placeholder="Search files..."
-                    className="ps-9"
-                  />
-                </div>
-
-                <ActionToolbar
-                  mode={mode}
-                  viewMode={viewMode}
-                  selectedCount={selectedIds.length}
-                  uploadPending={uploadMutation.isPending}
-                  onViewModeChange={setViewMode}
-                  onMove={() => openMoveDialog(selectedIds)}
-                  onCopy={() => openCopyDialog(selectedIds)}
-                  onDelete={() => openDeleteDialog(selectedIds)}
-                  onImportUrl={() => setImportUrlOpen(true)}
-                  canUpload={canManage}
-                />
-              </div>
-            }
-          >
-            {isLoading ? (
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-                {Array.from({ length: 12 }).map((_, index) => (
-                  <Skeleton key={index} className="aspect-square rounded-md" />
+            {treeQuery.isLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <Skeleton key={index} className="h-8 w-full" />
                 ))}
               </div>
-            ) : viewMode === "list" ? (
-              <MediaList {...browserProps} />
             ) : (
-              <MediaGrid {...browserProps} />
+              <MediaFolderTree
+                tree={treeQuery.data?.tree ?? []}
+                selectedFolderId={folderId}
+                enableDropTargets={canManage && mode === "manage"}
+                onRenameFolder={
+                  canManage
+                    ? (node) =>
+                        setFolderEditTarget(treeNodeToBrowserFolder(node))
+                    : undefined
+                }
+                onDeleteFolder={
+                  canManage
+                    ? (node) =>
+                        setFolderDeleteTarget(treeNodeToBrowserFolder(node))
+                    : undefined
+                }
+                onMoveFolder={
+                  canManage
+                    ? (node) =>
+                        openMoveDialog([], [treeNodeToBrowserFolder(node)])
+                    : undefined
+                }
+                onCopyFolder={
+                  canManage
+                    ? (node) =>
+                        openCopyDialog([], [treeNodeToBrowserFolder(node)])
+                    : undefined
+                }
+                onSelectFolder={(nextFolderId) => {
+                  setFolderId(nextFolderId)
+                  setPage(1)
+                  setSelectedIds([])
+                }}
+              />
             )}
-          </MediaUploadZone>
+          </aside>
 
-          {pageCount > 1 ? (
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="text-sm text-muted-foreground">
-                Page {page} of {pageCount}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={page <= 1}
-                  onClick={() => setPage((current) => Math.max(1, current - 1))}
-                >
-                  Previous
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={page >= pageCount}
-                  onClick={() => setPage((current) => current + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+          <div className="min-w-0 flex-1">
+            <div className="mb-3 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+              {breadcrumb.map((crumb, index) => (
+                <React.Fragment key={`${crumb.id ?? "root"}-${index}`}>
+                  {index > 0 ? (
+                    <ChevronRightIcon className="size-3.5 shrink-0" />
+                  ) : null}
+                  <MediaLibraryFolderDropTarget folderId={crumb.id}>
+                    <button
+                      type="button"
+                      className="rounded px-1 hover:text-foreground"
+                      onClick={() => {
+                        setFolderId(crumb.id)
+                        setPage(1)
+                        setSelectedIds([])
+                      }}
+                    >
+                      {crumb.name}
+                    </button>
+                  </MediaLibraryFolderDropTarget>
+                </React.Fragment>
+              ))}
             </div>
-          ) : null}
+
+            {canManage && mode === "manage" ? (
+              <p className="mb-2 text-xs text-muted-foreground">
+                Drag files or folders onto a folder to move. Hold Alt or Ctrl
+                while dropping to copy.
+              </p>
+            ) : null}
+
+            <MediaUploadZone
+              accept={accept}
+              disabled={!canManage}
+              uploadPending={uploadMutation.isPending}
+              onFilesSelected={handleFilesSelected}
+              className="space-y-4"
+              header={
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="relative max-w-md flex-1">
+                    <SearchIcon className="absolute start-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={search}
+                      onChange={(event) => {
+                        setSearch(event.target.value)
+                        setPage(1)
+                      }}
+                      placeholder="Search files..."
+                      className="ps-9"
+                    />
+                  </div>
+
+                  <ActionToolbar
+                    mode={mode}
+                    viewMode={viewMode}
+                    selectedCount={selectedIds.length}
+                    uploadPending={uploadMutation.isPending}
+                    onViewModeChange={setViewMode}
+                    onMove={() => openMoveDialog(selectedIds)}
+                    onCopy={() => openCopyDialog(selectedIds)}
+                    onDelete={() => openDeleteDialog(selectedIds)}
+                    onImportUrl={() => setImportUrlOpen(true)}
+                    canUpload={canManage}
+                  />
+                </div>
+              }
+            >
+              {isLoading ? (
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+                  {Array.from({ length: 12 }).map((_, index) => (
+                    <Skeleton
+                      key={index}
+                      className="aspect-square rounded-md"
+                    />
+                  ))}
+                </div>
+              ) : viewMode === "list" ? (
+                <MediaList {...browserProps} />
+              ) : (
+                <MediaGrid {...browserProps} />
+              )}
+            </MediaUploadZone>
+
+            {pageCount > 1 ? (
+              <div className="mt-4 flex items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  Page {page} of {pageCount}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={page <= 1}
+                    onClick={() =>
+                      setPage((current) => Math.max(1, current - 1))
+                    }
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={page >= pageCount}
+                    onClick={() => setPage((current) => current + 1)}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </div>
+
+        <MediaFolderFormDialog
+          open={folderDialogOpen}
+          onOpenChange={setFolderDialogOpen}
+          parentId={folderId}
+        />
+
+        <MediaFolderFormDialog
+          open={!!folderEditTarget}
+          onOpenChange={(open) => {
+            if (!open) setFolderEditTarget(null)
+          }}
+          folder={folderEditTarget}
+        />
+
+        <MediaFolderDeleteDialog
+          open={!!folderDeleteTarget}
+          onOpenChange={(open) => {
+            if (!open) setFolderDeleteTarget(null)
+          }}
+          folder={folderDeleteTarget}
+          onConfirm={handleDeleteFolder}
+          isDeleting={deleteFolderMutation.isPending}
+        />
+
+        <MediaImportUrlDialog
+          open={importUrlOpen}
+          onOpenChange={setImportUrlOpen}
+          folderId={folderId}
+        />
+
+        <MediaPreviewDialog
+          open={!!previewItem}
+          onOpenChange={(open) => {
+            if (!open) setPreviewItem(null)
+          }}
+          item={previewItem}
+        />
+
+        <MediaPropertiesDialog
+          open={!!propertiesItem}
+          onOpenChange={(open) => {
+            if (!open) setPropertiesItem(null)
+          }}
+          item={propertiesItem}
+        />
+
+        <MediaMoveDialog
+          open={moveDialogOpen}
+          onOpenChange={setMoveDialogOpen}
+          mediaIds={actionIds}
+          folders={actionFolders}
+          mode="move"
+          onSuccess={() => {
+            setSelectedIds([])
+            setActionIds([])
+            setActionFolders([])
+            setMoveDialogOpen(false)
+          }}
+        />
+
+        <MediaMoveDialog
+          open={copyDialogOpen}
+          onOpenChange={setCopyDialogOpen}
+          mediaIds={actionIds}
+          folders={actionFolders}
+          mode="copy"
+          onSuccess={() => {
+            setSelectedIds([])
+            setActionIds([])
+            setActionFolders([])
+            setCopyDialogOpen(false)
+          }}
+        />
+
+        <MediaBulkDeleteDialog
+          open={deleteOpen}
+          onOpenChange={setDeleteOpen}
+          ids={actionIds}
+          onSuccess={() => {
+            setSelectedIds([])
+            setActionIds([])
+          }}
+        />
       </div>
-
-      <MediaFolderFormDialog
-        open={folderDialogOpen}
-        onOpenChange={setFolderDialogOpen}
-        parentId={folderId}
-      />
-
-      <MediaFolderFormDialog
-        open={!!folderEditTarget}
-        onOpenChange={(open) => {
-          if (!open) setFolderEditTarget(null)
-        }}
-        folder={folderEditTarget}
-      />
-
-      <MediaFolderDeleteDialog
-        open={!!folderDeleteTarget}
-        onOpenChange={(open) => {
-          if (!open) setFolderDeleteTarget(null)
-        }}
-        folder={folderDeleteTarget}
-        onConfirm={handleDeleteFolder}
-        isDeleting={deleteFolderMutation.isPending}
-      />
-
-      <MediaImportUrlDialog
-        open={importUrlOpen}
-        onOpenChange={setImportUrlOpen}
-        folderId={folderId}
-      />
-
-      <MediaPreviewDialog
-        open={!!previewItem}
-        onOpenChange={(open) => {
-          if (!open) setPreviewItem(null)
-        }}
-        item={previewItem}
-      />
-
-      <MediaPropertiesDialog
-        open={!!propertiesItem}
-        onOpenChange={(open) => {
-          if (!open) setPropertiesItem(null)
-        }}
-        item={propertiesItem}
-      />
-
-      <MediaMoveDialog
-        open={moveDialogOpen}
-        onOpenChange={setMoveDialogOpen}
-        mediaIds={actionIds}
-        folders={actionFolders}
-        mode="move"
-        onSuccess={() => {
-          setSelectedIds([])
-          setActionIds([])
-          setActionFolders([])
-          setMoveDialogOpen(false)
-        }}
-      />
-
-      <MediaMoveDialog
-        open={copyDialogOpen}
-        onOpenChange={setCopyDialogOpen}
-        mediaIds={actionIds}
-        folders={actionFolders}
-        mode="copy"
-        onSuccess={() => {
-          setSelectedIds([])
-          setActionIds([])
-          setActionFolders([])
-          setCopyDialogOpen(false)
-        }}
-      />
-
-      <MediaBulkDeleteDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        ids={actionIds}
-        onSuccess={() => {
-          setSelectedIds([])
-          setActionIds([])
-        }}
-      />
-    </div>
     </MediaLibraryDndProvider>
   )
 }

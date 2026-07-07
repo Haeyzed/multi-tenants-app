@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { useDeleteAttribute } from "@/hooks/tenant/use-attribute-query"
 import { exportAttributes } from "@/lib/services/tenant/attribute-service"

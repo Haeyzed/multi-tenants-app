@@ -8,6 +8,7 @@ export const useGetTeamMembers = (params?: {
 }) => {
   return useQuery({
     queryKey: ["team-members", params],
-    queryFn: () => getTeamMembers({ ...params, per_page: params?.per_page ?? 100 }),
+    queryFn: () =>
+      getTeamMembers({ ...params, per_page: params?.per_page ?? 100 }),
   })
 }

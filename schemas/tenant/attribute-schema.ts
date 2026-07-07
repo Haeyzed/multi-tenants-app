@@ -48,11 +48,17 @@ export const storeAttributeValueSchema = z.object({
   sort_order: z.number().min(0).nullable().optional(),
 })
 
-export const updateAttributeValueSchema = storeAttributeValueSchema.partial().extend({
-  value: z.string().min(1, "Value is required").max(255).optional(),
-})
+export const updateAttributeValueSchema = storeAttributeValueSchema
+  .partial()
+  .extend({
+    value: z.string().min(1, "Value is required").max(255).optional(),
+  })
 
 export type StoreAttributeFormValues = z.infer<typeof storeAttributeSchema>
 export type UpdateAttributeFormValues = z.infer<typeof updateAttributeSchema>
-export type StoreAttributeValueFormValues = z.infer<typeof storeAttributeValueSchema>
-export type UpdateAttributeValueFormValues = z.infer<typeof updateAttributeValueSchema>
+export type StoreAttributeValueFormValues = z.infer<
+  typeof storeAttributeValueSchema
+>
+export type UpdateAttributeValueFormValues = z.infer<
+  typeof updateAttributeValueSchema
+>

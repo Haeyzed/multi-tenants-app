@@ -1,7 +1,4 @@
-import {
-  ProductLabel,
-  ProductLabelOption,
-} from "@/types/tenant/product-label"
+import { ProductLabel, ProductLabelOption } from "@/types/tenant/product-label"
 import { ExportParams, ProductLabelStatistics } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -85,7 +82,9 @@ export const toggleProductLabelActive = async (
   return response.data
 }
 
-export const getProductLabelOptions = async (): Promise<ProductLabelOption[]> => {
+export const getProductLabelOptions = async (): Promise<
+  ProductLabelOption[]
+> => {
   const response = await tenantApiClient.get<ApiResponse<ProductLabelOption[]>>(
     "/product-labels/options"
   )
@@ -120,7 +119,10 @@ export const exportProductLabels = async (
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/product-labels/export", body)
+    await tenantApiClient.post<ApiResponse<void>>(
+      "/product-labels/export",
+      body
+    )
     return
   }
 

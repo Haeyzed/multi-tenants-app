@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,10 +39,10 @@ import {
 } from "@/hooks/tenant/use-attribute-query"
 import { type Attribute, type AttributeValue } from "@/types/tenant/attribute"
 import {
-  storeAttributeValueSchema,
-  updateAttributeValueSchema,
   type StoreAttributeValueFormValues,
+  storeAttributeValueSchema,
   type UpdateAttributeValueFormValues,
+  updateAttributeValueSchema,
 } from "@/schemas/tenant/attribute-schema"
 
 type AttributesManageValuesDialogProps = {
@@ -71,10 +71,14 @@ export function AttributesManageValuesDialog({
 
   const [formOpen, setFormOpen] = useState(false)
   const [editingValue, setEditingValue] = useState<AttributeValue | null>(null)
-  const [deletingValue, setDeletingValue] = useState<AttributeValue | null>(null)
+  const [deletingValue, setDeletingValue] = useState<AttributeValue | null>(
+    null
+  )
 
   const isUpdate = !!editingValue
-  const schema = isUpdate ? updateAttributeValueSchema : storeAttributeValueSchema
+  const schema = isUpdate
+    ? updateAttributeValueSchema
+    : storeAttributeValueSchema
 
   const form = useForm<
     StoreAttributeValueFormValues | UpdateAttributeValueFormValues
@@ -321,7 +325,9 @@ export function AttributesManageValuesDialog({
                   className="font-mono"
                   {...form.register("color_hex")}
                 />
-                <FieldError message={form.formState.errors.color_hex?.message} />
+                <FieldError
+                  message={form.formState.errors.color_hex?.message}
+                />
               </FieldContent>
             </Field>
 

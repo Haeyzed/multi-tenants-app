@@ -137,10 +137,14 @@ export function DataTableRowActions<TData>({
               onClick={() => {
                 setPrimary.mutate(warehouse.id, {
                   onSuccess: () => {
-                    toast.success(`"${warehouse.name}" set as primary warehouse`)
+                    toast.success(
+                      `"${warehouse.name}" set as primary warehouse`
+                    )
                   },
                   onError: (error) => {
-                    toast.error(error.message || "Failed to set primary warehouse")
+                    toast.error(
+                      error.message || "Failed to set primary warehouse"
+                    )
                   },
                 })
               }}

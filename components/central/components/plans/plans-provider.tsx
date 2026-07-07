@@ -23,7 +23,9 @@ type PlansContextType = {
   currentRow: Plan | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Plan | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -35,9 +37,8 @@ const PlansContext = React.createContext<PlansContextType | null>(null)
 export function PlansProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<PlansDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Plan | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   createCustomerGroup,
-  deleteManyCustomerGroups,
   deleteCustomerGroup,
+  deleteManyCustomerGroups,
   exportCustomerGroups,
   getCustomerGroupOptions,
   getCustomerGroups,
@@ -38,7 +38,8 @@ export const useGetCustomerGroupStatistics = () => {
 export const useCreateCustomerGroup = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (group: StoreCustomerGroupFormValues) => createCustomerGroup(group),
+    mutationFn: (group: StoreCustomerGroupFormValues) =>
+      createCustomerGroup(group),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })
@@ -50,8 +51,13 @@ export const useCreateCustomerGroup = () => {
 export const useUpdateCustomerGroup = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, group }: { id: number; group: UpdateCustomerGroupFormValues }) =>
-      updateCustomerGroup(id, group),
+    mutationFn: ({
+      id,
+      group,
+    }: {
+      id: number
+      group: UpdateCustomerGroupFormValues
+    }) => updateCustomerGroup(id, group),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })

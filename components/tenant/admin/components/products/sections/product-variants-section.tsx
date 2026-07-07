@@ -38,8 +38,8 @@ import {
   useGenerateProductVariants,
 } from "@/hooks/tenant/use-product-variant-query"
 import {
-  generateProductVariantsSchema,
   type GenerateProductVariantsFormValues,
+  generateProductVariantsSchema,
 } from "@/schemas/tenant/product-schema"
 import { type Product, type ProductVariant } from "@/types/tenant/product"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
@@ -58,15 +58,14 @@ function formatOptionValues(product: Product, variantId: number) {
     return "—"
   }
 
-  return variant.option_values
-    .map((value) => value.value)
-    .join(" / ")
+  return variant.option_values.map((value) => value.value).join(" / ")
 }
 
 function resolveVariantImageUrl(variant: ProductVariant) {
   const media =
     variant.image_media ??
-    (variant as ProductVariant & { image?: ProductVariant["image_media"] }).image ??
+    (variant as ProductVariant & { image?: ProductVariant["image_media"] })
+      .image ??
     null
 
   if (!media?.url) {
@@ -76,19 +75,22 @@ function resolveVariantImageUrl(variant: ProductVariant) {
   return resolveTenantMediaUrl(media)
 }
 
-export function ProductVariantsSection({ product }: ProductVariantsSectionProps) {
+export function ProductVariantsSection({
+  product,
+}: ProductVariantsSectionProps) {
   const generateVariants = useGenerateProductVariants(product.id)
   const deleteVariant = useDeleteProductVariant(product.id)
   const [mutateOpen, setMutateOpen] = React.useState(false)
   const [inventoryOpen, setInventoryOpen] = React.useState(false)
   const [priceTiersOpen, setPriceTiersOpen] = React.useState(false)
   const [generateOpen, setGenerateOpen] = React.useState(false)
-  const [selectedVariantId, setSelectedVariantId] = React.useState<number | null>(
-    null
-  )
+  const [selectedVariantId, setSelectedVariantId] = React.useState<
+    number | null
+  >(null)
 
   const selectedVariant =
-    product.variants?.find((variant) => variant.id === selectedVariantId) ?? null
+    product.variants?.find((variant) => variant.id === selectedVariantId) ??
+    null
 
   const generateForm = useForm<GenerateProductVariantsFormValues>({
     resolver: zodResolver(generateProductVariantsSchema),
@@ -184,113 +186,116 @@ export function ProductVariantsSection({ product }: ProductVariantsSectionProps)
                   const imageUrl = resolveVariantImageUrl(variant)
 
                   return (
-                  <TableRow key={variant.id}>
-                    <TableCell>
-                      {imageUrl ? (
-                        <div className="relative size-12 overflow-hidden rounded-md border">
-                          <Image
-                            src={imageUrl}
-                            alt={variant.title}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex size-12 items-center justify-center rounded-md border bg-muted text-[10px] text-muted-foreground">
-                          —
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span>{variant.title}</span>
-                        {variant.is_default && (
-                          <Badge variant="secondary">Default</Badge>
+                    <TableRow key={variant.id}>
+                      <TableCell>
+                        {imageUrl ? (
+                          <div className="relative size-12 overflow-hidden rounded-md border">
+                            <Image
+                              src={imageUrl}
+                              alt={variant.title}
+                              fill
+                              className="object-cover"
+                              unoptimized
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex size-12 items-center justify-center rounded-md border bg-muted text-[10px] text-muted-foreground">
+                            —
+                          </div>
                         )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{variant.sku}</TableCell>
-                    <TableCell>{formatOptionValues(product, variant.id)}</TableCell>
-                    <TableCell>{variant.price}</TableCell>
-                    <TableCell>
-                      {variant.inventories?.[0]?.quantity ??
-                        variant.inventory?.quantity ??
-                        0}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openPriceTiers(variant.id)}
-                              >
-                                <Layers className="size-4" />
-                              </Button>
-                            }
-                          />
-                          <TooltipContent>Manage price tiers</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openInventory(variant.id)}
-                              >
-                                <Package className="size-4" />
-                              </Button>
-                            }
-                          />
-                          <TooltipContent>Manage inventory</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => openEdit(variant.id)}
-                              >
-                                <Edit className="size-4" />
-                              </Button>
-                            }
-                          />
-                          <TooltipContent>Edit variant</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDelete(variant.id)}
-                                disabled={deleteVariant.isPending}
-                              >
-                                <Trash2 className="size-4" />
-                              </Button>
-                            }
-                          />
-                          <TooltipContent>Delete variant</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span>{variant.title}</span>
+                          {variant.is_default && (
+                            <Badge variant="secondary">Default</Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{variant.sku}</TableCell>
+                      <TableCell>
+                        {formatOptionValues(product, variant.id)}
+                      </TableCell>
+                      <TableCell>{variant.price}</TableCell>
+                      <TableCell>
+                        {variant.inventories?.[0]?.quantity ??
+                          variant.inventory?.quantity ??
+                          0}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openPriceTiers(variant.id)}
+                                >
+                                  <Layers className="size-4" />
+                                </Button>
+                              }
+                            />
+                            <TooltipContent>Manage price tiers</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openInventory(variant.id)}
+                                >
+                                  <Package className="size-4" />
+                                </Button>
+                              }
+                            />
+                            <TooltipContent>Manage inventory</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => openEdit(variant.id)}
+                                >
+                                  <Edit className="size-4" />
+                                </Button>
+                              }
+                            />
+                            <TooltipContent>Edit variant</TooltipContent>
+                          </Tooltip>
+                          <Tooltip>
+                            <TooltipTrigger
+                              render={
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => handleDelete(variant.id)}
+                                  disabled={deleteVariant.isPending}
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              }
+                            />
+                            <TooltipContent>Delete variant</TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )
                 })}
               </TableBody>
             </Table>
           ) : (
             <p className="text-sm text-muted-foreground">
-              No variants yet. Save options and generate variants, or add one manually.
+              No variants yet. Save options and generate variants, or add one
+              manually.
             </p>
           )}
         </CardContent>

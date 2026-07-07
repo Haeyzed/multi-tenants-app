@@ -5,8 +5,8 @@ import {
   CopyIcon,
   DownloadIcon,
   EyeIcon,
-  FolderInputIcon,
   FolderIcon,
+  FolderInputIcon,
   GripVerticalIcon,
   ImageIcon,
   InfoIcon,
@@ -24,7 +24,8 @@ import {
   mediaMatchesAccept,
 } from "@/lib/tenant/media-file-kind"
 import type { MediaBrowserFolder, MediaItem } from "@/types/tenant/media"
-import { MediaAiContextMenuSub,
+import {
+  MediaAiContextMenuSub,
   MediaAiDropdownMenuSub,
 } from "@/components/tenant/admin/components/media/media-ai-features-menu"
 import {
@@ -52,7 +53,10 @@ import {
 import { Button } from "@/components/ui/button"
 
 function runMenuAction(action: () => void) {
-  return (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+  return (event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) => {
     event.preventDefault()
     event.stopPropagation()
     action()
@@ -446,7 +450,9 @@ export function MediaGrid({
             className={cn(
               "group relative w-full overflow-hidden rounded-md border bg-card text-left transition-colors hover:border-primary/40",
               isSelected && "border-primary ring-2 ring-primary/20",
-              mode === "picker" && !isPickable && "cursor-not-allowed opacity-50"
+              mode === "picker" &&
+                !isPickable &&
+                "cursor-not-allowed opacity-50"
             )}
             onClick={() => {
               if (mode === "picker") {

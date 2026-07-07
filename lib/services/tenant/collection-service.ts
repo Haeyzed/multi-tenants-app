@@ -1,5 +1,5 @@
 import { Collection, CollectionOption } from "@/types/tenant/collection"
-import { ExportParams, CollectionStatistics } from "@/types/tenant/export"
+import { CollectionStatistics, ExportParams } from "@/types/tenant/export"
 import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -122,7 +122,9 @@ export const deleteManyCollections = async (ids: number[]): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>("/collections/bulk", { ids })
 }
 
-export const exportCollections = async (params: ExportParams): Promise<void> => {
+export const exportCollections = async (
+  params: ExportParams
+): Promise<void> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -157,5 +159,8 @@ export const downloadCollectionsImportSample = async (
 export const importCollections = async (file: File): Promise<void> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/collections/import", formData)
+  await tenantApiClient.upload<ApiResponse<void>>(
+    "/collections/import",
+    formData
+  )
 }

@@ -1,10 +1,11 @@
 import {
   BookmarkIcon,
+  Boxes,
   FolderOpenIcon,
   GalleryVerticalEndIcon,
   ImageIcon,
-  LayoutDashboardIcon,
   LayersIcon,
+  LayoutDashboardIcon,
   PackageIcon,
   PercentIcon,
   RulerIcon,
@@ -16,7 +17,6 @@ import {
   UsersIcon,
   UsersRoundIcon,
   WarehouseIcon,
-  Boxes,
 } from "lucide-react"
 import type { SidebarData } from "@/components/layout/types"
 

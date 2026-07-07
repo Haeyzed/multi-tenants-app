@@ -2,7 +2,7 @@
 
 import { useGetTenantStatistics } from "@/hooks/central/use-tenant-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Building2, CheckCircle2, Clock, AlertTriangle } from "lucide-react"
+import { AlertTriangle, Building2, CheckCircle2, Clock } from "lucide-react"
 
 export function TenantStatistics() {
   const { data: stats, isLoading } = useGetTenantStatistics()

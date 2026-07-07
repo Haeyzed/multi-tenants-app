@@ -42,9 +42,7 @@ export const getPlan = async (id: number): Promise<Plan> => {
   return response.data
 }
 
-export const createPlan = async (
-  plan: StorePlanFormValues
-): Promise<Plan> => {
+export const createPlan = async (plan: StorePlanFormValues): Promise<Plan> => {
   // Ensure limits is always string[] for API
   const payload = {
     ...plan,
@@ -74,14 +72,14 @@ export const deletePlan = async (id: number): Promise<void> => {
 }
 
 export const getPlanOptions = async (): Promise<PlanOption[]> => {
-  const response = await apiClient.get<ApiResponse<PlanOption[]>>("/plans/options");
-  return response.data;
-};
+  const response =
+    await apiClient.get<ApiResponse<PlanOption[]>>("/plans/options")
+  return response.data
+}
 
 export const getPlanStatistics = async (): Promise<PlanStatistics> => {
-  const response = await apiClient.get<ApiResponse<PlanStatistics>>(
-    "/plans/statistics"
-  )
+  const response =
+    await apiClient.get<ApiResponse<PlanStatistics>>("/plans/statistics")
   return response.data
 }
 
@@ -114,7 +112,11 @@ export const exportPlans = async (params: ExportParams): Promise<void> => {
 export const downloadPlansImportSample = async (
   type: "xlsx" | "csv" = "xlsx"
 ): Promise<void> => {
-  await apiClient.getFileDownload("/plans/import/sample", { type }, `plans-import-sample.${type}`)
+  await apiClient.getFileDownload(
+    "/plans/import/sample",
+    { type },
+    `plans-import-sample.${type}`
+  )
 }
 
 export const importPlans = async (file: File): Promise<void> => {

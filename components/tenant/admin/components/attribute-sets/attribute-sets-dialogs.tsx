@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { useDeleteAttributeSet } from "@/hooks/tenant/use-attribute-set-query"
 import { exportAttributeSets } from "@/lib/services/tenant/attribute-set-service"
@@ -167,7 +167,9 @@ export function AttributeSetsDialogs() {
           >
             <ResponsiveDialogContent>
               <ResponsiveDialogHeader>
-                <ResponsiveDialogTitle>Delete attribute set?</ResponsiveDialogTitle>
+                <ResponsiveDialogTitle>
+                  Delete attribute set?
+                </ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to delete &quot;{currentRow.name}&quot;. This
                   action cannot be undone.

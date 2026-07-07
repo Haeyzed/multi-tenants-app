@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { useDeleteTaxRule } from "@/hooks/tenant/use-tax-rule-query"
 import { exportTaxRules } from "@/lib/services/tenant/tax-rule-service"
@@ -41,9 +41,7 @@ export function TaxRulesDialogs() {
     setIsDeleting(true)
     deleteTaxRule.mutate(currentRow.id, {
       onSuccess: () => {
-        toast.success(
-          `Tax rule #${currentRow.id} deleted successfully`
-        )
+        toast.success(`Tax rule #${currentRow.id} deleted successfully`)
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {

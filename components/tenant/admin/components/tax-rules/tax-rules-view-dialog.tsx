@@ -41,17 +41,13 @@ function getTaxRuleViewFields(taxRule: TaxRule): ModuleViewField[] {
     {
       label: "Rule Type",
       value: (
-        <Badge variant="secondary">
-          {RULE_TYPE_LABELS[taxRule.rule_type]}
-        </Badge>
+        <Badge variant="secondary">{RULE_TYPE_LABELS[taxRule.rule_type]}</Badge>
       ),
     },
     {
       label: "Adjustment Rate",
       value:
-        taxRule.adjustment_rate !== null
-          ? `${taxRule.adjustment_rate}%`
-          : "—",
+        taxRule.adjustment_rate !== null ? `${taxRule.adjustment_rate}%` : "—",
     },
     {
       label: "Effective From",

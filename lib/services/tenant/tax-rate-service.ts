@@ -106,9 +106,10 @@ export const getTaxRateStatistics = async (): Promise<TaxRateStatistics> => {
 }
 
 export const getTaxRateOptions = async (): Promise<TaxRateOption[]> => {
-  const response = await tenantApiClient.get<ApiResponse<TaxRateOption[]>>(
-    "/tax-rates/options"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<TaxRateOption[]>>(
+      "/tax-rates/options"
+    )
   return response.data
 }
 

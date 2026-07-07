@@ -11,10 +11,7 @@ export default function CustomerMainLayout({
 }) {
   return (
     <CustomerAuthProvider>
-      <DashboardShell
-        sidebar={<AppSidebar />}
-        commandMenu={<CommandMenu />}
-      >
+      <DashboardShell sidebar={<AppSidebar />} commandMenu={<CommandMenu />}>
         <CustomerAuthGuard>{children}</CustomerAuthGuard>
       </DashboardShell>
     </CustomerAuthProvider>

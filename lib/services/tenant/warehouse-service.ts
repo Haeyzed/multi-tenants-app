@@ -4,7 +4,11 @@ import {
   WarehouseOption,
   WarehouseZone,
 } from "@/types/tenant/warehouse"
-import { WarehouseStatistics, ExportParams, ImportSummary } from "@/types/tenant/export"
+import {
+  ExportParams,
+  ImportSummary,
+  WarehouseStatistics,
+} from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -164,12 +168,13 @@ export const getPrimaryWarehouse = async (): Promise<Warehouse | null> => {
   return response.data
 }
 
-export const getWarehouseStatistics = async (): Promise<WarehouseStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<WarehouseStatistics>>(
-    "/warehouses/statistics"
-  )
-  return response.data
-}
+export const getWarehouseStatistics =
+  async (): Promise<WarehouseStatistics> => {
+    const response = await tenantApiClient.get<
+      ApiResponse<WarehouseStatistics>
+    >("/warehouses/statistics")
+    return response.data
+  }
 
 // Zones
 

@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import { type Table } from "@tanstack/react-table"
-import { Trash2, Download } from "lucide-react"
+import { Download, Trash2 } from "lucide-react"
 import {
   ActionBar,
+  ActionBarClose,
   ActionBarGroup,
   ActionBarItem,
   ActionBarSelection,
-  ActionBarClose,
 } from "@/components/ui/action-bar"
 import { type Unit } from "@/types/tenant/unit"
 import { useUnits } from "./units-provider"
@@ -17,7 +17,9 @@ type UnitsBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function UnitsBulkActions<TData>({ table }: UnitsBulkActionsProps<TData>) {
+export function UnitsBulkActions<TData>({
+  table,
+}: UnitsBulkActionsProps<TData>) {
   const { setOpen, setExportSelection, setDeleteManySelection } = useUnits()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 

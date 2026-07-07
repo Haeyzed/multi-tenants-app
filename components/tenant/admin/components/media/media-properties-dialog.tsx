@@ -1,10 +1,13 @@
 "use client"
 
-import { formatDistanceToNow, format } from "date-fns"
+import { format, formatDistanceToNow } from "date-fns"
 import { ExternalLinkIcon } from "lucide-react"
 
 import { useGetMedia } from "@/hooks/tenant/use-media-query"
-import { getMediaFileExtension, isMediaImage } from "@/lib/tenant/media-file-kind"
+import {
+  getMediaFileExtension,
+  isMediaImage,
+} from "@/lib/tenant/media-file-kind"
 import type { MediaItem } from "@/types/tenant/media"
 import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
@@ -34,8 +37,9 @@ function formatDate(value: string | null | undefined) {
 function buildFields(item: MediaItem): ModuleViewField[] {
   const extension = getMediaFileExtension(item)
   const uploaderName = item.uploader
-    ? [item.uploader.first_name, item.uploader.last_name].filter(Boolean).join(" ") ||
-      item.uploader.email
+    ? [item.uploader.first_name, item.uploader.last_name]
+        .filter(Boolean)
+        .join(" ") || item.uploader.email
     : null
 
   const customProperties = (
@@ -48,7 +52,12 @@ function buildFields(item: MediaItem): ModuleViewField[] {
     {
       label: "Preview",
       value: isMediaImage(item) ? (
-        <MediaThumbnail media={item} alt={item.title ?? item.name} size="lg" zoomable />
+        <MediaThumbnail
+          media={item}
+          alt={item.title ?? item.name}
+          size="lg"
+          zoomable
+        />
       ) : (
         <MediaFileIcon item={item} size="lg" />
       ),
@@ -61,9 +70,16 @@ function buildFields(item: MediaItem): ModuleViewField[] {
     { label: "Extension", value: extension ? extension.toUpperCase() : "—" },
     { label: "MIME type", value: item.mime_type ?? "—" },
     { label: "Size", value: formatFileSize(item.size) },
-    { label: "Folder", value: item.folder?.path ?? item.folder?.name ?? "Library root" },
+    {
+      label: "Folder",
+      value: item.folder?.path ?? item.folder?.name ?? "Library root",
+    },
     { label: "Disk", value: item.disk },
-    { label: "Storage path", value: item.path ?? "—", className: "sm:col-span-2" },
+    {
+      label: "Storage path",
+      value: item.path ?? "—",
+      className: "sm:col-span-2",
+    },
     {
       label: "URL",
       value: (
@@ -79,7 +95,11 @@ function buildFields(item: MediaItem): ModuleViewField[] {
       ),
       className: "sm:col-span-2",
     },
-    { label: "Alt text", value: item.alt_text ?? "—", className: "sm:col-span-2" },
+    {
+      label: "Alt text",
+      value: item.alt_text ?? "—",
+      className: "sm:col-span-2",
+    },
     { label: "Uploaded by", value: uploaderName ?? item.uploaded_by ?? "—" },
     { label: "Uploader email", value: item.uploader?.email ?? "—" },
     { label: "Created", value: formatDate(item.created_at) },

@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,10 +26,10 @@ import { MediaThumbnail } from "@/components/tenant/admin/components/shared/medi
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { type Brand } from "@/types/tenant/brand"
 import {
-  storeBrandSchema,
-  updateBrandSchema,
   type StoreBrandFormValues,
+  storeBrandSchema,
   type UpdateBrandFormValues,
+  updateBrandSchema,
 } from "@/schemas/tenant/brand-schema"
 
 type BrandsFormDialogProps = {
@@ -75,7 +75,9 @@ export function BrandsFormDialog({
     },
   })
 
-  const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | null>(null)
+  const [logoPreviewUrl, setLogoPreviewUrl] = React.useState<string | null>(
+    null
+  )
   const [logoPreviewTitle, setLogoPreviewTitle] = React.useState<string | null>(
     null
   )
@@ -213,7 +215,10 @@ export function BrandsFormDialog({
           <Field>
             <FieldLabel>Summary</FieldLabel>
             <FieldContent>
-              <Input placeholder="Short summary" {...form.register("summary")} />
+              <Input
+                placeholder="Short summary"
+                {...form.register("summary")}
+              />
             </FieldContent>
           </Field>
 
@@ -224,7 +229,9 @@ export function BrandsFormDialog({
                 placeholder="Brand description..."
                 {...form.register("description")}
               />
-              <FieldError message={form.formState.errors.description?.message} />
+              <FieldError
+                message={form.formState.errors.description?.message}
+              />
             </FieldContent>
           </Field>
 
@@ -235,7 +242,9 @@ export function BrandsFormDialog({
             previewTitle={logoPreviewTitle}
             onChange={(mediaId, media) => {
               form.setValue("logo_media_id", mediaId)
-              setLogoPreviewUrl(media?.url ? resolveTenantMediaUrl(media) : null)
+              setLogoPreviewUrl(
+                media?.url ? resolveTenantMediaUrl(media) : null
+              )
               setLogoPreviewTitle(media?.title ?? media?.name ?? null)
             }}
             accept="image/*"
@@ -248,7 +257,9 @@ export function BrandsFormDialog({
             previewTitle={bannerPreviewTitle}
             onChange={(mediaId, media) => {
               form.setValue("banner_media_id", mediaId)
-              setBannerPreviewUrl(media?.url ? resolveTenantMediaUrl(media) : null)
+              setBannerPreviewUrl(
+                media?.url ? resolveTenantMediaUrl(media) : null
+              )
               setBannerPreviewTitle(media?.title ?? media?.name ?? null)
             }}
             accept="image/*"
@@ -258,7 +269,9 @@ export function BrandsFormDialog({
             <div className="flex flex-wrap gap-4 rounded-lg border p-3">
               {logoPreviewUrl ? (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground">Logo preview</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Logo preview
+                  </p>
                   <MediaThumbnail
                     media={{ url: logoPreviewUrl, name: logoPreviewTitle }}
                     alt={logoPreviewTitle ?? "Brand logo"}
@@ -268,7 +281,9 @@ export function BrandsFormDialog({
               ) : null}
               {bannerPreviewUrl ? (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground">Banner preview</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Banner preview
+                  </p>
                   <MediaThumbnail
                     media={{ url: bannerPreviewUrl, name: bannerPreviewTitle }}
                     alt={bannerPreviewTitle ?? "Brand banner"}
@@ -283,7 +298,10 @@ export function BrandsFormDialog({
             <Field>
               <FieldLabel>Meta Title</FieldLabel>
               <FieldContent>
-                <Input placeholder="SEO title" {...form.register("meta_title")} />
+                <Input
+                  placeholder="SEO title"
+                  {...form.register("meta_title")}
+                />
               </FieldContent>
             </Field>
             <Field>
@@ -293,7 +311,9 @@ export function BrandsFormDialog({
                   placeholder="https://example.com"
                   {...form.register("website_url")}
                 />
-                <FieldError message={form.formState.errors.website_url?.message} />
+                <FieldError
+                  message={form.formState.errors.website_url?.message}
+                />
               </FieldContent>
             </Field>
             <Field>

@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import {
   Combobox,
@@ -34,10 +34,10 @@ import {
 } from "@/hooks/tenant/use-collection-query"
 import { type Collection, type CollectionType } from "@/types/tenant/collection"
 import {
-  storeCollectionSchema,
-  updateCollectionSchema,
   type StoreCollectionFormValues,
+  storeCollectionSchema,
   type UpdateCollectionFormValues,
+  updateCollectionSchema,
 } from "@/schemas/tenant/collection-schema"
 
 type CollectionsFormDialogProps = {
@@ -155,7 +155,9 @@ export function CollectionsFormDialog({
     setConditionsError(null)
   }, [open, currentRow, form])
 
-  const onSubmit = (data: StoreCollectionFormValues | UpdateCollectionFormValues) => {
+  const onSubmit = (
+    data: StoreCollectionFormValues | UpdateCollectionFormValues
+  ) => {
     let conditions: Record<string, unknown> | null = null
 
     try {
@@ -181,7 +183,10 @@ export function CollectionsFormDialog({
 
     if (isUpdate && currentRow) {
       updateCollection.mutate(
-        { id: currentRow.id, collection: payload as UpdateCollectionFormValues },
+        {
+          id: currentRow.id,
+          collection: payload as UpdateCollectionFormValues,
+        },
         {
           onSuccess: () => {
             toast.success("Collection updated successfully")
@@ -189,7 +194,11 @@ export function CollectionsFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update collection")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update collection"
+            )
           },
         }
       )
@@ -202,7 +211,11 @@ export function CollectionsFormDialog({
           form.reset()
         },
         onError: (error) => {
-          handleFormApiError(error, form.setError, "Failed to create collection")
+          handleFormApiError(
+            error,
+            form.setError,
+            "Failed to create collection"
+          )
         },
       })
     }
@@ -249,7 +262,9 @@ export function CollectionsFormDialog({
                 placeholder="Collection description..."
                 {...form.register("description")}
               />
-              <FieldError message={form.formState.errors.description?.message} />
+              <FieldError
+                message={form.formState.errors.description?.message}
+              />
             </FieldContent>
           </Field>
 
@@ -257,13 +272,19 @@ export function CollectionsFormDialog({
             <Field>
               <FieldLabel>Meta Title</FieldLabel>
               <FieldContent>
-                <Input placeholder="SEO title" {...form.register("meta_title")} />
+                <Input
+                  placeholder="SEO title"
+                  {...form.register("meta_title")}
+                />
               </FieldContent>
             </Field>
             <Field>
               <FieldLabel>Sort By</FieldLabel>
               <FieldContent>
-                <Input placeholder="e.g. created_at" {...form.register("sort_by")} />
+                <Input
+                  placeholder="e.g. created_at"
+                  {...form.register("sort_by")}
+                />
               </FieldContent>
             </Field>
           </div>

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
-  bulkUploadMedia,
   bulkUpdateMedia,
+  bulkUploadMedia,
   copyMedia,
   copyMediaItem,
   deleteManyMedia,
@@ -21,8 +21,8 @@ import {
   createMediaFolder,
   deleteManyMediaFolders,
   deleteMediaFolder,
-  getMediaFolderTree,
   getMediaFolders,
+  getMediaFolderTree,
   moveMediaFolder,
   updateMediaFolder,
 } from "@/lib/services/tenant/media-folder-service"
@@ -157,13 +157,8 @@ export const useUpdateMedia = () => {
 export const useMoveMediaItem = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({
-      id,
-      folderId,
-    }: {
-      id: number
-      folderId: number | null
-    }) => moveMediaItem(id, folderId),
+    mutationFn: ({ id, folderId }: { id: number; folderId: number | null }) =>
+      moveMediaItem(id, folderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["media"] })
       queryClient.invalidateQueries({ queryKey: ["media-folders"] })
@@ -174,13 +169,8 @@ export const useMoveMediaItem = () => {
 export const useCopyMediaItem = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({
-      id,
-      folderId,
-    }: {
-      id: number
-      folderId: number | null
-    }) => copyMediaItem(id, folderId),
+    mutationFn: ({ id, folderId }: { id: number; folderId: number | null }) =>
+      copyMediaItem(id, folderId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["media"] })
       queryClient.invalidateQueries({ queryKey: ["media-folders"] })
@@ -292,13 +282,8 @@ export const useUpdateMediaFolder = () => {
 export const useMoveMediaFolder = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({
-      id,
-      parentId,
-    }: {
-      id: number
-      parentId: number | null
-    }) => moveMediaFolder(id, parentId),
+    mutationFn: ({ id, parentId }: { id: number; parentId: number | null }) =>
+      moveMediaFolder(id, parentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["media"] })
       queryClient.invalidateQueries({ queryKey: ["media-folders"] })

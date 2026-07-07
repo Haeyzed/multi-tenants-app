@@ -1,8 +1,8 @@
 import { PaginatedResponse } from "@/types/central/pagination"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import {
-  MediaBulkActionResponse,
   MediaBackgroundRemovalResponse,
+  MediaBulkActionResponse,
   MediaBulkUploadResponse,
   MediaItem,
   MediaListParams,
@@ -67,14 +67,15 @@ export const getMediaPaginated = async (
 }
 
 export const getMedia = async (id: number): Promise<MediaItem> => {
-  const response = await tenantApiClient.get<ApiResponse<MediaItem>>(`/media/${id}`)
+  const response = await tenantApiClient.get<ApiResponse<MediaItem>>(
+    `/media/${id}`
+  )
   return normalizeMediaItem(response.data)
 }
 
 export const getMediaStatistics = async (): Promise<MediaStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<MediaStatistics>>(
-    "/media/statistics"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<MediaStatistics>>("/media/statistics")
   return response.data
 }
 
@@ -126,10 +127,9 @@ export const bulkUploadMedia = async (
     formData.append("alt_text", meta.alt_text)
   }
 
-  const response = await tenantApiClient.upload<ApiResponse<MediaBulkUploadResponse>>(
-    "/media/bulk-upload",
-    formData
-  )
+  const response = await tenantApiClient.upload<
+    ApiResponse<MediaBulkUploadResponse>
+  >("/media/bulk-upload", formData)
 
   return {
     ...response.data,
@@ -139,7 +139,11 @@ export const bulkUploadMedia = async (
 
 export const updateMedia = async (
   id: number,
-  payload: { title?: string; alt_text?: string | null; folder_id?: number | null }
+  payload: {
+    title?: string
+    alt_text?: string | null
+    folder_id?: number | null
+  }
 ): Promise<MediaItem> => {
   const response = await tenantApiClient.put<ApiResponse<MediaItem>>(
     `/media/${id}`,
@@ -152,10 +156,9 @@ export const moveMedia = async (
   ids: number[],
   folderId: number | null
 ): Promise<MediaBulkActionResponse> => {
-  const response = await tenantApiClient.post<ApiResponse<MediaBulkActionResponse>>(
-    "/media/move",
-    { ids, folder_id: folderId }
-  )
+  const response = await tenantApiClient.post<
+    ApiResponse<MediaBulkActionResponse>
+  >("/media/move", { ids, folder_id: folderId })
   return {
     ...response.data,
     items: response.data.items?.map(normalizeMediaItem) ?? [],
@@ -177,10 +180,9 @@ export const copyMedia = async (
   ids: number[],
   folderId: number | null
 ): Promise<MediaBulkActionResponse> => {
-  const response = await tenantApiClient.post<ApiResponse<MediaBulkActionResponse>>(
-    "/media/copy",
-    { ids, folder_id: folderId }
-  )
+  const response = await tenantApiClient.post<
+    ApiResponse<MediaBulkActionResponse>
+  >("/media/copy", { ids, folder_id: folderId })
   return {
     ...response.data,
     items: response.data.items?.map(normalizeMediaItem) ?? [],
@@ -202,10 +204,9 @@ export const bulkUpdateMedia = async (
   ids: number[],
   payload: { title?: string; alt_text?: string | null }
 ): Promise<MediaBulkActionResponse> => {
-  const response = await tenantApiClient.patch<ApiResponse<MediaBulkActionResponse>>(
-    "/media/bulk",
-    { ids, ...payload }
-  )
+  const response = await tenantApiClient.patch<
+    ApiResponse<MediaBulkActionResponse>
+  >("/media/bulk", { ids, ...payload })
   return response.data
 }
 

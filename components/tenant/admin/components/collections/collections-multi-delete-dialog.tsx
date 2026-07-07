@@ -7,12 +7,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
@@ -73,8 +73,8 @@ export function CollectionsMultiDeleteDialog({
             Delete {ids.length} {ids.length > 1 ? "collections" : "collection"}
           </ResponsiveDialogTitle>
           <ResponsiveDialogDescription>
-            Are you sure you want to delete the selected collections? This action
-            cannot be undone.
+            Are you sure you want to delete the selected collections? This
+            action cannot be undone.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 

@@ -5,7 +5,11 @@ import {
   SupplierContact,
   SupplierOption,
 } from "@/types/tenant/supplier"
-import { ExportParams, ImportSummary, SupplierStatistics } from "@/types/tenant/export"
+import {
+  ExportParams,
+  ImportSummary,
+  SupplierStatistics,
+} from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -144,9 +148,10 @@ export const toggleSupplierActive = async (id: number): Promise<Supplier> => {
 }
 
 export const getSupplierOptions = async (): Promise<SupplierOption[]> => {
-  const response = await tenantApiClient.get<ApiResponse<SupplierOption[]>>(
-    "/suppliers/options"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<SupplierOption[]>>(
+      "/suppliers/options"
+    )
   return response.data
 }
 
@@ -248,9 +253,9 @@ export const deleteSupplierAddress = async (
 export const getSupplierBankAccounts = async (
   supplierId: number
 ): Promise<SupplierBankAccount[]> => {
-  const response = await tenantApiClient.get<ApiResponse<SupplierBankAccount[]>>(
-    `/suppliers/${supplierId}/bank-accounts`
-  )
+  const response = await tenantApiClient.get<
+    ApiResponse<SupplierBankAccount[]>
+  >(`/suppliers/${supplierId}/bank-accounts`)
   return response.data
 }
 

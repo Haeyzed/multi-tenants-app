@@ -35,9 +35,7 @@ function getUserViewFields(user: User): ModuleViewField[] {
     },
     {
       label: "Created",
-      value: user.created_at
-        ? format(new Date(user.created_at), "PPP")
-        : "—",
+      value: user.created_at ? format(new Date(user.created_at), "PPP") : "—",
     },
   ]
 }

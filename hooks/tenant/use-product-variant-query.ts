@@ -143,7 +143,8 @@ export const useDeleteProductVariant = (productId: number) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (variantId: number) => deleteProductVariant(productId, variantId),
+    mutationFn: (variantId: number) =>
+      deleteProductVariant(productId, variantId),
     onSuccess: () => invalidateProductQueries(queryClient, productId),
   })
 }

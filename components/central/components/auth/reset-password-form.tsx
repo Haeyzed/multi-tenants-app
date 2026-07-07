@@ -1,22 +1,33 @@
-"use client";
+"use client"
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { useResetPassword } from "@/hooks/central/use-auth-query";
-import { resetPasswordSchema } from "@/schemas/central/auth-schema";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Spinner } from "@/components/ui/spinner";
-import { handleFormApiError } from "@/lib/form-api-errors";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import {
+  Field,
+  FieldContent,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { useResetPassword } from "@/hooks/central/use-auth-query"
+import { resetPasswordSchema } from "@/schemas/central/auth-schema"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Spinner } from "@/components/ui/spinner"
+import { handleFormApiError } from "@/lib/form-api-errors"
 
 export function ResetPasswordForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const resetPasswordMutation = useResetPassword();
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const resetPasswordMutation = useResetPassword()
   const form = useForm<z.infer<typeof resetPasswordSchema>>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -25,21 +36,21 @@ export function ResetPasswordForm() {
       password: "",
       password_confirmation: "",
     },
-  });
+  })
 
   const onSubmit = (values: z.infer<typeof resetPasswordSchema>) => {
     resetPasswordMutation.mutate(values, {
       onSuccess: () => {
-        router.push("/central/login");
+        router.push("/central/login")
       },
       onError: (error) => {
-        handleFormApiError(error, form.setError, "Failed to reset password");
+        handleFormApiError(error, form.setError, "Failed to reset password")
       },
-    });
-  };
+    })
+  }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Reset Password</CardTitle>
@@ -51,37 +62,68 @@ export function ResetPasswordForm() {
               <FieldLabel>Email</FieldLabel>
               <FieldContent>
                 <Input {...form.register("email")} readOnly />
-                <FieldError errors={form.formState.errors.email ? [form.formState.errors.email] : []} />
+                <FieldError
+                  errors={
+                    form.formState.errors.email
+                      ? [form.formState.errors.email]
+                      : []
+                  }
+                />
               </FieldContent>
             </Field>
             <Field>
               <FieldLabel>OTP</FieldLabel>
               <FieldContent>
                 <Input {...form.register("otp")} />
-                <FieldError errors={form.formState.errors.otp ? [form.formState.errors.otp] : []} />
+                <FieldError
+                  errors={
+                    form.formState.errors.otp ? [form.formState.errors.otp] : []
+                  }
+                />
               </FieldContent>
             </Field>
             <Field>
               <FieldLabel>New Password</FieldLabel>
               <FieldContent>
                 <Input type="password" {...form.register("password")} />
-                <FieldError errors={form.formState.errors.password ? [form.formState.errors.password] : []} />
+                <FieldError
+                  errors={
+                    form.formState.errors.password
+                      ? [form.formState.errors.password]
+                      : []
+                  }
+                />
               </FieldContent>
             </Field>
             <Field>
               <FieldLabel>Confirm New Password</FieldLabel>
               <FieldContent>
-                <Input type="password" {...form.register("password_confirmation")} />
-                <FieldError errors={form.formState.errors.password_confirmation ? [form.formState.errors.password_confirmation] : []} />
+                <Input
+                  type="password"
+                  {...form.register("password_confirmation")}
+                />
+                <FieldError
+                  errors={
+                    form.formState.errors.password_confirmation
+                      ? [form.formState.errors.password_confirmation]
+                      : []
+                  }
+                />
               </FieldContent>
             </Field>
-            <Button type="submit" className="w-full" disabled={resetPasswordMutation.isPending}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={resetPasswordMutation.isPending}
+            >
               {resetPasswordMutation.isPending && <Spinner />}
-              {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
+              {resetPasswordMutation.isPending
+                ? "Resetting..."
+                : "Reset Password"}
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
-  );
+  )
 }

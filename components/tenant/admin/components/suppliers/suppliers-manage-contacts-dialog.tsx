@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,10 +38,10 @@ import {
 } from "@/hooks/tenant/use-supplier-query"
 import { type Supplier, type SupplierContact } from "@/types/tenant/supplier"
 import {
-  storeSupplierContactSchema,
-  updateSupplierContactSchema,
   type StoreSupplierContactFormValues,
+  storeSupplierContactSchema,
   type UpdateSupplierContactFormValues,
+  updateSupplierContactSchema,
 } from "@/schemas/tenant/supplier-schema"
 
 type SuppliersManageContactsDialogProps = {
@@ -72,12 +72,13 @@ export function SuppliersManageContactsDialog({
   const [editingContact, setEditingContact] = useState<SupplierContact | null>(
     null
   )
-  const [deletingContact, setDeletingContact] = useState<SupplierContact | null>(
-    null
-  )
+  const [deletingContact, setDeletingContact] =
+    useState<SupplierContact | null>(null)
 
   const isUpdate = !!editingContact
-  const schema = isUpdate ? updateSupplierContactSchema : storeSupplierContactSchema
+  const schema = isUpdate
+    ? updateSupplierContactSchema
+    : storeSupplierContactSchema
 
   const form = useForm<
     StoreSupplierContactFormValues | UpdateSupplierContactFormValues
@@ -202,55 +203,55 @@ export function SuppliersManageContactsDialog({
               <div className="max-h-[min(50dvh,360px)] overflow-auto rounded-md border">
                 <div className="min-w-full overflow-x-auto">
                   <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Position</TableHead>
-                    <TableHead>Primary</TableHead>
-                    <TableHead className="w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {contacts.map((contact) => (
-                    <TableRow key={contact.id}>
-                      <TableCell className="font-medium">
-                        {contact.name}
-                      </TableCell>
-                      <TableCell>{contact.email || "—"}</TableCell>
-                      <TableCell>{contact.phone || "—"}</TableCell>
-                      <TableCell>{contact.position || "—"}</TableCell>
-                      <TableCell>
-                        {contact.is_primary ? (
-                          <Badge variant="secondary">Primary</Badge>
-                        ) : (
-                          "—"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => openEditForm(contact)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => setDeletingContact(contact)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Phone</TableHead>
+                        <TableHead>Position</TableHead>
+                        <TableHead>Primary</TableHead>
+                        <TableHead className="w-24">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {contacts.map((contact) => (
+                        <TableRow key={contact.id}>
+                          <TableCell className="font-medium">
+                            {contact.name}
+                          </TableCell>
+                          <TableCell>{contact.email || "—"}</TableCell>
+                          <TableCell>{contact.phone || "—"}</TableCell>
+                          <TableCell>{contact.position || "—"}</TableCell>
+                          <TableCell>
+                            {contact.is_primary ? (
+                              <Badge variant="secondary">Primary</Badge>
+                            ) : (
+                              "—"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => openEditForm(contact)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => setDeletingContact(contact)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
                   </Table>
                 </div>
               </div>
@@ -287,11 +288,11 @@ export function SuppliersManageContactsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-            <form
-              id="supplier-contact-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
+          <form
+            id="supplier-contact-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <Field>
               <FieldLabel>Name *</FieldLabel>
               <FieldContent>
@@ -313,7 +314,10 @@ export function SuppliersManageContactsDialog({
             <Field>
               <FieldLabel>Phone</FieldLabel>
               <FieldContent>
-                <Input placeholder="+1 555 000 0000" {...form.register("phone")} />
+                <Input
+                  placeholder="+1 555 000 0000"
+                  {...form.register("phone")}
+                />
               </FieldContent>
             </Field>
             <Field>
@@ -337,7 +341,7 @@ export function SuppliersManageContactsDialog({
                 Primary contact
               </label>
             </div>
-            </form>
+          </form>
 
           <ResponsiveDialogFooter>
             <ResponsiveDialogClose

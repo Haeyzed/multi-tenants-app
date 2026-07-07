@@ -7,12 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,10 +45,10 @@ import {
   type TaxRuleType,
 } from "@/types/tenant/tax-rule"
 import {
-  storeTaxRuleSchema,
-  updateTaxRuleSchema,
   type StoreTaxRuleFormValues,
+  storeTaxRuleSchema,
   type UpdateTaxRuleFormValues,
+  updateTaxRuleSchema,
 } from "@/schemas/tenant/tax-rule-schema"
 
 type TaxRulesFormDialogProps = {
@@ -203,7 +203,11 @@ export function TaxRulesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update tax rule")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update tax rule"
+            )
           },
         }
       )
@@ -321,9 +325,9 @@ export function TaxRulesFormDialog({
               <FieldContent>
                 <Combobox
                   items={applicableOptions}
-                  itemToStringValue={(item: ProductOption | CustomerGroupOption) =>
-                    item.label
-                  }
+                  itemToStringValue={(
+                    item: ProductOption | CustomerGroupOption
+                  ) => item.label}
                   value={selectedApplicable}
                   onValueChange={(item) => {
                     if (!item) return

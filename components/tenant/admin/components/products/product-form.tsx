@@ -3,9 +3,9 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useForm, type Resolver } from "react-hook-form"
+import { type Resolver, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
+import { toastApiSuccess } from "@/lib/toast-api"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
@@ -17,11 +17,11 @@ import {
 import {
   getDefaultProductFormValues,
   mapProductToFormValues,
+  type StoreProductFormValues,
   storeProductSchema,
   VARIANT_PRODUCT_TYPES,
-  type StoreProductFormValues,
 } from "@/schemas/tenant/product-schema"
-import { type Product } from "@/types/tenant/product"
+import { type Product, resolveProductEnumValue } from "@/types/tenant/product"
 import { ProductBasicSection } from "./sections/product-basic-section"
 import { ProductPricingSection } from "./sections/product-pricing-section"
 import { ProductInventorySection } from "./sections/product-inventory-section"
@@ -42,7 +42,6 @@ import { ProductBundleSection } from "./sections/product-bundle-section"
 import { ProductServiceSection } from "./sections/product-service-section"
 import { ProductSubscriptionSection } from "./sections/product-subscription-section"
 import { slugify } from "./sections/product-form-shared"
-import { resolveProductEnumValue } from "@/types/tenant/product"
 
 type ProductFormProps = {
   product?: Product
@@ -58,7 +57,9 @@ export function ProductForm({ product }: ProductFormProps) {
   const stayOnPageRef = React.useRef(false)
 
   const form = useForm<StoreProductFormValues>({
-    resolver: zodResolver(storeProductSchema) as Resolver<StoreProductFormValues>,
+    resolver: zodResolver(
+      storeProductSchema
+    ) as Resolver<StoreProductFormValues>,
     defaultValues: getDefaultProductFormValues(),
   })
 

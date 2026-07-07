@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,10 +26,10 @@ import {
 } from "@/hooks/tenant/use-tax-class-query"
 import { type TaxClass } from "@/types/tenant/tax-class"
 import {
-  storeTaxClassSchema,
-  updateTaxClassSchema,
   type StoreTaxClassFormValues,
+  storeTaxClassSchema,
   type UpdateTaxClassFormValues,
+  updateTaxClassSchema,
 } from "@/schemas/tenant/tax-class-schema"
 
 type TaxClassesFormDialogProps = {
@@ -99,7 +99,9 @@ export function TaxClassesFormDialog({
     }
   }, [open, currentRow, form])
 
-  const onSubmit = (data: StoreTaxClassFormValues | UpdateTaxClassFormValues) => {
+  const onSubmit = (
+    data: StoreTaxClassFormValues | UpdateTaxClassFormValues
+  ) => {
     const payload = {
       ...data,
       description: data.description || null,
@@ -117,7 +119,11 @@ export function TaxClassesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update tax class")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update tax class"
+            )
           },
         }
       )

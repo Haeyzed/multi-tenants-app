@@ -24,11 +24,7 @@ type MediaAiFeaturesMenuProps = {
   processingItemId?: number | null
 }
 
-function RemoveBackgroundLabel({
-  isProcessing,
-}: {
-  isProcessing: boolean
-}) {
+function RemoveBackgroundLabel({ isProcessing }: { isProcessing: boolean }) {
   return (
     <>
       {isProcessing ? <Spinner className="size-4" /> : <ImageMinusIcon />}

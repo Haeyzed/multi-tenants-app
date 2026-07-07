@@ -15,9 +15,7 @@ type PlansViewDialogProps = {
 }
 
 function getPlanViewFields(plan: Plan): ModuleViewField[] {
-  const features = Array.isArray(plan.features)
-    ? plan.features.join(", ")
-    : "—"
+  const features = Array.isArray(plan.features) ? plan.features.join(", ") : "—"
 
   return [
     { label: "Name", value: plan.name },
@@ -53,9 +51,7 @@ function getPlanViewFields(plan: Plan): ModuleViewField[] {
     },
     {
       label: "Created",
-      value: plan.created_at
-        ? format(new Date(plan.created_at), "PPP")
-        : "—",
+      value: plan.created_at ? format(new Date(plan.created_at), "PPP") : "—",
     },
   ]
 }

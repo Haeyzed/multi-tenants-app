@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   createCustomer,
-  deleteManyCustomers,
   deleteCustomer,
+  deleteManyCustomers,
   exportCustomers,
   getCustomerOptions,
   getCustomers,

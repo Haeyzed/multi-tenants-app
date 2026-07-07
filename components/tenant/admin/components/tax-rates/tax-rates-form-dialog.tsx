@@ -7,12 +7,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,10 +39,10 @@ import { type TaxClassOption } from "@/types/tenant/tax-class"
 import { type TaxZoneOption } from "@/types/tenant/tax-zone"
 import { type TaxRate } from "@/types/tenant/tax-rate"
 import {
-  storeTaxRateSchema,
-  updateTaxRateSchema,
   type StoreTaxRateFormValues,
+  storeTaxRateSchema,
   type UpdateTaxRateFormValues,
+  updateTaxRateSchema,
 } from "@/schemas/tenant/tax-rate-schema"
 
 type TaxRatesFormDialogProps = {
@@ -156,7 +156,11 @@ export function TaxRatesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update tax rate")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update tax rate"
+            )
           },
         }
       )
@@ -368,7 +372,10 @@ export function TaxRatesFormDialog({
                   form.setValue("applies_to_shipping", !!checked)
                 }
               />
-              <label htmlFor="applies_to_shipping" className="text-sm font-medium">
+              <label
+                htmlFor="applies_to_shipping"
+                className="text-sm font-medium"
+              >
                 Applies to Shipping
               </label>
             </div>

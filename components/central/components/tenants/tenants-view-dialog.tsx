@@ -4,12 +4,12 @@ import * as React from "react"
 import { format } from "date-fns"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
-  ResponsiveDialogClose,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -77,7 +77,10 @@ export function TenantsViewDialog({
               <DetailItem label="Slug" value={tenant.slug} />
               <DetailItem label="Email" value={tenant.email} />
               <DetailItem label="Phone" value={tenant.phone} />
-              <DetailItem label="Plan" value={tenant.plan_name ?? tenant.plan} />
+              <DetailItem
+                label="Plan"
+                value={tenant.plan_name ?? tenant.plan}
+              />
               <DetailItem
                 label="Status"
                 value={

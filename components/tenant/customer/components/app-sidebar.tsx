@@ -3,9 +3,7 @@
 import { NavGroup } from "@/components/layout/nav-group"
 import { NavUser } from "@/components/tenant/customer/components/nav-user"
 import { TeamSwitcher } from "@/components/tenant/customer/components/team-switcher"
-import {
-  sidebarData,
-} from "@/components/tenant/customer/components/sidebar-data"
+import { sidebarData } from "@/components/tenant/customer/components/sidebar-data"
 import { useLayout } from "@/lib/providers/layout-provider"
 import {
   Sidebar,

@@ -100,7 +100,9 @@ export function DataTableRowActions<TData>({
                   )
                 },
                 onError: (error) => {
-                  toast.error(error.message || "Failed to update featured status")
+                  toast.error(
+                    error.message || "Failed to update featured status"
+                  )
                 },
               })
             }}

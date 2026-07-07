@@ -31,7 +31,9 @@ type ProductsContextType = {
   currentRow: Product | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Product | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
@@ -47,9 +49,8 @@ const ProductsContext = React.createContext<ProductsContextType | null>(null)
 export function ProductsProvider({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useDialogState<ProductsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Product | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
   const [bulkUpdateSelection, setBulkUpdateSelection] =

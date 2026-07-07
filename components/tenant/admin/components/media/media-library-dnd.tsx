@@ -22,10 +22,7 @@ import {
 } from "@dnd-kit/sortable"
 import * as React from "react"
 
-import {
-  SortableItem,
-  SortableItemHandle,
-} from "@/components/ui/sortable"
+import { SortableItem, SortableItemHandle } from "@/components/ui/sortable"
 import { cn } from "@/lib/utils"
 
 export type MediaLibraryDragKind = "media" | "folder"
@@ -264,7 +261,7 @@ export function MediaLibraryDragHandle({
   return (
     <SortableItemHandle
       className={cn(
-        "text-muted-foreground hover:text-foreground opacity-0 transition-opacity group-hover:opacity-100",
+        "text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-foreground",
         className
       )}
       onClick={(event) => {
@@ -305,7 +302,7 @@ export function MediaLibraryFolderDropTarget({
         className,
         isOver &&
           dnd?.enabled &&
-          "ring-2 ring-primary/50 bg-primary/10 transition-colors"
+          "bg-primary/10 ring-2 ring-primary/50 transition-colors"
       )}
     >
       {children}

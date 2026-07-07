@@ -8,7 +8,7 @@ import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { type Category } from "@/types/tenant/category"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Text } from "lucide-react"
 
 export const columns: ColumnDef<Category>[] = [
   {
@@ -39,7 +39,11 @@ export const columns: ColumnDef<Category>[] = [
     id: "image",
     header: () => <span className="text-xs font-medium">Image</span>,
     cell: ({ row }) => (
-      <MediaThumbnail media={row.original.image} alt={row.original.name} size="sm" />
+      <MediaThumbnail
+        media={row.original.image}
+        alt={row.original.name}
+        size="sm"
+      />
     ),
     size: 56,
     enableSorting: false,
@@ -49,7 +53,11 @@ export const columns: ColumnDef<Category>[] = [
     id: "banner",
     header: () => <span className="text-xs font-medium">Banner</span>,
     cell: ({ row }) => (
-      <MediaThumbnail media={row.original.banner} alt={`${row.original.name} banner`} size="sm" />
+      <MediaThumbnail
+        media={row.original.banner}
+        alt={`${row.original.name} banner`}
+        size="sm"
+      />
     ),
     size: 56,
     enableSorting: false,

@@ -1,8 +1,4 @@
-import {
-  resolveTenantApiBaseUrl,
-  TENANT_TOKEN_KEY,
-  TENANT_CUSTOMER_TOKEN_KEY,
-} from "@/lib/tenant-api-url"
+import { resolveTenantApiBaseUrl, TENANT_CUSTOMER_TOKEN_KEY, TENANT_TOKEN_KEY, } from "@/lib/tenant-api-url"
 
 export class ApiError extends Error {
   constructor(
@@ -39,70 +35,6 @@ class TenantApiClient {
 
   public getToken(): string | null {
     return this.token
-  }
-
-  private buildQueryString(
-    params?: Record<
-      string,
-      string | number | boolean | string[] | number[] | undefined
-    >
-  ): string {
-    if (!params) return ""
-
-    const searchParams = new URLSearchParams()
-    for (const [key, value] of Object.entries(params)) {
-      if (value === undefined) continue
-      if (Array.isArray(value)) {
-        for (const item of value) {
-          searchParams.append(`${key}[]`, String(item))
-        }
-        continue
-      }
-      searchParams.append(key, String(value))
-    }
-
-    const query = searchParams.toString()
-    return query ? `?${query}` : ""
-  }
-
-  private async request<T>(
-    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
-    path: string,
-    body?: unknown,
-    params?: Record<
-      string,
-      string | number | boolean | string[] | number[] | undefined
-    >
-  ): Promise<T> {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    }
-
-    if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`
-    }
-
-    const url = `${resolveTenantApiBaseUrl()}${path}${this.buildQueryString(params)}`
-
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    })
-
-    const responseData = await response.json().catch(() => null)
-
-    if (!response.ok) {
-      throw new ApiError(
-        responseData?.message ||
-          `HTTP ${response.status}: ${response.statusText}`,
-        response.status,
-        responseData?.errors
-      )
-    }
-
-    return responseData as T
   }
 
   public get<T>(
@@ -176,7 +108,9 @@ class TenantApiClient {
     const filename =
       parseFilenameFromContentDisposition(
         response.headers.get("Content-Disposition")
-      ) ?? options?.defaultFilename ?? "export.xlsx"
+      ) ??
+      options?.defaultFilename ??
+      "export.xlsx"
 
     triggerBrowserDownload(blob, filename)
     return filename
@@ -239,6 +173,70 @@ class TenantApiClient {
       method: "POST",
       headers,
       body: formData,
+    })
+
+    const responseData = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    return responseData as T
+  }
+
+  private buildQueryString(
+    params?: Record<
+      string,
+      string | number | boolean | string[] | number[] | undefined
+    >
+  ): string {
+    if (!params) return ""
+
+    const searchParams = new URLSearchParams()
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined) continue
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          searchParams.append(`${key}[]`, String(item))
+        }
+        continue
+      }
+      searchParams.append(key, String(value))
+    }
+
+    const query = searchParams.toString()
+    return query ? `?${query}` : ""
+  }
+
+  private async request<T>(
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    path: string,
+    body?: unknown,
+    params?: Record<
+      string,
+      string | number | boolean | string[] | number[] | undefined
+    >
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    const url = `${resolveTenantApiBaseUrl()}${path}${this.buildQueryString(params)}`
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
     })
 
     const responseData = await response.json().catch(() => null)

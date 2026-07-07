@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -41,10 +41,10 @@ import {
 import { type Product } from "@/types/tenant/product"
 import { type ProductFaq } from "@/types/tenant/product-nested"
 import {
-  storeProductFaqSchema,
-  updateProductFaqSchema,
   type StoreProductFaqFormValues,
+  storeProductFaqSchema,
   type UpdateProductFaqFormValues,
+  updateProductFaqSchema,
 } from "@/schemas/tenant/product-nested-schema"
 
 type ProductsManageFaqsDialogProps = {
@@ -87,7 +87,12 @@ export function ProductsManageFaqsDialog({
 
   const openCreateForm = () => {
     setEditingFaq(null)
-    form.reset({ question: "", answer: "", is_visible: true, sort_order: faqs.length })
+    form.reset({
+      question: "",
+      answer: "",
+      is_visible: true,
+      sort_order: faqs.length,
+    })
     setFormOpen(true)
   }
 
@@ -181,7 +186,9 @@ export function ProductsManageFaqsDialog({
               <TableBody>
                 {faqs.map((faq) => (
                   <TableRow key={faq.id}>
-                    <TableCell className="max-w-md truncate">{faq.question}</TableCell>
+                    <TableCell className="max-w-md truncate">
+                      {faq.question}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={faq.is_visible ? "secondary" : "outline"}>
                         {faq.is_visible ? "Visible" : "Hidden"}
@@ -252,7 +259,11 @@ export function ProductsManageFaqsDialog({
             </div>
             <ResponsiveDialogFooter>
               <ResponsiveDialogClose
-                render={<Button type="button" variant="outline">Cancel</Button>}
+                render={
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                }
               />
               <Button
                 type="submit"

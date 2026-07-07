@@ -7,9 +7,12 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { type Tenant, TenantStatus } from "@/types/central/tenant"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, CheckCircle2, Clock, AlertTriangle } from "lucide-react"
+import { AlertTriangle, CheckCircle2, Clock, Text } from "lucide-react"
 
-const statusVariantMap: Record<TenantStatus, React.ComponentProps<typeof Status>["variant"]> = {
+const statusVariantMap: Record<
+  TenantStatus,
+  React.ComponentProps<typeof Status>["variant"]
+> = {
   active: "success",
   pending: "warning",
   suspended: "error",
@@ -78,7 +81,9 @@ export const columns: ColumnDef<Tenant>[] = [
       <DataTableColumnHeader column={column} label="Email" />
     ),
     cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.getValue("email") || "—"}</span>
+      <span className="text-muted-foreground">
+        {row.getValue("email") || "—"}
+      </span>
     ),
   },
   {
@@ -87,7 +92,9 @@ export const columns: ColumnDef<Tenant>[] = [
       <DataTableColumnHeader column={column} label="Phone" />
     ),
     cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.getValue("phone") || "—"}</span>
+      <span className="text-muted-foreground">
+        {row.getValue("phone") || "—"}
+      </span>
     ),
   },
   {

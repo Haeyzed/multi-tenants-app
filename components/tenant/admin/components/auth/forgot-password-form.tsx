@@ -33,7 +33,9 @@ export function ForgotPasswordForm({
     defaultValues: { email: "" },
   })
 
-  const onSubmit = (values: z.infer<typeof tenantAdminForgotPasswordSchema>) => {
+  const onSubmit = (
+    values: z.infer<typeof tenantAdminForgotPasswordSchema>
+  ) => {
     forgotPasswordMutation.mutate(values.email, {
       onSuccess: () => {
         toast.success("Password reset OTP sent to your email")

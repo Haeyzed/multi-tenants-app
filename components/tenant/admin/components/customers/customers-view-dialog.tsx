@@ -33,7 +33,9 @@ function getCustomerViewFields(customer: Customer): ModuleViewField[] {
       value: (
         <Status variant={customer.is_active ? "success" : "default"}>
           <StatusIndicator />
-          <StatusLabel>{customer.is_active ? "Active" : "Inactive"}</StatusLabel>
+          <StatusLabel>
+            {customer.is_active ? "Active" : "Inactive"}
+          </StatusLabel>
         </Status>
       ),
     },

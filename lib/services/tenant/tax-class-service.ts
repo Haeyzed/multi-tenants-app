@@ -168,5 +168,8 @@ export const downloadTaxClassesImportSample = async (
 export const importTaxClasses = async (file: File): Promise<void> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/tax-classes/import", formData)
+  await tenantApiClient.upload<ApiResponse<void>>(
+    "/tax-classes/import",
+    formData
+  )
 }

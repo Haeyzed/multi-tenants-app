@@ -6,22 +6,22 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
+  AlertCircle,
+  CheckCircle2,
   Globe,
   Plus,
-  CheckCircle2,
-  AlertCircle,
   Star,
   Trash2,
 } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
-  ResponsiveDialogHeader,
-  ResponsiveDialogTitle,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
-  ResponsiveDialogClose,
+  ResponsiveDialogHeader,
+  ResponsiveDialogTitle,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -64,10 +64,8 @@ export function TenantsDomainDialog({
   const updateDomain = useUpdateTenantDomain()
   const verifyDomain = useVerifyTenantDomain()
   const deleteDomain = useDeleteTenantDomain()
-  const { data: domains = [], isLoading: isLoadingDomains } = useGetTenantDomains(
-    tenant.id,
-    open
-  )
+  const { data: domains = [], isLoading: isLoadingDomains } =
+    useGetTenantDomains(tenant.id, open)
   const [verifyingId, setVerifyingId] = React.useState<number | null>(null)
   const [updatingId, setUpdatingId] = React.useState<number | null>(null)
   const [deletingId, setDeletingId] = React.useState<number | null>(null)

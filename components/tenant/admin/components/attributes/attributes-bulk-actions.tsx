@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import { type Table } from "@tanstack/react-table"
-import { Trash2, Download } from "lucide-react"
+import { Download, Trash2 } from "lucide-react"
 import {
   ActionBar,
+  ActionBarClose,
   ActionBarGroup,
   ActionBarItem,
   ActionBarSelection,
-  ActionBarClose,
 } from "@/components/ui/action-bar"
 import { type Attribute } from "@/types/tenant/attribute"
 import { useAttributes } from "./attributes-provider"
@@ -20,7 +20,8 @@ type AttributesBulkActionsProps<TData> = {
 export function AttributesBulkActions<TData>({
   table,
 }: AttributesBulkActionsProps<TData>) {
-  const { setOpen, setExportSelection, setDeleteManySelection } = useAttributes()
+  const { setOpen, setExportSelection, setDeleteManySelection } =
+    useAttributes()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const onOpenChange = React.useCallback(

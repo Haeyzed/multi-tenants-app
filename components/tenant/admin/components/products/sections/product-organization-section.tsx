@@ -183,9 +183,13 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
                 itemToStringValue={(item) => item.label}
                 value={selectedPrimaryCategory}
                 onValueChange={(item) => {
-                  form.setValue("primary_category_id", item ? item.value : null, {
-                    shouldDirty: true,
-                  })
+                  form.setValue(
+                    "primary_category_id",
+                    item ? item.value : null,
+                    {
+                      shouldDirty: true,
+                    }
+                  )
                 }}
               >
                 <ComboboxInput placeholder="Select primary category..." />
@@ -295,7 +299,10 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
                           toggleLabel(label.value, !!checked)
                         }
                       />
-                      <label htmlFor={`label-${label.value}`} className="text-sm">
+                      <label
+                        htmlFor={`label-${label.value}`}
+                        className="text-sm"
+                      >
                         {label.label}
                       </label>
                     </div>
@@ -374,7 +381,9 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         open={labelDialogOpen}
         onOpenChange={setLabelDialogOpen}
         onCreated={(label) => {
-          void queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+          void queryClient.invalidateQueries({
+            queryKey: ["productLabelOptions"],
+          })
           toggleLabel(label.id, true)
         }}
       />
@@ -382,7 +391,9 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         open={collectionDialogOpen}
         onOpenChange={setCollectionDialogOpen}
         onCreated={(collection) => {
-          void queryClient.invalidateQueries({ queryKey: ["collectionOptions"] })
+          void queryClient.invalidateQueries({
+            queryKey: ["collectionOptions"],
+          })
           toggleCollection(collection.id, true)
         }}
       />

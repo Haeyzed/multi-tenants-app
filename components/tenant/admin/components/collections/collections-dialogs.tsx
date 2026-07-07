@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { useDeleteCollection } from "@/hooks/tenant/use-collection-query"
 import { exportCollections } from "@/lib/services/tenant/collection-service"
@@ -152,7 +152,9 @@ export function CollectionsDialogs() {
           >
             <ResponsiveDialogContent>
               <ResponsiveDialogHeader>
-                <ResponsiveDialogTitle>Delete collection?</ResponsiveDialogTitle>
+                <ResponsiveDialogTitle>
+                  Delete collection?
+                </ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to delete a collection with the ID{" "}
                   <strong>{currentRow.id}</strong>. This action cannot be

@@ -9,9 +9,15 @@ const baseCustomerGroupSchema = z.object({
 
 export const storeCustomerGroupSchema = baseCustomerGroupSchema
 
-export const updateCustomerGroupSchema = baseCustomerGroupSchema.partial().extend({
-  name: z.string().min(1, "Name is required").max(255).optional(),
-})
+export const updateCustomerGroupSchema = baseCustomerGroupSchema
+  .partial()
+  .extend({
+    name: z.string().min(1, "Name is required").max(255).optional(),
+  })
 
-export type StoreCustomerGroupFormValues = z.infer<typeof storeCustomerGroupSchema>
-export type UpdateCustomerGroupFormValues = z.infer<typeof updateCustomerGroupSchema>
+export type StoreCustomerGroupFormValues = z.infer<
+  typeof storeCustomerGroupSchema
+>
+export type UpdateCustomerGroupFormValues = z.infer<
+  typeof updateCustomerGroupSchema
+>

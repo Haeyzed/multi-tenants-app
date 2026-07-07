@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,10 +26,10 @@ import {
 } from "@/hooks/tenant/use-attribute-set-query"
 import { type AttributeSet } from "@/types/tenant/attribute-set"
 import {
-  storeAttributeSetSchema,
-  updateAttributeSetSchema,
   type StoreAttributeSetFormValues,
+  storeAttributeSetSchema,
   type UpdateAttributeSetFormValues,
+  updateAttributeSetSchema,
 } from "@/schemas/tenant/attribute-set-schema"
 
 type AttributeSetsFormDialogProps = {
@@ -51,11 +51,14 @@ export function AttributeSetsFormDialog({
   const isUpdate = !!currentRow
   const createAttributeSet = useCreateAttributeSet()
   const updateAttributeSet = useUpdateAttributeSet()
-  const isSubmitting = createAttributeSet.isPending || updateAttributeSet.isPending
+  const isSubmitting =
+    createAttributeSet.isPending || updateAttributeSet.isPending
 
   const schema = isUpdate ? updateAttributeSetSchema : storeAttributeSetSchema
 
-  const form = useForm<StoreAttributeSetFormValues | UpdateAttributeSetFormValues>({
+  const form = useForm<
+    StoreAttributeSetFormValues | UpdateAttributeSetFormValues
+  >({
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
@@ -162,7 +165,10 @@ export function AttributeSetsFormDialog({
           <Field>
             <FieldLabel>Name *</FieldLabel>
             <FieldContent>
-              <Input placeholder="Attribute set name" {...form.register("name")} />
+              <Input
+                placeholder="Attribute set name"
+                {...form.register("name")}
+              />
               <FieldError message={form.formState.errors.name?.message} />
             </FieldContent>
           </Field>
@@ -174,7 +180,9 @@ export function AttributeSetsFormDialog({
                 placeholder="Attribute set description..."
                 {...form.register("description")}
               />
-              <FieldError message={form.formState.errors.description?.message} />
+              <FieldError
+                message={form.formState.errors.description?.message}
+              />
             </FieldContent>
           </Field>
 
@@ -192,7 +200,9 @@ export function AttributeSetsFormDialog({
             <Checkbox
               id="is_active"
               checked={form.watch("is_active")}
-              onCheckedChange={(checked) => form.setValue("is_active", !!checked)}
+              onCheckedChange={(checked) =>
+                form.setValue("is_active", !!checked)
+              }
             />
             <label htmlFor="is_active" className="text-sm font-medium">
               Active
@@ -204,7 +214,11 @@ export function AttributeSetsFormDialog({
           <ResponsiveDialogClose
             render={<Button variant="outline">Close</Button>}
           />
-          <Button type="submit" form="attribute-sets-form" disabled={isSubmitting}>
+          <Button
+            type="submit"
+            form="attribute-sets-form"
+            disabled={isSubmitting}
+          >
             {isSubmitting && <Spinner />}
             {isSubmitting
               ? "Saving..."

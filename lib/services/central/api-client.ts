@@ -22,51 +22,6 @@ class ApiClient {
     return this.token
   }
 
-  private async request<T>(
-    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
-    path: string,
-    body?: unknown,
-    params?: Record<string, any>
-  ): Promise<T> {
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    }
-
-    if (this.token) {
-      headers["Authorization"] = `Bearer ${this.token}`
-    }
-
-    let url = `${this.baseURL}${path}`
-    if (params) {
-      const filteredParams = Object.fromEntries(
-        Object.entries(params).filter(([, v]) => v !== undefined && v !== null)
-      )
-      const query = new URLSearchParams(filteredParams).toString()
-      if (query) url += `?${query}`
-    }
-
-    const response = await fetch(url, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
-    })
-
-    const responseData = await response.json().catch(() => null)
-
-    if (!response.ok) {
-      throw new ApiError(
-        responseData?.message ||
-          `HTTP ${response.status}: ${response.statusText}`,
-        response.status,
-        responseData?.errors
-      )
-    }
-
-    // Return the FULL response body (including success, message, data, meta)
-    return responseData as T
-  }
-
   public get<T>(path: string, params?: Record<string, any>): Promise<T> {
     return this.request<T>("GET", path, undefined, params)
   }
@@ -135,7 +90,9 @@ class ApiClient {
     const filename =
       parseFilenameFromContentDisposition(
         response.headers.get("Content-Disposition")
-      ) ?? options?.defaultFilename ?? "export.xlsx"
+      ) ??
+      options?.defaultFilename ??
+      "export.xlsx"
 
     triggerBrowserDownload(blob, filename)
     return filename
@@ -218,6 +175,51 @@ class ApiClient {
       )
     }
 
+    return responseData as T
+  }
+
+  private async request<T>(
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    path: string,
+    body?: unknown,
+    params?: Record<string, any>
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    }
+
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`
+    }
+
+    let url = `${this.baseURL}${path}`
+    if (params) {
+      const filteredParams = Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v !== undefined && v !== null)
+      )
+      const query = new URLSearchParams(filteredParams).toString()
+      if (query) url += `?${query}`
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    })
+
+    const responseData = await response.json().catch(() => null)
+
+    if (!response.ok) {
+      throw new ApiError(
+        responseData?.message ||
+          `HTTP ${response.status}: ${response.statusText}`,
+        response.status,
+        responseData?.errors
+      )
+    }
+
+    // Return the FULL response body (including success, message, data, meta)
     return responseData as T
   }
 }

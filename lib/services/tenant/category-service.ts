@@ -3,7 +3,7 @@ import {
   CategoryOption,
   CategoryTreeNode,
 } from "@/types/tenant/category"
-import { ExportParams, CategoryStatistics } from "@/types/tenant/export"
+import { CategoryStatistics, ExportParams } from "@/types/tenant/export"
 import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -30,7 +30,9 @@ function normalizeCategory(category: Category): Category {
     image: normalizeEmbeddedMedia(category.image),
     banner: normalizeEmbeddedMedia(category.banner),
     icon: normalizeEmbeddedMedia(category.icon),
-    parent: category.parent ? normalizeCategory(category.parent) : category.parent,
+    parent: category.parent
+      ? normalizeCategory(category.parent)
+      : category.parent,
   }
 }
 
@@ -72,16 +74,17 @@ export const getCategoryBySlug = async (slug: string): Promise<Category> => {
 }
 
 export const getCategoryTree = async (): Promise<CategoryTreeNode[]> => {
-  const response = await tenantApiClient.get<
-    ApiResponse<{ tree: CategoryTreeNode[] }>
-  >("/categories/tree")
+  const response =
+    await tenantApiClient.get<ApiResponse<{ tree: CategoryTreeNode[] }>>(
+      "/categories/tree"
+    )
   return response.data.tree
 }
 
 export const getCategoryTreeSelect = async (): Promise<CategoryOption[]> => {
-  const response = await tenantApiClient.get<ApiResponse<Record<string, string>>>(
-    "/categories/tree-select"
-  )
+  const response = await tenantApiClient.get<
+    ApiResponse<Record<string, string>>
+  >("/categories/tree-select")
 
   return Object.entries(response.data).map(([id, label]) => ({
     value: Number(id),
@@ -114,7 +117,9 @@ export const deleteCategory = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/categories/${id}`)
 }
 
-export const toggleCategoryVisibility = async (id: number): Promise<Category> => {
+export const toggleCategoryVisibility = async (
+  id: number
+): Promise<Category> => {
   const response = await tenantApiClient.post<ApiResponse<Category>>(
     `/categories/${id}/toggle-visibility`
   )
@@ -185,5 +190,8 @@ export const downloadCategoriesImportSample = async (
 export const importCategories = async (file: File): Promise<void> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/categories/import", formData)
+  await tenantApiClient.upload<ApiResponse<void>>(
+    "/categories/import",
+    formData
+  )
 }

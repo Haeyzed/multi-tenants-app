@@ -2,7 +2,7 @@
 
 import { useGetTaxZoneStatistics } from "@/hooks/tenant/use-tax-zone-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Globe, CheckCircle, XCircle, Star } from "lucide-react"
+import { CheckCircle, Globe, Star, XCircle } from "lucide-react"
 
 export function TaxZoneStatistics() {
   const { data: stats, isLoading } = useGetTaxZoneStatistics()

@@ -5,11 +5,7 @@ import { useEffect } from "react"
 import { useCustomerAuth } from "@/lib/providers/tenant/customer-auth-provider"
 import { tenantCustomerApiClient } from "@/lib/services/tenant/api-client"
 
-export function CustomerAuthGuard({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export function CustomerAuthGuard({ children }: { children: React.ReactNode }) {
   const { profile, isLoading } = useCustomerAuth()
   const router = useRouter()
 

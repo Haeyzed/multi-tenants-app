@@ -2,7 +2,7 @@
 
 import { useGetTagStatistics } from "@/hooks/tenant/use-tag-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tags, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Tags } from "lucide-react"
 
 export function TagStatistics() {
   const { data: stats, isLoading } = useGetTagStatistics()

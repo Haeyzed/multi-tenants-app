@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -37,10 +37,10 @@ import {
 } from "@/hooks/tenant/use-product-label-query"
 import { type ProductLabel } from "@/types/tenant/product-label"
 import {
-  storeProductLabelSchema,
-  updateProductLabelSchema,
   type StoreProductLabelFormValues,
+  storeProductLabelSchema,
   type UpdateProductLabelFormValues,
+  updateProductLabelSchema,
 } from "@/schemas/tenant/product-label-schema"
 
 type ProductLabelsFormDialogProps = {
@@ -134,19 +134,19 @@ export function ProductLabelsFormDialog({
 
   const schema = isUpdate ? updateProductLabelSchema : storeProductLabelSchema
 
-  const form = useForm<StoreProductLabelFormValues | UpdateProductLabelFormValues>(
-    {
-      resolver: zodResolver(schema),
-      defaultValues: {
-        name: "",
-        color: "",
-        background_color: "",
-        icon: "",
-        is_active: true,
-        sort_order: 0,
-      },
-    }
-  )
+  const form = useForm<
+    StoreProductLabelFormValues | UpdateProductLabelFormValues
+  >({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      color: "",
+      background_color: "",
+      icon: "",
+      is_active: true,
+      sort_order: 0,
+    },
+  })
 
   React.useEffect(() => {
     if (!open) return

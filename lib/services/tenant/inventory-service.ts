@@ -127,12 +127,13 @@ export const getInventoryMovements = async (params?: {
   }
 }
 
-export const getInventoryStatistics = async (): Promise<InventoryStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<InventoryStatistics>>(
-    "/inventories/statistics"
-  )
-  return response.data
-}
+export const getInventoryStatistics =
+  async (): Promise<InventoryStatistics> => {
+    const response = await tenantApiClient.get<
+      ApiResponse<InventoryStatistics>
+    >("/inventories/statistics")
+    return response.data
+  }
 
 export const getStockAlerts = async (params?: {
   search?: string

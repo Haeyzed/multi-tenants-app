@@ -2,7 +2,7 @@
 
 import { useGetAttributeSetStatistics } from "@/hooks/tenant/use-attribute-set-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Layers, CheckCircle, XCircle } from "lucide-react"
+import { CheckCircle, Layers, XCircle } from "lucide-react"
 
 export function AttributeSetStatistics() {
   const { data: stats, isLoading } = useGetAttributeSetStatistics()

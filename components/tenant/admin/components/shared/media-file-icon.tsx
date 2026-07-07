@@ -1,6 +1,6 @@
 "use client"
 
-import { FileIcon, defaultStyles } from "react-file-icon"
+import { defaultStyles, FileIcon } from "react-file-icon"
 
 import {
   getMediaFileExtension,

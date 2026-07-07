@@ -17,8 +17,8 @@ import { type StoreProductFormValues } from "@/schemas/tenant/product-schema"
 import {
   FieldError,
   productConditionOptions,
-  productTypeOptions,
   type ProductFormSectionProps,
+  productTypeOptions,
 } from "./product-form-shared"
 
 type ProductBasicSectionProps = ProductFormSectionProps & {
@@ -162,7 +162,9 @@ export function ProductBasicSection({
             <RichTextEditor
               value={form.watch("description") ?? ""}
               onChange={(html) =>
-                form.setValue("description", html || null, { shouldDirty: true })
+                form.setValue("description", html || null, {
+                  shouldDirty: true,
+                })
               }
               placeholder="Full product description..."
             />

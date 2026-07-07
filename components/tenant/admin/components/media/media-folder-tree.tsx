@@ -25,7 +25,10 @@ import {
 } from "@/components/ui/context-menu"
 
 function runMenuAction(action: () => void) {
-  return (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+  return (event: {
+    preventDefault: () => void
+    stopPropagation: () => void
+  }) => {
     event.preventDefault()
     event.stopPropagation()
     action()
@@ -201,7 +204,7 @@ function FolderTreeNode({
         )}
         {folderLabel}
       </div>
-      <span className="w-6 shrink-0 pe-0.5 text-end text-xs tabular-nums text-muted-foreground">
+      <span className="w-6 shrink-0 pe-0.5 text-end text-xs text-muted-foreground tabular-nums">
         {node.media_count}
       </span>
     </div>

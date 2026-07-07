@@ -6,7 +6,8 @@ const optionalUrl = z
   .nullable()
   .optional()
   .refine(
-    (value) => !value || value === "" || z.string().url().safeParse(value).success,
+    (value) =>
+      !value || value === "" || z.string().url().safeParse(value).success,
     { message: "Must be a valid URL" }
   )
 
@@ -50,9 +51,11 @@ export const storeSupplierContactSchema = z.object({
   is_primary: z.boolean().optional(),
 })
 
-export const updateSupplierContactSchema = storeSupplierContactSchema.partial().extend({
-  name: z.string().min(1, "Name is required").max(255).optional(),
-})
+export const updateSupplierContactSchema = storeSupplierContactSchema
+  .partial()
+  .extend({
+    name: z.string().min(1, "Name is required").max(255).optional(),
+  })
 
 export const storeSupplierAddressSchema = z.object({
   type: z.enum(["office", "billing", "shipping"]).optional(),
@@ -65,11 +68,17 @@ export const storeSupplierAddressSchema = z.object({
   is_default: z.boolean().optional(),
 })
 
-export const updateSupplierAddressSchema = storeSupplierAddressSchema.partial().extend({
-  address_line_1: z.string().min(1, "Address line 1 is required").max(255).optional(),
-  city: z.string().min(1, "City is required").max(255).optional(),
-  country: z.string().length(2, "Country must be a 2-letter code").optional(),
-})
+export const updateSupplierAddressSchema = storeSupplierAddressSchema
+  .partial()
+  .extend({
+    address_line_1: z
+      .string()
+      .min(1, "Address line 1 is required")
+      .max(255)
+      .optional(),
+    city: z.string().min(1, "City is required").max(255).optional(),
+    country: z.string().length(2, "Country must be a 2-letter code").optional(),
+  })
 
 export const storeSupplierBankAccountSchema = z.object({
   account_name: z.string().min(1, "Account name is required").max(255),
@@ -82,19 +91,36 @@ export const storeSupplierBankAccountSchema = z.object({
   is_default: z.boolean().optional(),
 })
 
-export const updateSupplierBankAccountSchema =
-  storeSupplierBankAccountSchema.partial().extend({
-    account_name: z.string().min(1, "Account name is required").max(255).optional(),
-    account_number: z.string().min(1, "Account number is required").max(50).optional(),
+export const updateSupplierBankAccountSchema = storeSupplierBankAccountSchema
+  .partial()
+  .extend({
+    account_name: z
+      .string()
+      .min(1, "Account name is required")
+      .max(255)
+      .optional(),
+    account_number: z
+      .string()
+      .min(1, "Account number is required")
+      .max(50)
+      .optional(),
     bank_name: z.string().min(1, "Bank name is required").max(255).optional(),
   })
 
 export type StoreSupplierFormValues = z.infer<typeof storeSupplierSchema>
 export type UpdateSupplierFormValues = z.infer<typeof updateSupplierSchema>
-export type StoreSupplierContactFormValues = z.infer<typeof storeSupplierContactSchema>
-export type UpdateSupplierContactFormValues = z.infer<typeof updateSupplierContactSchema>
-export type StoreSupplierAddressFormValues = z.infer<typeof storeSupplierAddressSchema>
-export type UpdateSupplierAddressFormValues = z.infer<typeof updateSupplierAddressSchema>
+export type StoreSupplierContactFormValues = z.infer<
+  typeof storeSupplierContactSchema
+>
+export type UpdateSupplierContactFormValues = z.infer<
+  typeof updateSupplierContactSchema
+>
+export type StoreSupplierAddressFormValues = z.infer<
+  typeof storeSupplierAddressSchema
+>
+export type UpdateSupplierAddressFormValues = z.infer<
+  typeof updateSupplierAddressSchema
+>
 export type StoreSupplierBankAccountFormValues = z.infer<
   typeof storeSupplierBankAccountSchema
 >

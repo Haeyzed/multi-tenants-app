@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,10 +26,10 @@ import {
 } from "@/hooks/tenant/use-supplier-query"
 import { type Supplier } from "@/types/tenant/supplier"
 import {
-  storeSupplierSchema,
-  updateSupplierSchema,
   type StoreSupplierFormValues,
+  storeSupplierSchema,
   type UpdateSupplierFormValues,
+  updateSupplierSchema,
 } from "@/schemas/tenant/supplier-schema"
 
 type SupplierFormDialogProps = {
@@ -111,7 +111,9 @@ export function SuppliersFormDialog({
     }
   }, [open, currentRow, form])
 
-  const onSubmit = (data: StoreSupplierFormValues | UpdateSupplierFormValues) => {
+  const onSubmit = (
+    data: StoreSupplierFormValues | UpdateSupplierFormValues
+  ) => {
     const payload = {
       ...data,
       description: data.description || null,
@@ -133,7 +135,11 @@ export function SuppliersFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update supplier")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update supplier"
+            )
           },
         }
       )
@@ -172,11 +178,11 @@ export function SuppliersFormDialog({
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
-          <form
-            id="suppliers-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-          >
+        <form
+          id="suppliers-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <Field>
             <FieldLabel>Name *</FieldLabel>
             <FieldContent>
@@ -289,7 +295,7 @@ export function SuppliersFormDialog({
               Active
             </label>
           </div>
-          </form>
+        </form>
 
         <ResponsiveDialogFooter>
           <ResponsiveDialogClose

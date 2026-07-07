@@ -2,7 +2,7 @@
 
 import { useGetCategoryStatistics } from "@/hooks/tenant/use-category-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tags, Eye, EyeOff, FolderTree } from "lucide-react"
+import { Eye, EyeOff, FolderTree, Tags } from "lucide-react"
 
 export function CategoryStatistics() {
   const { data: stats, isLoading } = useGetCategoryStatistics()

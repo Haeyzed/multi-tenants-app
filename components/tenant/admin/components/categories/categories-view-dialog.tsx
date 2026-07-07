@@ -5,8 +5,8 @@ import { format } from "date-fns"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import {
   ModuleViewDialog,
-  ModuleViewVisibility,
   type ModuleViewField,
+  ModuleViewVisibility,
 } from "@/components/tenant/admin/components/shared/module-view-dialog"
 import { type Category } from "@/types/tenant/category"
 
@@ -74,7 +74,11 @@ function getCategoryViewFields(category: Category): ModuleViewField[] {
     {
       label: "Icon",
       value: category.icon?.url ? (
-        <MediaThumbnail media={category.icon} alt={`${category.name} icon`} size="md" />
+        <MediaThumbnail
+          media={category.icon}
+          alt={`${category.name} icon`}
+          size="md"
+        />
       ) : (
         "—"
       ),

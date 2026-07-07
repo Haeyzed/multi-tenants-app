@@ -15,8 +15,7 @@ type CustomerGroupsViewDialogProps = {
 }
 
 function getCustomerGroupViewFields(group: CustomerGroup): ModuleViewField[] {
-  const discount =
-    group.discount_percentage ?? group.discount_percent ?? "0"
+  const discount = group.discount_percentage ?? group.discount_percent ?? "0"
 
   return [
     { label: "Name", value: group.name },
@@ -39,9 +38,7 @@ function getCustomerGroupViewFields(group: CustomerGroup): ModuleViewField[] {
     { label: "Customers", value: String(group.customers_count ?? 0) },
     {
       label: "Created",
-      value: group.created_at
-        ? format(new Date(group.created_at), "PPP")
-        : "—",
+      value: group.created_at ? format(new Date(group.created_at), "PPP") : "—",
     },
   ]
 }

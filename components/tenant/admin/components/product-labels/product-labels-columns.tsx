@@ -7,7 +7,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { type ProductLabel } from "@/types/tenant/product-label"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Text } from "lucide-react"
 
 function ColorCell({ color }: { color: string | null }) {
   if (!color) {
@@ -101,7 +101,9 @@ export const columns: ColumnDef<ProductLabel>[] = [
       <DataTableColumnHeader column={column} label="Icon" />
     ),
     cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.getValue("icon") || "—"}</span>
+      <span className="text-muted-foreground">
+        {row.getValue("icon") || "—"}
+      </span>
     ),
   },
   {

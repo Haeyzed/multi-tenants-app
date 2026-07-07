@@ -38,8 +38,8 @@ import {
 import { type Product } from "@/types/tenant/product"
 import { type ProductReview } from "@/types/tenant/product-nested"
 import {
-  updateProductReviewSchema,
   type UpdateProductReviewFormValues,
+  updateProductReviewSchema,
 } from "@/schemas/tenant/product-nested-schema"
 
 type ProductsManageReviewsDialogProps = {
@@ -53,10 +53,15 @@ export function ProductsManageReviewsDialog({
   onOpenChange,
   product,
 }: ProductsManageReviewsDialogProps) {
-  const { data: reviews = [], isLoading } = useGetProductReviews(product.id, open)
+  const { data: reviews = [], isLoading } = useGetProductReviews(
+    product.id,
+    open
+  )
   const updateReview = useUpdateProductReview(product.id)
   const deleteReview = useDeleteProductReview(product.id)
-  const [selectedReview, setSelectedReview] = useState<ProductReview | null>(null)
+  const [selectedReview, setSelectedReview] = useState<ProductReview | null>(
+    null
+  )
 
   const form = useForm<UpdateProductReviewFormValues>({
     resolver: zodResolver(updateProductReviewSchema),
@@ -124,7 +129,9 @@ export function ProductsManageReviewsDialog({
                       {review.author_name ?? review.author_email ?? "—"}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={review.is_approved ? "secondary" : "outline"}>
+                      <Badge
+                        variant={review.is_approved ? "secondary" : "outline"}
+                      >
                         {review.is_approved ? "Approved" : "Pending"}
                       </Badge>
                     </TableCell>
@@ -146,8 +153,12 @@ export function ProductsManageReviewsDialog({
                           onClick={() =>
                             deleteReview.mutate(review.id, {
                               onSuccess: (response) =>
-                                toastApiSuccess(response.message, "Review deleted"),
-                              onError: () => toast.error("Failed to delete review"),
+                                toastApiSuccess(
+                                  response.message,
+                                  "Review deleted"
+                                ),
+                              onError: () =>
+                                toast.error("Failed to delete review"),
                             })
                           }
                         >

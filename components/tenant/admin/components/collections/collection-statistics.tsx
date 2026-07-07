@@ -2,7 +2,7 @@
 
 import { useGetCollectionStatistics } from "@/hooks/tenant/use-collection-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { FolderOpen, Eye, Star } from "lucide-react"
+import { Eye, FolderOpen, Star } from "lucide-react"
 
 export function CollectionStatistics() {
   const { data: stats, isLoading } = useGetCollectionStatistics()

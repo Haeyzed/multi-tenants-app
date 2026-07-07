@@ -26,7 +26,10 @@ export const getUnits = async (params?: {
   per_page?: number
   page?: number
 }): Promise<PaginatedResponse<Unit>> => {
-  const response = await tenantApiClient.get<ApiResponse<Unit[]>>("/units", params)
+  const response = await tenantApiClient.get<ApiResponse<Unit[]>>(
+    "/units",
+    params
+  )
   return {
     data: response.data,
     meta: response.meta || {
@@ -85,7 +88,9 @@ export const setBaseUnit = async (id: number): Promise<Unit> => {
   return response.data
 }
 
-export const getUnitOptions = async (type?: UnitType): Promise<UnitOption[]> => {
+export const getUnitOptions = async (
+  type?: UnitType
+): Promise<UnitOption[]> => {
   const response = await tenantApiClient.get<ApiResponse<UnitOption[]>>(
     "/units/options",
     type ? { type } : undefined
@@ -101,9 +106,8 @@ export const getUnitTypeOptions = async (): Promise<UnitTypeOption[]> => {
 }
 
 export const getUnitStatistics = async (): Promise<UnitStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<UnitStatistics>>(
-    "/units/statistics"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<UnitStatistics>>("/units/statistics")
   return response.data
 }
 

@@ -23,14 +23,18 @@ function useMediaUploadContext() {
   const context = React.useContext(MediaUploadContext)
 
   if (!context) {
-    throw new Error("Media upload components must be used within MediaUploadZone.")
+    throw new Error(
+      "Media upload components must be used within MediaUploadZone."
+    )
   }
 
   return context
 }
 
-interface MediaUploadTriggerProps
-  extends Omit<React.ComponentProps<typeof Button>, "onClick"> {
+interface MediaUploadTriggerProps extends Omit<
+  React.ComponentProps<typeof Button>,
+  "onClick"
+> {
   pending?: boolean
 }
 
@@ -211,7 +215,7 @@ export function MediaUploadZone({
           aria-disabled={disabled}
           tabIndex={disabled ? undefined : 0}
           className={cn(
-            "relative min-h-[12rem] rounded-lg border-2 border-dashed border-transparent p-1 outline-none transition-colors",
+            "relative min-h-[12rem] rounded-lg border-2 border-dashed border-transparent p-1 transition-colors outline-none",
             dragOver && "border-primary/40 bg-accent/15",
             disabled && "cursor-default"
           )}

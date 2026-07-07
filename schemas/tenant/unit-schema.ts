@@ -8,10 +8,15 @@ const baseUnitSchema = z.object({
     .string()
     .min(1, "Code is required")
     .max(50)
-    .regex(/^[a-z0-9_-]+$/, "Code must be lowercase letters, numbers, hyphens, or underscores"),
+    .regex(
+      /^[a-z0-9_-]+$/,
+      "Code must be lowercase letters, numbers, hyphens, or underscores"
+    ),
   symbol: z.string().min(1, "Symbol is required").max(20),
   type: unitTypeSchema,
-  conversion_factor: z.coerce.number().gt(0, "Conversion factor must be greater than 0"),
+  conversion_factor: z.coerce
+    .number()
+    .gt(0, "Conversion factor must be greater than 0"),
   is_base: z.boolean().optional(),
   sort_order: z.number().min(0).nullable().optional(),
 })
@@ -24,7 +29,10 @@ export const updateUnitSchema = baseUnitSchema.partial().extend({
     .string()
     .min(1, "Code is required")
     .max(50)
-    .regex(/^[a-z0-9_-]+$/, "Code must be lowercase letters, numbers, hyphens, or underscores")
+    .regex(
+      /^[a-z0-9_-]+$/,
+      "Code must be lowercase letters, numbers, hyphens, or underscores"
+    )
     .optional(),
   symbol: z.string().min(1, "Symbol is required").max(20).optional(),
   type: unitTypeSchema.optional(),

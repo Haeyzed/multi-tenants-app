@@ -4,12 +4,12 @@ import * as React from "react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -152,7 +152,10 @@ export function AttributeSetsManageAttributesDialog({
           <ResponsiveDialogClose
             render={<Button variant="outline">Cancel</Button>}
           />
-          <Button onClick={handleSave} disabled={syncAttributes.isPending || isLoading}>
+          <Button
+            onClick={handleSave}
+            disabled={syncAttributes.isPending || isLoading}
+          >
             {syncAttributes.isPending && <Spinner />}
             Save
           </Button>

@@ -50,7 +50,9 @@ type ProductDocumentsSectionProps = {
   product: Product
 }
 
-function resolveDocumentMedia(productDocument: ProductDocument): MediaItem | null {
+function resolveDocumentMedia(
+  productDocument: ProductDocument
+): MediaItem | null {
   const source = productDocument.media
   const url = source?.url
     ? resolveTenantMediaUrl(source)
@@ -79,7 +81,9 @@ function resolveDocumentMedia(productDocument: ProductDocument): MediaItem | nul
   }
 }
 
-export function ProductDocumentsSection({ product }: ProductDocumentsSectionProps) {
+export function ProductDocumentsSection({
+  product,
+}: ProductDocumentsSectionProps) {
   const { data: documents = [] as ProductDocument[], isLoading } =
     useGetProductDocuments(product.id)
   const createDocument = useCreateProductDocument(product.id)
@@ -149,8 +153,9 @@ export function ProductDocumentsSection({ product }: ProductDocumentsSectionProp
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Attach manuals, datasheets, certificates, or warranty files (PDF, Word,
-          Excel, PowerPoint, and more). Separate from digital download files.
+          Attach manuals, datasheets, certificates, or warranty files (PDF,
+          Word, Excel, PowerPoint, and more). Separate from digital download
+          files.
         </p>
 
         <div className="space-y-3 rounded-lg border p-4">
@@ -240,7 +245,9 @@ export function ProductDocumentsSection({ product }: ProductDocumentsSectionProp
                   <TableCell className="capitalize">
                     {productDocument.document_type}
                   </TableCell>
-                  <TableCell>{productDocument.is_public ? "Yes" : "No"}</TableCell>
+                  <TableCell>
+                    {productDocument.is_public ? "Yes" : "No"}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Button
@@ -260,7 +267,10 @@ export function ProductDocumentsSection({ product }: ProductDocumentsSectionProp
                         onClick={() =>
                           deleteDocument.mutate(productDocument.id, {
                             onSuccess: (response) =>
-                              toastApiSuccess(response.message, "Document removed"),
+                              toastApiSuccess(
+                                response.message,
+                                "Document removed"
+                              ),
                             onError: (error) =>
                               toastApiError(error, "Failed to remove document"),
                           })

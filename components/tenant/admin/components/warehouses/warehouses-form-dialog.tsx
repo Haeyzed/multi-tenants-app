@@ -7,12 +7,12 @@ import { toast } from "sonner"
 import { MapPin } from "lucide-react"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,10 +27,10 @@ import {
 } from "@/hooks/tenant/use-warehouse-query"
 import { type Warehouse } from "@/types/tenant/warehouse"
 import {
-  storeWarehouseSchema,
-  updateWarehouseSchema,
   type StoreWarehouseFormValues,
+  storeWarehouseSchema,
   type UpdateWarehouseFormValues,
+  updateWarehouseSchema,
 } from "@/schemas/tenant/warehouse-schema"
 import { TaxZoneMapDialog } from "@/components/tenant/admin/components/tax-zones/tax-zone-map-dialog"
 
@@ -184,7 +184,11 @@ export function WarehousesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update warehouse")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update warehouse"
+            )
           },
         }
       )
@@ -224,11 +228,11 @@ export function WarehousesFormDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-            <form
-              id="warehouses-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
+          <form
+            id="warehouses-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <Field>
               <FieldLabel>Name *</FieldLabel>
               <FieldContent>
@@ -302,7 +306,10 @@ export function WarehousesFormDialog({
               <Field>
                 <FieldLabel>Postal Code</FieldLabel>
                 <FieldContent>
-                  <Input placeholder="SW1A 1AA" {...form.register("postal_code")} />
+                  <Input
+                    placeholder="SW1A 1AA"
+                    {...form.register("postal_code")}
+                  />
                 </FieldContent>
               </Field>
               <Field>
@@ -314,13 +321,18 @@ export function WarehousesFormDialog({
                     className="font-mono uppercase"
                     {...form.register("country")}
                   />
-                  <FieldError message={form.formState.errors.country?.message} />
+                  <FieldError
+                    message={form.formState.errors.country?.message}
+                  />
                 </FieldContent>
               </Field>
               <Field>
                 <FieldLabel>Phone</FieldLabel>
                 <FieldContent>
-                  <Input placeholder="+1 555 000 0000" {...form.register("phone")} />
+                  <Input
+                    placeholder="+1 555 000 0000"
+                    {...form.register("phone")}
+                  />
                 </FieldContent>
               </Field>
               <Field>
@@ -417,13 +429,17 @@ export function WarehousesFormDialog({
                 </label>
               </div>
             </div>
-            </form>
+          </form>
 
           <ResponsiveDialogFooter>
             <ResponsiveDialogClose
               render={<Button variant="outline">Close</Button>}
             />
-            <Button type="submit" form="warehouses-form" disabled={isSubmitting}>
+            <Button
+              type="submit"
+              form="warehouses-form"
+              disabled={isSubmitting}
+            >
               {isSubmitting && <Spinner />}
               {isSubmitting
                 ? "Saving..."

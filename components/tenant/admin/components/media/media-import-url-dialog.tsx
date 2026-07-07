@@ -89,7 +89,9 @@ export function MediaImportUrlDialog({
               />
             </Field>
             <Field>
-              <FieldLabel htmlFor="media-import-title">Title (optional)</FieldLabel>
+              <FieldLabel htmlFor="media-import-title">
+                Title (optional)
+              </FieldLabel>
               <Input
                 id="media-import-title"
                 value={title}

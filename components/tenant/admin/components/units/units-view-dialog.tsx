@@ -21,23 +21,21 @@ function getUnitViewFields(unit: Unit): ModuleViewField[] {
     { label: "Symbol", value: unit.symbol },
     {
       label: "Type",
-      value: <Badge variant="outline" className="capitalize">{unit.type}</Badge>,
+      value: (
+        <Badge variant="outline" className="capitalize">
+          {unit.type}
+        </Badge>
+      ),
     },
     { label: "Conversion factor", value: String(unit.conversion_factor) },
     {
       label: "Base unit",
-      value: unit.is_base ? (
-        <Badge variant="secondary">Base</Badge>
-      ) : (
-        "No"
-      ),
+      value: unit.is_base ? <Badge variant="secondary">Base</Badge> : "No",
     },
     { label: "Sort order", value: String(unit.sort_order ?? 0) },
     {
       label: "Created",
-      value: unit.created_at
-        ? format(new Date(unit.created_at), "PPP")
-        : "—",
+      value: unit.created_at ? format(new Date(unit.created_at), "PPP") : "—",
     },
   ]
 }

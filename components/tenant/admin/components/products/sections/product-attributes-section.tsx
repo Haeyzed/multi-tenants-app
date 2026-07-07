@@ -26,12 +26,13 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { useGetAttributeSetAttributes, useGetAttributeSetOptions } from "@/hooks/tenant/use-attribute-set-query"
+import {
+  useGetAttributeSetAttributes,
+  useGetAttributeSetOptions,
+} from "@/hooks/tenant/use-attribute-set-query"
 import { useGetAttributeValues } from "@/hooks/tenant/use-attribute-query"
 import { type Attribute, type AttributeValue } from "@/types/tenant/attribute"
-import {
-  type StoreProductFormValues,
-} from "@/schemas/tenant/product-schema"
+import { type StoreProductFormValues } from "@/schemas/tenant/product-schema"
 import { type ProductFormSectionProps } from "./product-form-shared"
 
 type AttributeValueFormItem = NonNullable<
@@ -210,7 +211,9 @@ function AttributeValueField({
           })
         }}
       >
-        <ComboboxInput placeholder={`Select ${attribute.name.toLowerCase()}...`} />
+        <ComboboxInput
+          placeholder={`Select ${attribute.name.toLowerCase()}...`}
+        />
         <ComboboxContent>
           <ComboboxEmpty>No values found.</ComboboxEmpty>
           <ComboboxList>
@@ -261,9 +264,7 @@ export function ProductAttributesSection({ form }: ProductFormSectionProps) {
     const updated =
       index === -1
         ? [...current, next]
-        : current.map((item, itemIndex) =>
-            itemIndex === index ? next : item
-          )
+        : current.map((item, itemIndex) => (itemIndex === index ? next : item))
 
     form.setValue("attribute_values", updated, { shouldDirty: true })
   }

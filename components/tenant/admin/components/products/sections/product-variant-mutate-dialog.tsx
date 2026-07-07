@@ -34,10 +34,10 @@ import {
   useUpdateProductVariant,
 } from "@/hooks/tenant/use-product-variant-query"
 import {
-  storeProductVariantSchema,
-  updateProductVariantSchema,
   type StoreProductVariantFormValues,
+  storeProductVariantSchema,
   type UpdateProductVariantFormValues,
+  updateProductVariantSchema,
 } from "@/schemas/tenant/product-schema"
 import { type ProductVariant } from "@/types/tenant/product"
 import { type UnitOption } from "@/types/tenant/unit"
@@ -74,7 +74,9 @@ export function ProductVariantMutateDialog({
     null
   )
 
-  const form = useForm<StoreProductVariantFormValues | UpdateProductVariantFormValues>({
+  const form = useForm<
+    StoreProductVariantFormValues | UpdateProductVariantFormValues
+  >({
     resolver: zodResolver(
       isUpdate ? updateProductVariantSchema : storeProductVariantSchema
     ),
@@ -110,7 +112,8 @@ export function ProductVariantMutateDialog({
     if (variant) {
       const variantImage =
         variant.image_media ??
-        (variant as ProductVariant & { image?: ProductVariant["image_media"] }).image ??
+        (variant as ProductVariant & { image?: ProductVariant["image_media"] })
+          .image ??
         null
 
       setImagePreviewUrl(
@@ -173,7 +176,11 @@ export function ProductVariantMutateDialog({
             onOpenChange(false)
           },
           onError: (error) =>
-            handleFormApiError(error, form.setError, "Failed to update variant"),
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update variant"
+            ),
         }
       )
       return
@@ -315,7 +322,9 @@ export function ProductVariantMutateDialog({
                   <FieldContent>
                     <Combobox
                       items={weightUnits}
-                      itemToStringValue={(item) => `${item.label} (${item.symbol})`}
+                      itemToStringValue={(item) =>
+                        `${item.label} (${item.symbol})`
+                      }
                       value={selectedWeightUnit}
                       onValueChange={(item) => {
                         form.setValue(
@@ -386,7 +395,9 @@ export function ProductVariantMutateDialog({
                 <FieldContent>
                   <Combobox
                     items={dimensionUnits}
-                    itemToStringValue={(item) => `${item.label} (${item.symbol})`}
+                    itemToStringValue={(item) =>
+                      `${item.label} (${item.symbol})`
+                    }
                     value={selectedDimensionUnit}
                     onValueChange={(item) => {
                       form.setValue(

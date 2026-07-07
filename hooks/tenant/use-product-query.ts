@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
+  bulkUpdateProducts,
   createProduct,
   deleteManyProducts,
   deleteProduct,
   exportProducts,
-  bulkUpdateProducts,
   getProduct,
   getProductOptions,
   getProducts,

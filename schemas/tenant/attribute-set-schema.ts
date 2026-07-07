@@ -9,9 +9,15 @@ const baseAttributeSetSchema = z.object({
 
 export const storeAttributeSetSchema = baseAttributeSetSchema
 
-export const updateAttributeSetSchema = baseAttributeSetSchema.partial().extend({
-  name: z.string().min(1, "Name is required").max(255).optional(),
-})
+export const updateAttributeSetSchema = baseAttributeSetSchema
+  .partial()
+  .extend({
+    name: z.string().min(1, "Name is required").max(255).optional(),
+  })
 
-export type StoreAttributeSetFormValues = z.infer<typeof storeAttributeSetSchema>
-export type UpdateAttributeSetFormValues = z.infer<typeof updateAttributeSetSchema>
+export type StoreAttributeSetFormValues = z.infer<
+  typeof storeAttributeSetSchema
+>
+export type UpdateAttributeSetFormValues = z.infer<
+  typeof updateAttributeSetSchema
+>

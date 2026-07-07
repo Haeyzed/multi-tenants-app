@@ -27,8 +27,8 @@ import { Spinner } from "@/components/ui/spinner"
 import { useGetProductOptions } from "@/hooks/tenant/use-product-query"
 import { useSyncProductBundleItems } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductBundleItemsSchema,
   type SyncProductBundleItemsFormValues,
+  syncProductBundleItemsSchema,
 } from "@/schemas/tenant/product-schema"
 import { type Product } from "@/types/tenant/product"
 import { FieldError } from "./product-form-shared"
@@ -47,7 +47,9 @@ function createEmptyBundleItem(): SyncProductBundleItemsFormValues["bundle_items
   }
 }
 
-function mapBundleItems(product: Product): SyncProductBundleItemsFormValues["bundle_items"] {
+function mapBundleItems(
+  product: Product
+): SyncProductBundleItemsFormValues["bundle_items"] {
   return (
     product.bundle_items?.map((item) => ({
       included_product_id: item.included_product_id,
@@ -69,7 +71,9 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
   const availableProducts = productOptions.filter(
     (option: { label: string; value: number }) => option.value !== product.id
   )
-  const [bundleItems, setBundleItems] = React.useState(() => mapBundleItems(product))
+  const [bundleItems, setBundleItems] = React.useState(() =>
+    mapBundleItems(product)
+  )
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
   const updateItem = (
@@ -117,7 +121,9 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setBundleItems((current) => [...current, createEmptyBundleItem()])}
+          onClick={() =>
+            setBundleItems((current) => [...current, createEmptyBundleItem()])
+          }
         >
           <Plus className="mr-1 size-4" />
           Add product
@@ -146,98 +152,107 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
                   ) ?? null
 
                 return (
-                <TableRow key={`bundle-item-${index}`}>
-                  <TableCell className="min-w-[240px]">
-                    <Combobox
-                      items={availableProducts}
-                      itemToStringValue={(option: { label: string; value: number }) =>
-                        option.label
-                      }
-                      value={selectedProduct}
-                      onValueChange={(option) =>
-                        updateItem(index, {
-                          included_product_id: option ? option.value : 0,
-                        })
-                      }
-                    >
-                      <ComboboxInput placeholder="Select product" />
-                      <ComboboxContent>
-                        <ComboboxEmpty>No products found.</ComboboxEmpty>
-                        <ComboboxList>
-                          {(option) => (
-                            <ComboboxItem key={option.value} value={option}>
-                              {option.label}
-                            </ComboboxItem>
-                          )}
-                        </ComboboxList>
-                      </ComboboxContent>
-                    </Combobox>
-                    <FieldError message={errors[`bundle_items.${index}.included_product_id`]} />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min={1}
-                      value={item.quantity}
-                      onChange={(event) =>
-                        updateItem(index, { quantity: Number(event.target.value) || 1 })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={item.discount_percentage ?? ""}
-                      onChange={(event) =>
-                        updateItem(index, {
-                          discount_percentage: event.target.value
-                            ? Number(event.target.value)
-                            : null,
-                        })
-                      }
-                      placeholder="—"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={item.fixed_price ?? ""}
-                      onChange={(event) =>
-                        updateItem(index, {
-                          fixed_price: event.target.value
-                            ? Number(event.target.value)
-                            : null,
-                        })
-                      }
-                      placeholder="—"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Checkbox
-                      checked={item.is_optional ?? false}
-                      onCheckedChange={(checked) =>
-                        updateItem(index, { is_optional: !!checked })
-                      }
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        setBundleItems((current) =>
-                          current.filter((_, itemIndex) => itemIndex !== index)
-                        )
-                      }
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                  <TableRow key={`bundle-item-${index}`}>
+                    <TableCell className="min-w-[240px]">
+                      <Combobox
+                        items={availableProducts}
+                        itemToStringValue={(option: {
+                          label: string
+                          value: number
+                        }) => option.label}
+                        value={selectedProduct}
+                        onValueChange={(option) =>
+                          updateItem(index, {
+                            included_product_id: option ? option.value : 0,
+                          })
+                        }
+                      >
+                        <ComboboxInput placeholder="Select product" />
+                        <ComboboxContent>
+                          <ComboboxEmpty>No products found.</ComboboxEmpty>
+                          <ComboboxList>
+                            {(option) => (
+                              <ComboboxItem key={option.value} value={option}>
+                                {option.label}
+                              </ComboboxItem>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                      <FieldError
+                        message={
+                          errors[`bundle_items.${index}.included_product_id`]
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        min={1}
+                        value={item.quantity}
+                        onChange={(event) =>
+                          updateItem(index, {
+                            quantity: Number(event.target.value) || 1,
+                          })
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={100}
+                        value={item.discount_percentage ?? ""}
+                        onChange={(event) =>
+                          updateItem(index, {
+                            discount_percentage: event.target.value
+                              ? Number(event.target.value)
+                              : null,
+                          })
+                        }
+                        placeholder="—"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={item.fixed_price ?? ""}
+                        onChange={(event) =>
+                          updateItem(index, {
+                            fixed_price: event.target.value
+                              ? Number(event.target.value)
+                              : null,
+                          })
+                        }
+                        placeholder="—"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox
+                        checked={item.is_optional ?? false}
+                        onCheckedChange={(checked) =>
+                          updateItem(index, { is_optional: !!checked })
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setBundleItems((current) =>
+                            current.filter(
+                              (_, itemIndex) => itemIndex !== index
+                            )
+                          )
+                        }
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
                 )
               })}
             </TableBody>
@@ -245,7 +260,11 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
         )}
 
         <div className="flex justify-end">
-          <Button type="button" onClick={handleSave} disabled={syncBundleItems.isPending}>
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={syncBundleItems.isPending}
+          >
             {syncBundleItems.isPending && <Spinner />}
             Save bundle
           </Button>

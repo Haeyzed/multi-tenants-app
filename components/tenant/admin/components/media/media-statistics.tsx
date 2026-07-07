@@ -1,6 +1,6 @@
 "use client"
 
-import { HardDriveIcon, ImageIcon, FolderIcon } from "lucide-react"
+import { FolderIcon, HardDriveIcon, ImageIcon } from "lucide-react"
 
 import { useGetMediaStatistics } from "@/hooks/tenant/use-media-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"

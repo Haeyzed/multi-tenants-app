@@ -57,17 +57,23 @@ export function UnitsTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "6rem", "4rem", "6rem", "6rem", "4rem", "4rem", "3rem"]}
+        cellWidths={[
+          "auto",
+          "6rem",
+          "4rem",
+          "6rem",
+          "6rem",
+          "4rem",
+          "4rem",
+          "3rem",
+        ]}
       />
     )
   }
 
   return (
     <div className="data-table-container space-y-4">
-      <DataTable
-        table={table}
-        actionBar={<UnitsBulkActions table={table} />}
-      >
+      <DataTable table={table} actionBar={<UnitsBulkActions table={table} />}>
         <DataTableToolbar table={table} />
       </DataTable>
     </div>

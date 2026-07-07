@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -50,10 +50,10 @@ import { MediaThumbnail } from "@/components/tenant/admin/components/shared/medi
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { type Category, type CategoryOption } from "@/types/tenant/category"
 import {
-  storeCategorySchema,
-  updateCategorySchema,
   type StoreCategoryFormValues,
+  storeCategorySchema,
   type UpdateCategoryFormValues,
+  updateCategorySchema,
 } from "@/schemas/tenant/category-schema"
 
 type CategoriesFormDialogProps = {
@@ -63,7 +63,10 @@ type CategoriesFormDialogProps = {
   onCreated?: (category: Category) => void
 }
 
-const noneParentOption: CategoryOption = { label: "None (root category)", value: 0 }
+const noneParentOption: CategoryOption = {
+  label: "None (root category)",
+  value: 0,
+}
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null
@@ -115,16 +118,18 @@ export function CategoriesFormDialog({
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState<string | null>(
     null
   )
-  const [imagePreviewTitle, setImagePreviewTitle] = React.useState<string | null>(
-    null
-  )
+  const [imagePreviewTitle, setImagePreviewTitle] = React.useState<
+    string | null
+  >(null)
   const [bannerPreviewUrl, setBannerPreviewUrl] = React.useState<string | null>(
     null
   )
   const [bannerPreviewTitle, setBannerPreviewTitle] = React.useState<
     string | null
   >(null)
-  const [iconPreviewUrl, setIconPreviewUrl] = React.useState<string | null>(null)
+  const [iconPreviewUrl, setIconPreviewUrl] = React.useState<string | null>(
+    null
+  )
   const [iconPreviewTitle, setIconPreviewTitle] = React.useState<string | null>(
     null
   )
@@ -193,7 +198,9 @@ export function CategoriesFormDialog({
       parentId ? item.value === parentId : item.value === 0
     ) ?? noneParentOption
 
-  const onSubmit = (data: StoreCategoryFormValues | UpdateCategoryFormValues) => {
+  const onSubmit = (
+    data: StoreCategoryFormValues | UpdateCategoryFormValues
+  ) => {
     const payload = {
       ...data,
       description: data.description || null,
@@ -216,7 +223,11 @@ export function CategoriesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update category")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update category"
+            )
           },
         }
       )
@@ -278,7 +289,10 @@ export function CategoriesFormDialog({
                 value={selectedParent}
                 onValueChange={(item) => {
                   if (!item) return
-                  form.setValue("parent_id", item.value === 0 ? null : item.value)
+                  form.setValue(
+                    "parent_id",
+                    item.value === 0 ? null : item.value
+                  )
                 }}
               >
                 <ComboboxInput placeholder="Select parent category..." />
@@ -299,7 +313,10 @@ export function CategoriesFormDialog({
           <Field>
             <FieldLabel>Summary</FieldLabel>
             <FieldContent>
-              <Input placeholder="Short summary" {...form.register("summary")} />
+              <Input
+                placeholder="Short summary"
+                {...form.register("summary")}
+              />
             </FieldContent>
           </Field>
 
@@ -310,7 +327,9 @@ export function CategoriesFormDialog({
                 placeholder="Category description..."
                 {...form.register("description")}
               />
-              <FieldError message={form.formState.errors.description?.message} />
+              <FieldError
+                message={form.formState.errors.description?.message}
+              />
             </FieldContent>
           </Field>
 
@@ -321,7 +340,9 @@ export function CategoriesFormDialog({
             previewTitle={imagePreviewTitle}
             onChange={(mediaId, media) => {
               form.setValue("image_media_id", mediaId)
-              setImagePreviewUrl(media?.url ? resolveTenantMediaUrl(media) : null)
+              setImagePreviewUrl(
+                media?.url ? resolveTenantMediaUrl(media) : null
+              )
               setImagePreviewTitle(media?.title ?? media?.name ?? null)
             }}
             accept="image/*"
@@ -334,7 +355,9 @@ export function CategoriesFormDialog({
             previewTitle={bannerPreviewTitle}
             onChange={(mediaId, media) => {
               form.setValue("banner_media_id", mediaId)
-              setBannerPreviewUrl(media?.url ? resolveTenantMediaUrl(media) : null)
+              setBannerPreviewUrl(
+                media?.url ? resolveTenantMediaUrl(media) : null
+              )
               setBannerPreviewTitle(media?.title ?? media?.name ?? null)
             }}
             accept="image/*"
@@ -347,17 +370,22 @@ export function CategoriesFormDialog({
             previewTitle={iconPreviewTitle}
             onChange={(mediaId, media) => {
               form.setValue("icon_media_id", mediaId)
-              setIconPreviewUrl(media?.url ? resolveTenantMediaUrl(media) : null)
+              setIconPreviewUrl(
+                media?.url ? resolveTenantMediaUrl(media) : null
+              )
               setIconPreviewTitle(media?.title ?? media?.name ?? null)
             }}
             accept="image/*"
           />
 
-          {(imagePreviewUrl || bannerPreviewUrl || iconPreviewUrl) && isUpdate ? (
+          {(imagePreviewUrl || bannerPreviewUrl || iconPreviewUrl) &&
+          isUpdate ? (
             <div className="flex flex-wrap gap-4 rounded-lg border p-3">
               {imagePreviewUrl ? (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground">Image preview</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Image preview
+                  </p>
                   <MediaThumbnail
                     media={{ url: imagePreviewUrl, name: imagePreviewTitle }}
                     alt={imagePreviewTitle ?? "Category image"}
@@ -367,7 +395,9 @@ export function CategoriesFormDialog({
               ) : null}
               {bannerPreviewUrl ? (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground">Banner preview</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Banner preview
+                  </p>
                   <MediaThumbnail
                     media={{ url: bannerPreviewUrl, name: bannerPreviewTitle }}
                     alt={bannerPreviewTitle ?? "Category banner"}
@@ -377,7 +407,9 @@ export function CategoriesFormDialog({
               ) : null}
               {iconPreviewUrl ? (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-muted-foreground">Icon preview</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Icon preview
+                  </p>
                   <MediaThumbnail
                     media={{ url: iconPreviewUrl, name: iconPreviewTitle }}
                     alt={iconPreviewTitle ?? "Category icon"}
@@ -392,7 +424,10 @@ export function CategoriesFormDialog({
             <Field>
               <FieldLabel>Meta Title</FieldLabel>
               <FieldContent>
-                <Input placeholder="SEO title" {...form.register("meta_title")} />
+                <Input
+                  placeholder="SEO title"
+                  {...form.register("meta_title")}
+                />
               </FieldContent>
             </Field>
             <Field>
@@ -428,16 +463,18 @@ export function CategoriesFormDialog({
                   defaultFormat="hex"
                 >
                   <div className="flex items-center gap-3">
-                    <ColorPickerTrigger render={
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="flex items-center gap-2 px-3"
-                      >
-                        <ColorPickerSwatch className="size-4" />
-                        {form.watch("color") || "Pick color"}
-                      </Button>
-                    }/>
+                    <ColorPickerTrigger
+                      render={
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="flex items-center gap-2 px-3"
+                        >
+                          <ColorPickerSwatch className="size-4" />
+                          {form.watch("color") || "Pick color"}
+                        </Button>
+                      }
+                    />
                     {form.watch("color") ? (
                       <Button
                         type="button"
@@ -472,7 +509,10 @@ export function CategoriesFormDialog({
             <Field>
               <FieldLabel>Icon class</FieldLabel>
               <FieldContent>
-                <Input placeholder="lucide-tag" {...form.register("icon_class")} />
+                <Input
+                  placeholder="lucide-tag"
+                  {...form.register("icon_class")}
+                />
               </FieldContent>
             </Field>
           </div>

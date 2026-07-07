@@ -1,5 +1,5 @@
 import { Brand, BrandOption } from "@/types/tenant/brand"
-import { ExportParams, BrandStatistics } from "@/types/tenant/export"
+import { BrandStatistics, ExportParams } from "@/types/tenant/export"
 import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -51,7 +51,9 @@ export const getBrands = async (params?: {
 }
 
 export const getBrand = async (id: number): Promise<Brand> => {
-  const response = await tenantApiClient.get<ApiResponse<Brand>>(`/brands/${id}`)
+  const response = await tenantApiClient.get<ApiResponse<Brand>>(
+    `/brands/${id}`
+  )
   return normalizeBrand(response.data)
 }
 
@@ -112,9 +114,10 @@ export const getBrandOptions = async (): Promise<BrandOption[]> => {
 }
 
 export const getBrandStatistics = async (): Promise<BrandStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<BrandStatistics>>(
-    "/brands/statistics"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<BrandStatistics>>(
+      "/brands/statistics"
+    )
   return response.data
 }
 

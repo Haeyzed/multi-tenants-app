@@ -29,7 +29,9 @@ export function MediaPickerField({
   accept = "image/*",
 }: MediaPickerFieldProps) {
   const [open, setOpen] = React.useState(false)
-  const [selectedMedia, setSelectedMedia] = React.useState<MediaItem | null>(null)
+  const [selectedMedia, setSelectedMedia] = React.useState<MediaItem | null>(
+    null
+  )
 
   const displayUrl = previewUrl
     ? resolveTenantMediaUrl({ url: previewUrl, path: null })
@@ -37,16 +39,19 @@ export function MediaPickerField({
       ? resolveTenantMediaUrl(selectedMedia)
       : null
   const previewItem =
-    selectedMedia ?? (displayUrl ? { url: displayUrl, name: previewTitle ?? undefined } : null)
+    selectedMedia ??
+    (displayUrl ? { url: displayUrl, name: previewTitle ?? undefined } : null)
   const previewLabel =
     previewTitle ??
-    (selectedMedia ? (selectedMedia.title ?? selectedMedia.name) : previewTitle) ??
+    (selectedMedia
+      ? (selectedMedia.title ?? selectedMedia.name)
+      : previewTitle) ??
     previewItem?.name
   const showImagePreview = Boolean(
     displayUrl &&
-      (accept?.startsWith("image") ||
-        !previewItem ||
-        isMediaImage(previewItem as MediaFileLike))
+    (accept?.startsWith("image") ||
+      !previewItem ||
+      isMediaImage(previewItem as MediaFileLike))
   )
 
   return (
@@ -58,7 +63,10 @@ export function MediaPickerField({
             <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
               {showImagePreview && displayUrl ? (
                 <MediaThumbnail
-                  media={{ url: displayUrl, name: previewTitle ?? previewItem?.name }}
+                  media={{
+                    url: displayUrl,
+                    name: previewTitle ?? previewItem?.name,
+                  }}
                   alt={previewTitle ?? previewItem?.name ?? "Selected media"}
                   size="sm"
                   className="size-16"
@@ -74,28 +82,28 @@ export function MediaPickerField({
                 <p className="truncate text-sm font-medium">{previewLabel}</p>
               ) : null}
               <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setOpen(true)}
-              >
-                {value ? "Change" : "Choose from library"}
-              </Button>
-              {value ? (
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="text-destructive hover:bg-destructive/10"
-                  onClick={() => {
-                    setSelectedMedia(null)
-                    onChange(null, null)
-                  }}
+                  onClick={() => setOpen(true)}
                 >
-                  Remove
+                  {value ? "Change" : "Choose from library"}
                 </Button>
-              ) : null}
+                {value ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:bg-destructive/10"
+                    onClick={() => {
+                      setSelectedMedia(null)
+                      onChange(null, null)
+                    }}
+                  >
+                    Remove
+                  </Button>
+                ) : null}
               </div>
             </div>
           </div>

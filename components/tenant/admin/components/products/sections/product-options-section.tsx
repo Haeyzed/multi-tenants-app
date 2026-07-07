@@ -10,8 +10,8 @@ import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import { useSyncProductOptions } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductOptionsSchema,
   type SyncProductOptionsFormValues,
+  syncProductOptionsSchema,
 } from "@/schemas/tenant/product-schema"
 import {
   type Product,
@@ -23,7 +23,9 @@ type ProductOptionsSectionProps = {
   product: Product
 }
 
-function createEmptyOption(position = 0): SyncProductOptionsFormValues["options"][number] {
+function createEmptyOption(
+  position = 0
+): SyncProductOptionsFormValues["options"][number] {
   return {
     name: "",
     code: "",
@@ -32,7 +34,9 @@ function createEmptyOption(position = 0): SyncProductOptionsFormValues["options"
   }
 }
 
-function mapProductOptions(product: Product): SyncProductOptionsFormValues["options"] {
+function mapProductOptions(
+  product: Product
+): SyncProductOptionsFormValues["options"] {
   if (!product.options?.length) {
     return [createEmptyOption()]
   }
@@ -121,7 +125,9 @@ export function ProductOptionsSection({ product }: ProductOptionsSectionProps) {
 
         return {
           ...option,
-          values: option.values.filter((_, entryIndex) => entryIndex !== valueIndex),
+          values: option.values.filter(
+            (_, entryIndex) => entryIndex !== valueIndex
+          ),
         }
       })
     )
@@ -153,7 +159,8 @@ export function ProductOptionsSection({ product }: ProductOptionsSectionProps) {
         <div>
           <CardTitle>Variant options</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Define options like Color or Size, then generate variants from their values.
+            Define options like Color or Size, then generate variants from their
+            values.
           </p>
         </div>
         <Button type="button" variant="outline" size="sm" onClick={addOption}>
@@ -179,7 +186,9 @@ export function ProductOptionsSection({ product }: ProductOptionsSectionProps) {
                         updateOption(optionIndex, { name: event.target.value })
                       }
                     />
-                    <FieldError message={errors[`options.${optionIndex}.name`]} />
+                    <FieldError
+                      message={errors[`options.${optionIndex}.name`]}
+                    />
                   </FieldContent>
                 </Field>
                 <Field>
@@ -222,12 +231,19 @@ export function ProductOptionsSection({ product }: ProductOptionsSectionProps) {
               </div>
 
               {option.values.map((value, valueIndex) => (
-                <div key={value.id ?? `value-${valueIndex}`} className="flex gap-2">
+                <div
+                  key={value.id ?? `value-${valueIndex}`}
+                  className="flex gap-2"
+                >
                   <Input
                     placeholder="Red"
                     value={value.value}
                     onChange={(event) =>
-                      updateOptionValue(optionIndex, valueIndex, event.target.value)
+                      updateOptionValue(
+                        optionIndex,
+                        valueIndex,
+                        event.target.value
+                      )
                     }
                   />
                   {option.values.length > 1 && (

@@ -2,7 +2,7 @@
 
 import { useGetSupplierStatistics } from "@/hooks/tenant/use-supplier-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Truck, CheckCircle, XCircle, Package } from "lucide-react"
+import { CheckCircle, Package, Truck, XCircle } from "lucide-react"
 
 export function SupplierStatistics() {
   const { data: stats, isLoading } = useGetSupplierStatistics()

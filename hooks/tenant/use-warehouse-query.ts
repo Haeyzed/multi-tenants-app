@@ -54,7 +54,8 @@ export const useGetWarehouseStatistics = () => {
 export const useCreateWarehouse = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (warehouse: StoreWarehouseFormValues) => createWarehouse(warehouse),
+    mutationFn: (warehouse: StoreWarehouseFormValues) =>
+      createWarehouse(warehouse),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
       queryClient.invalidateQueries({ queryKey: ["warehouse-statistics"] })
@@ -172,7 +173,9 @@ export const useCreateWarehouseZone = (warehouseId: number) => {
     mutationFn: (zone: StoreWarehouseZoneFormValues) =>
       createWarehouseZone(warehouseId, zone),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["warehouse-zones", warehouseId] })
+      queryClient.invalidateQueries({
+        queryKey: ["warehouse-zones", warehouseId],
+      })
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
     },
   })
@@ -189,7 +192,9 @@ export const useUpdateWarehouseZone = (warehouseId: number) => {
       zone: UpdateWarehouseZoneFormValues
     }) => updateWarehouseZone(warehouseId, zoneId, zone),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["warehouse-zones", warehouseId] })
+      queryClient.invalidateQueries({
+        queryKey: ["warehouse-zones", warehouseId],
+      })
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
     },
   })
@@ -200,13 +205,18 @@ export const useDeleteWarehouseZone = (warehouseId: number) => {
   return useMutation({
     mutationFn: (zoneId: number) => deleteWarehouseZone(warehouseId, zoneId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["warehouse-zones", warehouseId] })
+      queryClient.invalidateQueries({
+        queryKey: ["warehouse-zones", warehouseId],
+      })
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
     },
   })
 }
 
-export const useGetWarehouseLocations = (warehouseId?: number, enabled = true) => {
+export const useGetWarehouseLocations = (
+  warehouseId?: number,
+  enabled = true
+) => {
   return useQuery({
     queryKey: ["warehouse-locations", warehouseId],
     queryFn: () => getWarehouseLocations(warehouseId!),
@@ -223,7 +233,9 @@ export const useCreateWarehouseLocation = (warehouseId: number) => {
       queryClient.invalidateQueries({
         queryKey: ["warehouse-locations", warehouseId],
       })
-      queryClient.invalidateQueries({ queryKey: ["warehouse-zones", warehouseId] })
+      queryClient.invalidateQueries({
+        queryKey: ["warehouse-zones", warehouseId],
+      })
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
     },
   })
@@ -257,7 +269,9 @@ export const useDeleteWarehouseLocation = (warehouseId: number) => {
       queryClient.invalidateQueries({
         queryKey: ["warehouse-locations", warehouseId],
       })
-      queryClient.invalidateQueries({ queryKey: ["warehouse-zones", warehouseId] })
+      queryClient.invalidateQueries({
+        queryKey: ["warehouse-zones", warehouseId],
+      })
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
     },
   })

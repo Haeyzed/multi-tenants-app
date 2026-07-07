@@ -4,8 +4,8 @@ import { format } from "date-fns"
 
 import {
   ModuleViewDialog,
-  ModuleViewVisibility,
   type ModuleViewField,
+  ModuleViewVisibility,
 } from "@/components/tenant/admin/components/shared/module-view-dialog"
 import { type Tag } from "@/types/tenant/tag"
 
@@ -43,9 +43,7 @@ function getTagViewFields(tag: Tag): ModuleViewField[] {
     { label: "Sort order", value: String(tag.sort_order ?? 0) },
     {
       label: "Created",
-      value: tag.created_at
-        ? format(new Date(tag.created_at), "PPP")
-        : "—",
+      value: tag.created_at ? format(new Date(tag.created_at), "PPP") : "—",
     },
   ]
 }

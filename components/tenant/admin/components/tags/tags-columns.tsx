@@ -7,7 +7,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
 import { type Tag } from "@/types/tenant/tag"
 import { DataTableRowActions } from "./data-table-row-actions"
-import { Text, Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Text } from "lucide-react"
 
 export const columns: ColumnDef<Tag>[] = [
   {
@@ -78,7 +78,9 @@ export const columns: ColumnDef<Tag>[] = [
             style={{ backgroundColor: color }}
             aria-hidden
           />
-          <span className="font-mono text-xs text-muted-foreground">{color}</span>
+          <span className="font-mono text-xs text-muted-foreground">
+            {color}
+          </span>
         </div>
       )
     },
@@ -89,7 +91,9 @@ export const columns: ColumnDef<Tag>[] = [
       <DataTableColumnHeader column={column} label="Icon" />
     ),
     cell: ({ row }) => (
-      <span className="text-muted-foreground">{row.getValue("icon") || "—"}</span>
+      <span className="text-muted-foreground">
+        {row.getValue("icon") || "—"}
+      </span>
     ),
   },
   {

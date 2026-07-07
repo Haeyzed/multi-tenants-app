@@ -2,12 +2,12 @@
 
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { TaxZoneMapPreview } from "./tax-zone-map-preview"
@@ -36,7 +36,9 @@ export function TaxZoneMapDialog({
       <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
+          <ResponsiveDialogDescription>
+            {description}
+          </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <TaxZoneMapPreview

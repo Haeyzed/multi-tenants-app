@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -46,10 +46,10 @@ import {
 } from "@/hooks/tenant/use-supplier-query"
 import { type Supplier, type SupplierAddress } from "@/types/tenant/supplier"
 import {
-  storeSupplierAddressSchema,
-  updateSupplierAddressSchema,
   type StoreSupplierAddressFormValues,
+  storeSupplierAddressSchema,
   type UpdateSupplierAddressFormValues,
+  updateSupplierAddressSchema,
 } from "@/schemas/tenant/supplier-schema"
 
 type SuppliersManageAddressesDialogProps = {
@@ -101,12 +101,13 @@ export function SuppliersManageAddressesDialog({
   const [editingAddress, setEditingAddress] = useState<SupplierAddress | null>(
     null
   )
-  const [deletingAddress, setDeletingAddress] = useState<SupplierAddress | null>(
-    null
-  )
+  const [deletingAddress, setDeletingAddress] =
+    useState<SupplierAddress | null>(null)
 
   const isUpdate = !!editingAddress
-  const schema = isUpdate ? updateSupplierAddressSchema : storeSupplierAddressSchema
+  const schema = isUpdate
+    ? updateSupplierAddressSchema
+    : storeSupplierAddressSchema
 
   const form = useForm<
     StoreSupplierAddressFormValues | UpdateSupplierAddressFormValues
@@ -326,116 +327,116 @@ export function SuppliersManageAddressesDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-            <form
-              id="supplier-address-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
+          <form
+            id="supplier-address-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <Field>
+              <FieldLabel>Type</FieldLabel>
+              <FieldContent>
+                <Combobox
+                  items={ADDRESS_TYPES}
+                  itemToStringValue={(item) => item.label}
+                  value={selectedAddressType}
+                  onValueChange={(item) => {
+                    if (!item) return
+                    form.setValue("type", item.value)
+                  }}
+                >
+                  <ComboboxInput placeholder="Select type..." />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No types found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(item) => (
+                        <ComboboxItem key={item.value} value={item}>
+                          {item.label}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Address Line 1 *</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="123 Main St"
+                  {...form.register("address_line_1")}
+                />
+                <FieldError
+                  message={form.formState.errors.address_line_1?.message}
+                />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Address Line 2</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="Suite 100"
+                  {...form.register("address_line_2")}
+                />
+              </FieldContent>
+            </Field>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Field>
-                <FieldLabel>Type</FieldLabel>
+                <FieldLabel>City *</FieldLabel>
                 <FieldContent>
-                  <Combobox
-                    items={ADDRESS_TYPES}
-                    itemToStringValue={(item) => item.label}
-                    value={selectedAddressType}
-                    onValueChange={(item) => {
-                      if (!item) return
-                      form.setValue("type", item.value)
-                    }}
-                  >
-                    <ComboboxInput placeholder="Select type..." />
-                    <ComboboxContent>
-                      <ComboboxEmpty>No types found.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(item) => (
-                          <ComboboxItem key={item.value} value={item}>
-                            {item.label}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
+                  <Input placeholder="City" {...form.register("city")} />
+                  <FieldError message={form.formState.errors.city?.message} />
                 </FieldContent>
               </Field>
               <Field>
-                <FieldLabel>Address Line 1 *</FieldLabel>
+                <FieldLabel>State</FieldLabel>
+                <FieldContent>
+                  <Input placeholder="State" {...form.register("state")} />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Postal Code</FieldLabel>
                 <FieldContent>
                   <Input
-                    placeholder="123 Main St"
-                    {...form.register("address_line_1")}
+                    placeholder="Postal code"
+                    {...form.register("postal_code")}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Country *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="US"
+                    maxLength={2}
+                    className="uppercase"
+                    {...form.register("country", {
+                      onChange: (e) => {
+                        form.setValue("country", e.target.value.toUpperCase())
+                      },
+                    })}
                   />
                   <FieldError
-                    message={form.formState.errors.address_line_1?.message}
+                    message={form.formState.errors.country?.message}
                   />
                 </FieldContent>
               </Field>
-              <Field>
-                <FieldLabel>Address Line 2</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="Suite 100"
-                    {...form.register("address_line_2")}
-                  />
-                </FieldContent>
-              </Field>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Field>
-                  <FieldLabel>City *</FieldLabel>
-                  <FieldContent>
-                    <Input placeholder="City" {...form.register("city")} />
-                    <FieldError message={form.formState.errors.city?.message} />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>State</FieldLabel>
-                  <FieldContent>
-                    <Input placeholder="State" {...form.register("state")} />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>Postal Code</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="Postal code"
-                      {...form.register("postal_code")}
-                    />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>Country *</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="US"
-                      maxLength={2}
-                      className="uppercase"
-                      {...form.register("country", {
-                        onChange: (e) => {
-                          form.setValue("country", e.target.value.toUpperCase())
-                        },
-                      })}
-                    />
-                    <FieldError
-                      message={form.formState.errors.country?.message}
-                    />
-                  </FieldContent>
-                </Field>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="is_default_address"
-                  checked={form.watch("is_default")}
-                  onCheckedChange={(checked) =>
-                    form.setValue("is_default", !!checked)
-                  }
-                />
-                <label
-                  htmlFor="is_default_address"
-                  className="text-sm font-medium"
-                >
-                  Default address
-                </label>
-              </div>
-            </form>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_default_address"
+                checked={form.watch("is_default")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_default", !!checked)
+                }
+              />
+              <label
+                htmlFor="is_default_address"
+                className="text-sm font-medium"
+              >
+                Default address
+              </label>
+            </div>
+          </form>
 
           <ResponsiveDialogFooter>
             <ResponsiveDialogClose

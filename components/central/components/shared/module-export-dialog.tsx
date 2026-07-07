@@ -6,12 +6,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { DatePicker } from "@/components/ui/date-picker"
@@ -28,8 +28,11 @@ import {
 import { useAuth } from "@/lib/providers/central/auth-provider"
 import { useGetUserOptions } from "@/hooks/central/use-user-query"
 import { type ExportColumnOption } from "@/lib/export-columns"
-import { type ExportParams, type ExportFileType } from "@/types/central/export"
-import { type UserOption } from "@/types/central/export"
+import {
+  type ExportFileType,
+  type ExportParams,
+  type UserOption,
+} from "@/types/central/export"
 
 type ModuleExportDialogProps = {
   open: boolean
@@ -64,7 +67,9 @@ export function ModuleExportDialog({
 }: ModuleExportDialogProps) {
   const { user } = useAuth()
   const { data: userOptions = [] } = useGetUserOptions()
-  const [delivery, setDelivery] = React.useState<"download" | "email">("download")
+  const [delivery, setDelivery] = React.useState<"download" | "email">(
+    "download"
+  )
   const [fileType, setFileType] = React.useState<ExportFileType>("xlsx")
   const [startDate, setStartDate] = React.useState<Date | undefined>()
   const [endDate, setEndDate] = React.useState<Date | undefined>()
@@ -87,7 +92,8 @@ export function ModuleExportDialog({
     setSelectedColumns(allColumnKeys)
 
     if (user && userOptions.length > 0) {
-      const current = userOptions.find((option) => option.value === user.id) ?? null
+      const current =
+        userOptions.find((option) => option.value === user.id) ?? null
       setRecipient(current)
     } else {
       setRecipient(null)
@@ -135,7 +141,9 @@ export function ModuleExportDialog({
       await onExport(params)
 
       if (delivery === "download") {
-        toast.success(`${resourceLabel} export downloaded (${fileType.toUpperCase()})`)
+        toast.success(
+          `${resourceLabel} export downloaded (${fileType.toUpperCase()})`
+        )
       } else {
         toast.success(`Export sent to ${recipient?.email ?? "recipient"}`)
       }
@@ -144,7 +152,9 @@ export function ModuleExportDialog({
       onOpenChange(false)
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : `Failed to export ${resourceLabel}`
+        error instanceof Error
+          ? error.message
+          : `Failed to export ${resourceLabel}`
       )
     } finally {
       setSubmitting(false)
@@ -153,9 +163,11 @@ export function ModuleExportDialog({
 
   const pending = isPending || submitting
   const selectedDelivery =
-    deliveryOptions.find((option) => option.value === delivery) ?? deliveryOptions[0]
+    deliveryOptions.find((option) => option.value === delivery) ??
+    deliveryOptions[0]
   const selectedFormat =
-    formatOptions.find((option) => option.value === fileType) ?? formatOptions[0]
+    formatOptions.find((option) => option.value === fileType) ??
+    formatOptions[0]
   const allSelected = selectedColumns.length === allColumnKeys.length
 
   return (
@@ -335,7 +347,9 @@ export function ModuleExportDialog({
         </div>
 
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose render={<Button variant="outline">Cancel</Button>} />
+          <ResponsiveDialogClose
+            render={<Button variant="outline">Cancel</Button>}
+          />
           <Button onClick={handleExport} disabled={pending}>
             {pending && <Spinner />}
             Export

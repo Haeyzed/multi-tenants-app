@@ -7,12 +7,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Input } from "@/components/ui/input"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
@@ -91,7 +91,11 @@ export function PlansImportDialog({
             Import plans from an Excel (.xlsx) or CSV file.
           </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
-        <form id="plans-import-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          id="plans-import-form"
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <Button
             type="button"
             variant="outline"

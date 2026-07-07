@@ -1,8 +1,5 @@
 import { tenantCustomerApiClient } from "./api-client"
-import {
-  CustomerAuthResult,
-  CustomerProfile,
-} from "@/types/tenant/customer"
+import { CustomerAuthResult, CustomerProfile } from "@/types/tenant/customer"
 
 interface ApiResponse<T> {
   success: boolean
@@ -57,9 +54,10 @@ export const logout = async () => {
 }
 
 export const getProfile = async (): Promise<CustomerProfile> => {
-  const response = await tenantCustomerApiClient.get<
-    ApiResponse<CustomerProfile>
-  >("/customer/auth/me")
+  const response =
+    await tenantCustomerApiClient.get<ApiResponse<CustomerProfile>>(
+      "/customer/auth/me"
+    )
   return response.data
 }
 

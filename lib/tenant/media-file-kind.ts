@@ -80,7 +80,9 @@ export function getMediaFileExtension(item: MediaFileLike): string {
   const mime = item.mime_type?.toLowerCase()
   if (!mime) return ""
 
-  return MIME_EXTENSION_MAP[mime] ?? mime.split("/").pop()?.split("+").pop() ?? ""
+  return (
+    MIME_EXTENSION_MAP[mime] ?? mime.split("/").pop()?.split("+").pop() ?? ""
+  )
 }
 
 export function isMediaImage(item: MediaFileLike): boolean {

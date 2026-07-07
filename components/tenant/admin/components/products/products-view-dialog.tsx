@@ -206,7 +206,9 @@ function getProductViewFields(product: Product): ModuleViewField[] {
       value: (
         <Status variant={visibility !== "hidden" ? "success" : "default"}>
           <StatusIndicator />
-          <StatusLabel>{resolveProductEnumLabel(product.visibility)}</StatusLabel>
+          <StatusLabel>
+            {resolveProductEnumLabel(product.visibility)}
+          </StatusLabel>
         </Status>
       ),
     },
@@ -263,48 +265,45 @@ function getProductViewFields(product: Product): ModuleViewField[] {
     },
     {
       label: "Collections",
-      value:
-        product.collections?.length ? (
-          <div className="flex flex-wrap gap-1">
-            {product.collections.map((collection) => (
-              <Badge key={collection.id} variant="outline">
-                {collection.name}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          "—"
-        ),
+      value: product.collections?.length ? (
+        <div className="flex flex-wrap gap-1">
+          {product.collections.map((collection) => (
+            <Badge key={collection.id} variant="outline">
+              {collection.name}
+            </Badge>
+          ))}
+        </div>
+      ) : (
+        "—"
+      ),
     },
     {
       label: "Tags",
-      value:
-        product.tags?.length ? (
-          <div className="flex flex-wrap gap-1">
-            {product.tags.map((tag) => (
-              <Badge key={tag.id} variant="secondary">
-                {tag.name}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          "—"
-        ),
+      value: product.tags?.length ? (
+        <div className="flex flex-wrap gap-1">
+          {product.tags.map((tag) => (
+            <Badge key={tag.id} variant="secondary">
+              {tag.name}
+            </Badge>
+          ))}
+        </div>
+      ) : (
+        "—"
+      ),
     },
     {
       label: "Labels",
-      value:
-        product.labels?.length ? (
-          <div className="flex flex-wrap gap-1">
-            {product.labels.map((label) => (
-              <Badge key={label.id} variant="outline">
-                {label.name}
-              </Badge>
-            ))}
-          </div>
-        ) : (
-          "—"
-        ),
+      value: product.labels?.length ? (
+        <div className="flex flex-wrap gap-1">
+          {product.labels.map((label) => (
+            <Badge key={label.id} variant="outline">
+              {label.name}
+            </Badge>
+          ))}
+        </div>
+      ) : (
+        "—"
+      ),
     },
     {
       label: "Featured",

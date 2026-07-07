@@ -114,9 +114,10 @@ export const setDefaultTaxZone = async (id: number): Promise<TaxZone> => {
 }
 
 export const getTaxZoneOptions = async (): Promise<TaxZoneOption[]> => {
-  const response = await tenantApiClient.get<ApiResponse<TaxZoneOption[]>>(
-    "/tax-zones/options"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<TaxZoneOption[]>>(
+      "/tax-zones/options"
+    )
   return response.data
 }
 

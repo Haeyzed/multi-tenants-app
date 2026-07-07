@@ -3,7 +3,15 @@
 import * as React from "react"
 import Link from "next/link"
 import { type ColumnDef } from "@tanstack/react-table"
-import { Archive, CheckCircle2, Eye, EyeOff, FileEdit, Star, Text } from "lucide-react"
+import {
+  Archive,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  FileEdit,
+  Star,
+  Text,
+} from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 import { Status, StatusIndicator, StatusLabel } from "@/components/ui/status"
@@ -145,7 +153,9 @@ export const columns: ColumnDef<Product>[] = [
       return (
         <Status variant={isVisible ? "success" : "default"}>
           <StatusIndicator />
-          <StatusLabel>{resolveProductEnumLabel(row.original.visibility)}</StatusLabel>
+          <StatusLabel>
+            {resolveProductEnumLabel(row.original.visibility)}
+          </StatusLabel>
         </Status>
       )
     },

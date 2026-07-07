@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/combobox"
 import { type StoreProductFormValues } from "@/schemas/tenant/product-schema"
 import {
+  type ProductFormSectionProps,
   productVisibilityOptions,
   statusOptions,
-  type ProductFormSectionProps,
 } from "./product-form-shared"
 
 function parsePublishedAt(value: string | null | undefined): Date | undefined {

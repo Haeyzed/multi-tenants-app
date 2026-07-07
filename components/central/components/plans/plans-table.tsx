@@ -57,7 +57,18 @@ export function PlansTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "10rem", "8rem", "8rem", "8rem", "8rem", "8rem", "6rem", "8rem", "3rem"]}
+        cellWidths={[
+          "auto",
+          "10rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "6rem",
+          "8rem",
+          "3rem",
+        ]}
       />
     )
   }

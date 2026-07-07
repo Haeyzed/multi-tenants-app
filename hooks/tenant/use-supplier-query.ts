@@ -156,7 +156,9 @@ export const useCreateSupplierContact = (supplierId: number) => {
     mutationFn: (contact: StoreSupplierContactFormValues) =>
       createSupplierContact(supplierId, contact),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplier-contacts", supplierId] })
+      queryClient.invalidateQueries({
+        queryKey: ["supplier-contacts", supplierId],
+      })
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
   })
@@ -173,7 +175,9 @@ export const useUpdateSupplierContact = (supplierId: number) => {
       contact: UpdateSupplierContactFormValues
     }) => updateSupplierContact(supplierId, contactId, contact),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplier-contacts", supplierId] })
+      queryClient.invalidateQueries({
+        queryKey: ["supplier-contacts", supplierId],
+      })
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
   })
@@ -182,15 +186,21 @@ export const useUpdateSupplierContact = (supplierId: number) => {
 export const useDeleteSupplierContact = (supplierId: number) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (contactId: number) => deleteSupplierContact(supplierId, contactId),
+    mutationFn: (contactId: number) =>
+      deleteSupplierContact(supplierId, contactId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplier-contacts", supplierId] })
+      queryClient.invalidateQueries({
+        queryKey: ["supplier-contacts", supplierId],
+      })
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
   })
 }
 
-export const useGetSupplierAddresses = (supplierId?: number, enabled = true) => {
+export const useGetSupplierAddresses = (
+  supplierId?: number,
+  enabled = true
+) => {
   return useQuery({
     queryKey: ["supplier-addresses", supplierId],
     queryFn: () => getSupplierAddresses(supplierId!),
@@ -204,7 +214,9 @@ export const useCreateSupplierAddress = (supplierId: number) => {
     mutationFn: (address: StoreSupplierAddressFormValues) =>
       createSupplierAddress(supplierId, address),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplier-addresses", supplierId] })
+      queryClient.invalidateQueries({
+        queryKey: ["supplier-addresses", supplierId],
+      })
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
   })
@@ -221,7 +233,9 @@ export const useUpdateSupplierAddress = (supplierId: number) => {
       address: UpdateSupplierAddressFormValues
     }) => updateSupplierAddress(supplierId, addressId, address),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplier-addresses", supplierId] })
+      queryClient.invalidateQueries({
+        queryKey: ["supplier-addresses", supplierId],
+      })
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
   })
@@ -230,15 +244,21 @@ export const useUpdateSupplierAddress = (supplierId: number) => {
 export const useDeleteSupplierAddress = (supplierId: number) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (addressId: number) => deleteSupplierAddress(supplierId, addressId),
+    mutationFn: (addressId: number) =>
+      deleteSupplierAddress(supplierId, addressId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["supplier-addresses", supplierId] })
+      queryClient.invalidateQueries({
+        queryKey: ["supplier-addresses", supplierId],
+      })
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
     },
   })
 }
 
-export const useGetSupplierBankAccounts = (supplierId?: number, enabled = true) => {
+export const useGetSupplierBankAccounts = (
+  supplierId?: number,
+  enabled = true
+) => {
   return useQuery({
     queryKey: ["supplier-bank-accounts", supplierId],
     queryFn: () => getSupplierBankAccounts(supplierId!),
@@ -282,7 +302,8 @@ export const useUpdateSupplierBankAccount = (supplierId: number) => {
 export const useDeleteSupplierBankAccount = (supplierId: number) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (accountId: number) => deleteSupplierBankAccount(supplierId, accountId),
+    mutationFn: (accountId: number) =>
+      deleteSupplierBankAccount(supplierId, accountId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["supplier-bank-accounts", supplierId],

@@ -61,7 +61,17 @@ export function AttributeSetsTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "10rem", "8rem", "12rem", "8rem", "6rem", "6rem", "4rem", "3rem"]}
+        cellWidths={[
+          "auto",
+          "10rem",
+          "8rem",
+          "12rem",
+          "8rem",
+          "6rem",
+          "6rem",
+          "4rem",
+          "3rem",
+        ]}
       />
     )
   }

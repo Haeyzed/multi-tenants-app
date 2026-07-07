@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,10 +26,10 @@ import {
 } from "@/hooks/tenant/use-customer-group-query"
 import { type CustomerGroup } from "@/types/tenant/customer-group"
 import {
-  storeCustomerGroupSchema,
-  updateCustomerGroupSchema,
   type StoreCustomerGroupFormValues,
+  storeCustomerGroupSchema,
   type UpdateCustomerGroupFormValues,
+  updateCustomerGroupSchema,
 } from "@/schemas/tenant/customer-group-schema"
 
 type CustomerGroupsFormDialogProps = {
@@ -51,7 +51,9 @@ export function CustomerGroupsFormDialog({
   const isSubmitting = createGroup.isPending || updateGroup.isPending
   const schema = isUpdate ? updateCustomerGroupSchema : storeCustomerGroupSchema
 
-  const form = useForm<StoreCustomerGroupFormValues | UpdateCustomerGroupFormValues>({
+  const form = useForm<
+    StoreCustomerGroupFormValues | UpdateCustomerGroupFormValues
+  >({
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
@@ -105,7 +107,11 @@ export function CustomerGroupsFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update customer group")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update customer group"
+            )
           },
         }
       )
@@ -118,7 +124,11 @@ export function CustomerGroupsFormDialog({
           form.reset()
         },
         onError: (error) => {
-          handleFormApiError(error, form.setError, "Failed to create customer group")
+          handleFormApiError(
+            error,
+            form.setError,
+            "Failed to create customer group"
+          )
         },
       })
     }
@@ -180,7 +190,9 @@ export function CustomerGroupsFormDialog({
                 min={0}
                 max={100}
                 step="0.01"
-                {...form.register("discount_percentage", { valueAsNumber: true })}
+                {...form.register("discount_percentage", {
+                  valueAsNumber: true,
+                })}
               />
             </FieldContent>
           </Field>
@@ -189,7 +201,9 @@ export function CustomerGroupsFormDialog({
             <Checkbox
               id="is_active"
               checked={form.watch("is_active")}
-              onCheckedChange={(checked) => form.setValue("is_active", !!checked)}
+              onCheckedChange={(checked) =>
+                form.setValue("is_active", !!checked)
+              }
             />
             <label htmlFor="is_active" className="text-sm font-medium">
               Active
@@ -198,8 +212,14 @@ export function CustomerGroupsFormDialog({
         </form>
 
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose render={<Button variant="outline">Close</Button>} />
-          <Button type="submit" form="customer-groups-form" disabled={isSubmitting}>
+          <ResponsiveDialogClose
+            render={<Button variant="outline">Close</Button>}
+          />
+          <Button
+            type="submit"
+            form="customer-groups-form"
+            disabled={isSubmitting}
+          >
             {isSubmitting && <Spinner />}
             {isSubmitting
               ? "Saving..."

@@ -1,5 +1,9 @@
 import { Customer, CustomerOption } from "@/types/tenant/customer"
-import { CustomerStatistics, ExportParams, ImportSummary } from "@/types/tenant/export"
+import {
+  CustomerStatistics,
+  ExportParams,
+  ImportSummary,
+} from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -82,9 +86,10 @@ export const deleteCustomer = async (id: number): Promise<void> => {
 }
 
 export const getCustomerOptions = async (): Promise<CustomerOption[]> => {
-  const response = await tenantApiClient.get<ApiResponse<CustomerOption[]>>(
-    "/customers/options"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<CustomerOption[]>>(
+      "/customers/options"
+    )
   return response.data
 }
 

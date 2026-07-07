@@ -31,9 +31,7 @@ export function WarehousesTable() {
   const { data, isLoading, error } = useGetWarehouses({
     search: name || undefined,
     is_active:
-      status.length > 0
-        ? (status as ("active" | "inactive")[])
-        : undefined,
+      status.length > 0 ? (status as ("active" | "inactive")[]) : undefined,
     per_page: perPage,
     page,
   })

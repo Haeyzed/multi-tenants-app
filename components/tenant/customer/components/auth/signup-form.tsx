@@ -170,7 +170,9 @@ export function SignupForm({
             disabled={registerMutation.isPending}
           >
             {registerMutation.isPending && <Spinner />}
-            {registerMutation.isPending ? "Creating account..." : "Create Account"}
+            {registerMutation.isPending
+              ? "Creating account..."
+              : "Create Account"}
           </Button>
         </Field>
         <FieldSeparator>Or continue with</FieldSeparator>

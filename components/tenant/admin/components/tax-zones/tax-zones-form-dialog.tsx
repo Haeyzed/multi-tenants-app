@@ -6,12 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,10 +26,10 @@ import {
 import { type TaxZone } from "@/types/tenant/tax-zone"
 import { MapPin } from "lucide-react"
 import {
-  storeTaxZoneSchema,
-  updateTaxZoneSchema,
   type StoreTaxZoneFormValues,
+  storeTaxZoneSchema,
   type UpdateTaxZoneFormValues,
+  updateTaxZoneSchema,
 } from "@/schemas/tenant/tax-zone-schema"
 import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
 
@@ -44,7 +44,9 @@ function FieldError({ message }: { message?: string }) {
   return <p className="mt-1 text-sm text-destructive">{message}</p>
 }
 
-function parseOptionalNumber(value: string | number | null | undefined): number | null {
+function parseOptionalNumber(
+  value: string | number | null | undefined
+): number | null {
   if (value === "" || value === null || value === undefined) return null
   const num = typeof value === "number" ? value : Number(value)
   return Number.isNaN(num) ? null : num
@@ -150,7 +152,11 @@ export function TaxZonesFormDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update tax zone")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update tax zone"
+            )
           },
         }
       )
@@ -177,184 +183,192 @@ export function TaxZonesFormDialog({
           if (!val) form.reset()
         }}
       >
-      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
-        <ResponsiveDialogHeader>
-          <ResponsiveDialogTitle>
-            {isUpdate ? "Update" : "Create"} Tax Zone
-          </ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>
-            {isUpdate
-              ? "Update the tax zone geographic scope."
-              : "Add a new tax zone for your store."}{" "}
-            Leave location fields empty to match all values at that level.
-          </ResponsiveDialogDescription>
-        </ResponsiveDialogHeader>
+        <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
+          <ResponsiveDialogHeader>
+            <ResponsiveDialogTitle>
+              {isUpdate ? "Update" : "Create"} Tax Zone
+            </ResponsiveDialogTitle>
+            <ResponsiveDialogDescription>
+              {isUpdate
+                ? "Update the tax zone geographic scope."
+                : "Add a new tax zone for your store."}{" "}
+              Leave location fields empty to match all values at that level.
+            </ResponsiveDialogDescription>
+          </ResponsiveDialogHeader>
 
-        <form
-          id="tax-zones-form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
-          <Field>
-            <FieldLabel>Name *</FieldLabel>
-            <FieldContent>
-              <Input placeholder="United Kingdom" {...form.register("name")} />
-              <FieldError message={form.formState.errors.name?.message} />
-            </FieldContent>
-          </Field>
-
-          <div className="grid gap-4 sm:grid-cols-2">
+          <form
+            id="tax-zones-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <Field>
-              <FieldLabel>Country Code</FieldLabel>
+              <FieldLabel>Name *</FieldLabel>
               <FieldContent>
                 <Input
-                  placeholder="GB"
-                  maxLength={2}
-                  className="font-mono uppercase"
-                  {...form.register("country_code")}
+                  placeholder="United Kingdom"
+                  {...form.register("name")}
                 />
-                <FieldError message={form.formState.errors.country_code?.message} />
+                <FieldError message={form.formState.errors.name?.message} />
               </FieldContent>
             </Field>
 
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel>Country Code</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="GB"
+                    maxLength={2}
+                    className="font-mono uppercase"
+                    {...form.register("country_code")}
+                  />
+                  <FieldError
+                    message={form.formState.errors.country_code?.message}
+                  />
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel>State / Province</FieldLabel>
+                <FieldContent>
+                  <Input placeholder="England" {...form.register("state")} />
+                </FieldContent>
+              </Field>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field>
+                <FieldLabel>City</FieldLabel>
+                <FieldContent>
+                  <Input placeholder="London" {...form.register("city")} />
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel>Postal Code</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="SW1A 1AA"
+                    {...form.register("postal_code")}
+                  />
+                </FieldContent>
+              </Field>
+            </div>
+
             <Field>
-              <FieldLabel>State / Province</FieldLabel>
+              <FieldLabel>Postal Code Pattern</FieldLabel>
               <FieldContent>
-                <Input placeholder="England" {...form.register("state")} />
+                <Input
+                  placeholder="SW1%"
+                  className="font-mono"
+                  {...form.register("postal_code_pattern")}
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  SQL LIKE pattern for matching postal codes (e.g. SW1%)
+                </p>
               </FieldContent>
             </Field>
-          </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field>
+                <FieldLabel>Latitude</FieldLabel>
+                <FieldContent>
+                  <Input
+                    type="number"
+                    step="any"
+                    {...form.register("latitude", { valueAsNumber: true })}
+                  />
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel>Longitude</FieldLabel>
+                <FieldContent>
+                  <Input
+                    type="number"
+                    step="any"
+                    {...form.register("longitude", { valueAsNumber: true })}
+                  />
+                </FieldContent>
+              </Field>
+
+              <Field>
+                <FieldLabel>Radius (km)</FieldLabel>
+                <FieldContent>
+                  <Input
+                    type="number"
+                    step="any"
+                    min={0}
+                    {...form.register("radius_km", { valueAsNumber: true })}
+                  />
+                </FieldContent>
+              </Field>
+            </div>
+
+            {hasMapCoordinates ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMapOpen(true)}
+              >
+                <MapPin className="mr-2 h-4 w-4" />
+                View on Map
+              </Button>
+            ) : null}
+
             <Field>
-              <FieldLabel>City</FieldLabel>
-              <FieldContent>
-                <Input placeholder="London" {...form.register("city")} />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>Postal Code</FieldLabel>
-              <FieldContent>
-                <Input placeholder="SW1A 1AA" {...form.register("postal_code")} />
-              </FieldContent>
-            </Field>
-          </div>
-
-          <Field>
-            <FieldLabel>Postal Code Pattern</FieldLabel>
-            <FieldContent>
-              <Input
-                placeholder="SW1%"
-                className="font-mono"
-                {...form.register("postal_code_pattern")}
-              />
-              <p className="mt-1 text-xs text-muted-foreground">
-                SQL LIKE pattern for matching postal codes (e.g. SW1%)
-              </p>
-            </FieldContent>
-          </Field>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            <Field>
-              <FieldLabel>Latitude</FieldLabel>
+              <FieldLabel>Sort Order</FieldLabel>
               <FieldContent>
                 <Input
                   type="number"
-                  step="any"
-                  {...form.register("latitude", { valueAsNumber: true })}
+                  {...form.register("sort_order", { valueAsNumber: true })}
                 />
               </FieldContent>
             </Field>
 
-            <Field>
-              <FieldLabel>Longitude</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="number"
-                  step="any"
-                  {...form.register("longitude", { valueAsNumber: true })}
+            <div className="flex flex-wrap items-center gap-6">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_active"
+                  checked={form.watch("is_active")}
+                  onCheckedChange={(checked) =>
+                    form.setValue("is_active", !!checked)
+                  }
                 />
-              </FieldContent>
-            </Field>
-
-            <Field>
-              <FieldLabel>Radius (km)</FieldLabel>
-              <FieldContent>
-                <Input
-                  type="number"
-                  step="any"
-                  min={0}
-                  {...form.register("radius_km", { valueAsNumber: true })}
+                <label htmlFor="is_active" className="text-sm font-medium">
+                  Active
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_default"
+                  checked={form.watch("is_default")}
+                  onCheckedChange={(checked) =>
+                    form.setValue("is_default", !!checked)
+                  }
                 />
-              </FieldContent>
-            </Field>
-          </div>
+                <label htmlFor="is_default" className="text-sm font-medium">
+                  Default
+                </label>
+              </div>
+            </div>
+          </form>
 
-          {hasMapCoordinates ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setMapOpen(true)}
-            >
-              <MapPin className="mr-2 h-4 w-4" />
-              View on Map
+          <ResponsiveDialogFooter>
+            <ResponsiveDialogClose
+              render={<Button variant="outline">Close</Button>}
+            />
+            <Button type="submit" form="tax-zones-form" disabled={isSubmitting}>
+              {isSubmitting && <Spinner />}
+              {isSubmitting
+                ? "Saving..."
+                : isUpdate
+                  ? "Update Tax Zone"
+                  : "Create Tax Zone"}
             </Button>
-          ) : null}
-
-          <Field>
-            <FieldLabel>Sort Order</FieldLabel>
-            <FieldContent>
-              <Input
-                type="number"
-                {...form.register("sort_order", { valueAsNumber: true })}
-              />
-            </FieldContent>
-          </Field>
-
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_active"
-                checked={form.watch("is_active")}
-                onCheckedChange={(checked) =>
-                  form.setValue("is_active", !!checked)
-                }
-              />
-              <label htmlFor="is_active" className="text-sm font-medium">
-                Active
-              </label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_default"
-                checked={form.watch("is_default")}
-                onCheckedChange={(checked) =>
-                  form.setValue("is_default", !!checked)
-                }
-              />
-              <label htmlFor="is_default" className="text-sm font-medium">
-                Default
-              </label>
-            </div>
-          </div>
-        </form>
-
-        <ResponsiveDialogFooter>
-          <ResponsiveDialogClose
-            render={<Button variant="outline">Close</Button>}
-          />
-          <Button type="submit" form="tax-zones-form" disabled={isSubmitting}>
-            {isSubmitting && <Spinner />}
-            {isSubmitting
-              ? "Saving..."
-              : isUpdate
-                ? "Update Tax Zone"
-                : "Create Tax Zone"}
-          </Button>
-        </ResponsiveDialogFooter>
-      </ResponsiveDialogContent>
+          </ResponsiveDialogFooter>
+        </ResponsiveDialogContent>
       </ResponsiveDialog>
 
       {hasMapCoordinates ? (

@@ -24,21 +24,28 @@ type AttributesContextType = {
   currentRow: Attribute | null
   setCurrentRow: React.Dispatch<React.SetStateAction<Attribute | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
   >
 }
 
-const AttributesContext = React.createContext<AttributesContextType | null>(null)
+const AttributesContext = React.createContext<AttributesContextType | null>(
+  null
+)
 
-export function AttributesProvider({ children }: { children: React.ReactNode }) {
+export function AttributesProvider({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const [open, setOpen] = useDialogState<AttributesDialogType>(null)
   const [currentRow, setCurrentRow] = useState<Attribute | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 

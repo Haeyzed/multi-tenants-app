@@ -49,7 +49,9 @@ export function ProductsBulkUpdateDialog({
 }: ProductsBulkUpdateDialogProps) {
   const bulkUpdate = useBulkUpdateProducts()
   const [status, setStatus] = React.useState(statusOptions[0])
-  const [visibility, setVisibility] = React.useState(productVisibilityOptions[0])
+  const [visibility, setVisibility] = React.useState(
+    productVisibilityOptions[0]
+  )
 
   const handleSave = () => {
     if (ids.length === 0) {
@@ -133,7 +135,9 @@ export function ProductsBulkUpdateDialog({
         )}
 
         <ResponsiveDialogFooter>
-          <ResponsiveDialogClose render={<Button variant="outline">Cancel</Button>} />
+          <ResponsiveDialogClose
+            render={<Button variant="outline">Cancel</Button>}
+          />
           <Button onClick={handleSave} disabled={bulkUpdate.isPending}>
             {bulkUpdate.isPending && <Spinner />}
             Update products

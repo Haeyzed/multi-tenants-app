@@ -38,8 +38,8 @@ import {
 import { type Product } from "@/types/tenant/product"
 import { type ProductQuestion } from "@/types/tenant/product-nested"
 import {
-  answerProductQuestionSchema,
   type AnswerProductQuestionFormValues,
+  answerProductQuestionSchema,
 } from "@/schemas/tenant/product-nested-schema"
 
 type ProductsManageQuestionsDialogProps = {
@@ -59,9 +59,8 @@ export function ProductsManageQuestionsDialog({
   )
   const answerQuestion = useAnswerProductQuestion(product.id)
   const deleteQuestion = useDeleteProductQuestion(product.id)
-  const [selectedQuestion, setSelectedQuestion] = useState<ProductQuestion | null>(
-    null
-  )
+  const [selectedQuestion, setSelectedQuestion] =
+    useState<ProductQuestion | null>(null)
 
   const form = useForm<AnswerProductQuestionFormValues>({
     resolver: zodResolver(answerProductQuestionSchema),
@@ -99,8 +98,8 @@ export function ProductsManageQuestionsDialog({
             <ResponsiveDialogTitle>Customer questions</ResponsiveDialogTitle>
             <ResponsiveDialogDescription>
               Questions submitted by customers for{" "}
-              <strong>{product.name}</strong>. Answer them here to publish on the
-              storefront.
+              <strong>{product.name}</strong>. Answer them here to publish on
+              the storefront.
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 

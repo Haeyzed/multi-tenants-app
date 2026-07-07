@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -36,12 +36,15 @@ import {
   useGetSupplierBankAccounts,
   useUpdateSupplierBankAccount,
 } from "@/hooks/tenant/use-supplier-query"
-import { type Supplier, type SupplierBankAccount } from "@/types/tenant/supplier"
 import {
-  storeSupplierBankAccountSchema,
-  updateSupplierBankAccountSchema,
+  type Supplier,
+  type SupplierBankAccount,
+} from "@/types/tenant/supplier"
+import {
   type StoreSupplierBankAccountFormValues,
+  storeSupplierBankAccountSchema,
   type UpdateSupplierBankAccountFormValues,
+  updateSupplierBankAccountSchema,
 } from "@/schemas/tenant/supplier-schema"
 
 type SuppliersManageBankAccountsDialogProps = {
@@ -126,7 +129,9 @@ export function SuppliersManageBankAccountsDialog({
   }
 
   const onSubmit = (
-    data: StoreSupplierBankAccountFormValues | UpdateSupplierBankAccountFormValues
+    data:
+      | StoreSupplierBankAccountFormValues
+      | UpdateSupplierBankAccountFormValues
   ) => {
     const payload = {
       ...data,
@@ -164,7 +169,11 @@ export function SuppliersManageBankAccountsDialog({
           form.reset()
         },
         onError: (error) => {
-          handleFormApiError(error, form.setError, "Failed to create bank account")
+          handleFormApiError(
+            error,
+            form.setError,
+            "Failed to create bank account"
+          )
         },
       })
     }
@@ -183,7 +192,8 @@ export function SuppliersManageBankAccountsDialog({
     })
   }
 
-  const isSubmitting = createBankAccount.isPending || updateBankAccount.isPending
+  const isSubmitting =
+    createBankAccount.isPending || updateBankAccount.isPending
 
   return (
     <>
@@ -303,116 +313,113 @@ export function SuppliersManageBankAccountsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-            <form
-              id="supplier-bank-account-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
-              <Field>
-                <FieldLabel>Account Name *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="Operating Account"
-                    {...form.register("account_name")}
-                  />
-                  <FieldError
-                    message={form.formState.errors.account_name?.message}
-                  />
-                </FieldContent>
-              </Field>
-              <Field>
-                <FieldLabel>Account Number *</FieldLabel>
-                <FieldContent>
-                  <Input
-                    placeholder="1234567890"
-                    className="font-mono"
-                    {...form.register("account_number")}
-                  />
-                  <FieldError
-                    message={form.formState.errors.account_number?.message}
-                  />
-                </FieldContent>
-              </Field>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <Field>
-                  <FieldLabel>Bank Name *</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="Bank name"
-                      {...form.register("bank_name")}
-                    />
-                    <FieldError
-                      message={form.formState.errors.bank_name?.message}
-                    />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>Bank Branch</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="Branch name"
-                      {...form.register("bank_branch")}
-                    />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>SWIFT Code</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="SWIFT"
-                      className="uppercase"
-                      {...form.register("swift_code")}
-                    />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>IBAN</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="IBAN"
-                      className="uppercase"
-                      {...form.register("iban")}
-                    />
-                  </FieldContent>
-                </Field>
-                <Field>
-                  <FieldLabel>Currency</FieldLabel>
-                  <FieldContent>
-                    <Input
-                      placeholder="USD"
-                      maxLength={3}
-                      className="uppercase"
-                      {...form.register("currency", {
-                        onChange: (e) => {
-                          form.setValue(
-                            "currency",
-                            e.target.value.toUpperCase()
-                          )
-                        },
-                      })}
-                    />
-                    <FieldError
-                      message={form.formState.errors.currency?.message}
-                    />
-                  </FieldContent>
-                </Field>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="is_default_account"
-                  checked={form.watch("is_default")}
-                  onCheckedChange={(checked) =>
-                    form.setValue("is_default", !!checked)
-                  }
+          <form
+            id="supplier-bank-account-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
+            <Field>
+              <FieldLabel>Account Name *</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="Operating Account"
+                  {...form.register("account_name")}
                 />
-                <label
-                  htmlFor="is_default_account"
-                  className="text-sm font-medium"
-                >
-                  Default bank account
-                </label>
-              </div>
-            </form>
+                <FieldError
+                  message={form.formState.errors.account_name?.message}
+                />
+              </FieldContent>
+            </Field>
+            <Field>
+              <FieldLabel>Account Number *</FieldLabel>
+              <FieldContent>
+                <Input
+                  placeholder="1234567890"
+                  className="font-mono"
+                  {...form.register("account_number")}
+                />
+                <FieldError
+                  message={form.formState.errors.account_number?.message}
+                />
+              </FieldContent>
+            </Field>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Field>
+                <FieldLabel>Bank Name *</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="Bank name"
+                    {...form.register("bank_name")}
+                  />
+                  <FieldError
+                    message={form.formState.errors.bank_name?.message}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Bank Branch</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="Branch name"
+                    {...form.register("bank_branch")}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>SWIFT Code</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="SWIFT"
+                    className="uppercase"
+                    {...form.register("swift_code")}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>IBAN</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="IBAN"
+                    className="uppercase"
+                    {...form.register("iban")}
+                  />
+                </FieldContent>
+              </Field>
+              <Field>
+                <FieldLabel>Currency</FieldLabel>
+                <FieldContent>
+                  <Input
+                    placeholder="USD"
+                    maxLength={3}
+                    className="uppercase"
+                    {...form.register("currency", {
+                      onChange: (e) => {
+                        form.setValue("currency", e.target.value.toUpperCase())
+                      },
+                    })}
+                  />
+                  <FieldError
+                    message={form.formState.errors.currency?.message}
+                  />
+                </FieldContent>
+              </Field>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="is_default_account"
+                checked={form.watch("is_default")}
+                onCheckedChange={(checked) =>
+                  form.setValue("is_default", !!checked)
+                }
+              />
+              <label
+                htmlFor="is_default_account"
+                className="text-sm font-medium"
+              >
+                Default bank account
+              </label>
+            </div>
+          </form>
 
           <ResponsiveDialogFooter>
             <ResponsiveDialogClose

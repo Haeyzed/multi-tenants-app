@@ -11,10 +11,7 @@ export default function AdminMainLayout({
 }) {
   return (
     <TenantAuthProvider>
-      <DashboardShell
-        sidebar={<AppSidebar />}
-        commandMenu={<CommandMenu />}
-      >
+      <DashboardShell sidebar={<AppSidebar />} commandMenu={<CommandMenu />}>
         <TenantAdminAuthGuard>{children}</TenantAdminAuthGuard>
       </DashboardShell>
     </TenantAuthProvider>

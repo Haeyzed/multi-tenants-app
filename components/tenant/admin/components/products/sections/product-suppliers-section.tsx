@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
 import { Spinner } from "@/components/ui/spinner"
 import {
   Combobox,
@@ -28,8 +27,8 @@ import {
 import { useGetSupplierOptions } from "@/hooks/tenant/use-supplier-query"
 import { useSyncProductSuppliers } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductSuppliersSchema,
   type SyncProductSuppliersFormValues,
+  syncProductSuppliersSchema,
 } from "@/schemas/tenant/product-schema"
 import {
   type Product,
@@ -71,10 +70,14 @@ function mapProductSuppliers(
   }))
 }
 
-export function ProductSuppliersSection({ product }: ProductSuppliersSectionProps) {
+export function ProductSuppliersSection({
+  product,
+}: ProductSuppliersSectionProps) {
   const syncSuppliers = useSyncProductSuppliers(product.id)
   const { data: supplierOptions = [] } = useGetSupplierOptions()
-  const [suppliers, setSuppliers] = React.useState(() => mapProductSuppliers(product))
+  const [suppliers, setSuppliers] = React.useState(() =>
+    mapProductSuppliers(product)
+  )
   const [errors, setErrors] = React.useState<Record<string, string>>({})
 
   React.useEffect(() => {
@@ -86,7 +89,9 @@ export function ProductSuppliersSection({ product }: ProductSuppliersSectionProp
   }
 
   const removeSupplier = (index: number) => {
-    setSuppliers((current) => current.filter((_, itemIndex) => itemIndex !== index))
+    setSuppliers((current) =>
+      current.filter((_, itemIndex) => itemIndex !== index)
+    )
   }
 
   const updateSupplier = (
@@ -195,7 +200,9 @@ export function ProductSuppliersSection({ product }: ProductSuppliersSectionProp
                           </ComboboxList>
                         </ComboboxContent>
                       </Combobox>
-                      <FieldError message={errors[`suppliers.${index}.supplier_id`]} />
+                      <FieldError
+                        message={errors[`suppliers.${index}.supplier_id`]}
+                      />
                     </TableCell>
                     <TableCell>
                       <Input

@@ -2,7 +2,7 @@
 
 import { useGetTaxRateStatistics } from "@/hooks/tenant/use-tax-rate-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Percent, CheckCircle, XCircle, Layers } from "lucide-react"
+import { CheckCircle, Layers, Percent, XCircle } from "lucide-react"
 
 export function TaxRateStatistics() {
   const { data: stats, isLoading } = useGetTaxRateStatistics()

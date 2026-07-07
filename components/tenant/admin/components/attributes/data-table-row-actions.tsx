@@ -98,13 +98,17 @@ export function DataTableRowActions<TData>({
                   )
                 },
                 onError: (error) => {
-                  toast.error(error.message || "Failed to update filterable status")
+                  toast.error(
+                    error.message || "Failed to update filterable status"
+                  )
                 },
               })
             }}
           >
             <Filter className="mr-2 h-4 w-4" />
-            {attribute.is_filterable ? "Disable filterable" : "Enable filterable"}
+            {attribute.is_filterable
+              ? "Disable filterable"
+              : "Enable filterable"}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -117,7 +121,9 @@ export function DataTableRowActions<TData>({
                   )
                 },
                 onError: (error) => {
-                  toast.error(error.message || "Failed to update variant status")
+                  toast.error(
+                    error.message || "Failed to update variant status"
+                  )
                 },
               })
             }}

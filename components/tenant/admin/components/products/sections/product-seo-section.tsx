@@ -39,7 +39,9 @@ export function ProductSeoSection({ form }: ProductFormSectionProps) {
     robotsMetaOptions.find((item) => item.value === seo?.robots_meta) ??
     robotsMetaOptions[0]
 
-  const updateSeo = (patch: Partial<NonNullable<StoreProductFormValues["seo"]>>) => {
+  const updateSeo = (
+    patch: Partial<NonNullable<StoreProductFormValues["seo"]>>
+  ) => {
     form.setValue(
       "seo",
       {
@@ -116,7 +118,9 @@ export function ProductSeoSection({ form }: ProductFormSectionProps) {
               <Input
                 placeholder="Social share title"
                 value={seo?.og_title ?? ""}
-                onChange={(event) => updateSeo({ og_title: event.target.value })}
+                onChange={(event) =>
+                  updateSeo({ og_title: event.target.value })
+                }
               />
             </FieldContent>
           </Field>

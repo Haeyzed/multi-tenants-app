@@ -31,9 +31,7 @@ export function TaxRatesTable() {
   const { data, isLoading, error } = useGetTaxRates({
     search: name || undefined,
     is_active:
-      status.length > 0
-        ? (status as ("active" | "inactive")[])
-        : undefined,
+      status.length > 0 ? (status as ("active" | "inactive")[]) : undefined,
     per_page: perPage,
     page,
   })

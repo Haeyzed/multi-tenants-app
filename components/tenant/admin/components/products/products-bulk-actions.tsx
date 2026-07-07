@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import { type Table } from "@tanstack/react-table"
-import { Trash2, Download, CheckCircle2, EyeOff } from "lucide-react"
+import { CheckCircle2, Download, EyeOff, Trash2 } from "lucide-react"
 import {
   ActionBar,
+  ActionBarClose,
   ActionBarGroup,
   ActionBarItem,
   ActionBarSelection,
-  ActionBarClose,
 } from "@/components/ui/action-bar"
 import { type Product } from "@/types/tenant/product"
 import { useProducts } from "./products-provider"
@@ -20,8 +20,12 @@ type ProductsBulkActionsProps<TData> = {
 export function ProductsBulkActions<TData>({
   table,
 }: ProductsBulkActionsProps<TData>) {
-  const { setOpen, setExportSelection, setDeleteManySelection, setBulkUpdateSelection } =
-    useProducts()
+  const {
+    setOpen,
+    setExportSelection,
+    setDeleteManySelection,
+    setBulkUpdateSelection,
+  } = useProducts()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const onOpenChange = React.useCallback(

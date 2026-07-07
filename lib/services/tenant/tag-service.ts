@@ -25,7 +25,10 @@ export const getTags = async (params?: {
   per_page?: number
   page?: number
 }): Promise<PaginatedResponse<Tag>> => {
-  const response = await tenantApiClient.get<ApiResponse<Tag[]>>("/tags", params)
+  const response = await tenantApiClient.get<ApiResponse<Tag[]>>(
+    "/tags",
+    params
+  )
   return {
     data: response.data,
     meta: response.meta || {
@@ -81,9 +84,8 @@ export const getTagOptions = async (): Promise<TagOption[]> => {
 }
 
 export const getTagStatistics = async (): Promise<TagStatistics> => {
-  const response = await tenantApiClient.get<ApiResponse<TagStatistics>>(
-    "/tags/statistics"
-  )
+  const response =
+    await tenantApiClient.get<ApiResponse<TagStatistics>>("/tags/statistics")
   return response.data
 }
 

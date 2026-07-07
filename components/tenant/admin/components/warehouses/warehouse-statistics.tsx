@@ -2,7 +2,7 @@
 
 import { useGetWarehouseStatistics } from "@/hooks/tenant/use-warehouse-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Warehouse, CheckCircle, XCircle, Star, Package } from "lucide-react"
+import { CheckCircle, Package, Star, Warehouse, XCircle } from "lucide-react"
 
 export function WarehouseStatistics() {
   const { data: stats, isLoading } = useGetWarehouseStatistics()

@@ -36,7 +36,9 @@ export function MediaPickerDialog({
       <ResponsiveDialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-5xl">
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
-          <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
+          <ResponsiveDialogDescription>
+            {description}
+          </ResponsiveDialogDescription>
         </ResponsiveDialogHeader>
 
         <MediaLibraryPanel

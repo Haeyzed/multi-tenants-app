@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   createBrand,
-  deleteManyBrands,
   deleteBrand,
+  deleteManyBrands,
   exportBrands,
   getBrandOptions,
   getBrands,

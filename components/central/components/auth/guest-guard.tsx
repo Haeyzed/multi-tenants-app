@@ -5,11 +5,7 @@ import { useEffect } from "react"
 import { apiClient } from "@/lib/services/central/api-client"
 import { useGetProfile } from "@/hooks/central/use-auth-query"
 
-export function CentralGuestGuard({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export function CentralGuestGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const hasToken = !!apiClient.getToken()
   const { data: user, isLoading, isError } = useGetProfile()

@@ -10,11 +10,7 @@ export type ProductTypeValue =
   | "gift_card"
   | "configurable"
 
-export type ProductVisibilityValue =
-  | "visible"
-  | "hidden"
-  | "catalog"
-  | "search"
+export type ProductVisibilityValue = "visible" | "hidden" | "catalog" | "search"
 
 export type ProductConditionValue =
   | "new"

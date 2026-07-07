@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { useDeleteProductLabel } from "@/hooks/tenant/use-product-label-query"
 import { exportProductLabels } from "@/lib/services/tenant/product-label-service"
@@ -152,7 +152,9 @@ export function ProductLabelsDialogs() {
           >
             <ResponsiveDialogContent>
               <ResponsiveDialogHeader>
-                <ResponsiveDialogTitle>Delete product label?</ResponsiveDialogTitle>
+                <ResponsiveDialogTitle>
+                  Delete product label?
+                </ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to delete a product label with the ID{" "}
                   <strong>{currentRow.id}</strong>. This action cannot be

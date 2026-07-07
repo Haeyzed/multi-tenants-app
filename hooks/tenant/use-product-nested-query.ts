@@ -19,12 +19,12 @@ import {
 } from "@/lib/services/tenant/product-service"
 import {
   type AnswerProductQuestionFormValues,
+  type ProductVideoFormValues,
   type StoreProductDocumentFormValues,
   type StoreProductFaqFormValues,
   type UpdateProductDocumentFormValues,
   type UpdateProductFaqFormValues,
   type UpdateProductReviewFormValues,
-  type ProductVideoFormValues,
 } from "@/schemas/tenant/product-nested-schema"
 
 export const useDuplicateProduct = () => {
@@ -99,7 +99,9 @@ export const useCreateProductDocument = (productId: number) => {
     mutationFn: (payload: StoreProductDocumentFormValues) =>
       createProductDocument(productId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-documents", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-documents", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })
@@ -116,7 +118,9 @@ export const useUpdateProductDocument = (productId: number) => {
       payload: UpdateProductDocumentFormValues
     }) => updateProductDocument(productId, documentId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-documents", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-documents", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })
@@ -125,9 +129,12 @@ export const useUpdateProductDocument = (productId: number) => {
 export const useDeleteProductDocument = (productId: number) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (documentId: number) => deleteProductDocument(productId, documentId),
+    mutationFn: (documentId: number) =>
+      deleteProductDocument(productId, documentId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-documents", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-documents", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })
@@ -151,7 +158,9 @@ export const useUpdateProductReview = (productId: number) => {
       payload: UpdateProductReviewFormValues
     }) => updateProductReview(productId, reviewId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-reviews", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-reviews", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })
@@ -162,7 +171,9 @@ export const useDeleteProductReview = (productId: number) => {
   return useMutation({
     mutationFn: (reviewId: number) => deleteProductReview(productId, reviewId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-reviews", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-reviews", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })
@@ -186,7 +197,9 @@ export const useAnswerProductQuestion = (productId: number) => {
       payload: AnswerProductQuestionFormValues
     }) => answerProductQuestion(productId, questionId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-questions", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-questions", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })
@@ -195,9 +208,12 @@ export const useAnswerProductQuestion = (productId: number) => {
 export const useDeleteProductQuestion = (productId: number) => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (questionId: number) => deleteProductQuestion(productId, questionId),
+    mutationFn: (questionId: number) =>
+      deleteProductQuestion(productId, questionId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-questions", productId] })
+      queryClient.invalidateQueries({
+        queryKey: ["product-questions", productId],
+      })
       queryClient.invalidateQueries({ queryKey: ["products", productId] })
     },
   })

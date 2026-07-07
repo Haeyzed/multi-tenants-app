@@ -26,7 +26,10 @@ type ProductMediaSectionProps = ProductFormSectionProps & {
   product?: Product
 }
 
-export function ProductMediaSection({ form, product }: ProductMediaSectionProps) {
+export function ProductMediaSection({
+  form,
+  product,
+}: ProductMediaSectionProps) {
   const [primaryPreviewUrl, setPrimaryPreviewUrl] = React.useState<
     string | null
   >(() =>
@@ -155,7 +158,9 @@ export function ProductMediaSection({ form, product }: ProductMediaSectionProps)
                         {preview?.url ? (
                           <Image
                             src={preview.url}
-                            alt={item.alt_text ?? preview.name ?? "Gallery image"}
+                            alt={
+                              item.alt_text ?? preview.name ?? "Gallery image"
+                            }
                             width={72}
                             height={72}
                             className="aspect-square w-full rounded-sm object-cover"

@@ -2,7 +2,7 @@
 
 import { useGetTaxClassStatistics } from "@/hooks/tenant/use-tax-class-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Percent, CheckCircle, XCircle, Star } from "lucide-react"
+import { CheckCircle, Percent, Star, XCircle } from "lucide-react"
 
 export function TaxClassStatistics() {
   const { data: stats, isLoading } = useGetTaxClassStatistics()

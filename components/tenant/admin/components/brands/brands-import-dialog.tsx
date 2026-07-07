@@ -2,19 +2,19 @@
 
 import { z } from "zod"
 import * as React from "react"
-import { useForm, Controller } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import {
   FileUpload,
@@ -151,11 +151,13 @@ export function BrandsImportDialog({
                     <FileUploadDropzone className="flex-row flex-wrap border-dotted text-center">
                       <CloudUpload className="mr-2 size-4" />
                       Drag and drop or
-                      <FileUploadTrigger render={
-                        <Button variant="link" size="sm" className="mx-1 p-0">
-                          choose file
-                        </Button>
-                      }/>
+                      <FileUploadTrigger
+                        render={
+                          <Button variant="link" size="sm" className="mx-1 p-0">
+                            choose file
+                          </Button>
+                        }
+                      />
                       to upload
                     </FileUploadDropzone>
 
@@ -164,17 +166,18 @@ export function BrandsImportDialog({
                         <FileUploadItem key={index} value={file}>
                           <FileUploadItemPreview />
                           <FileUploadItemMetadata />
-                          <FileUploadItemDelete render={
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="size-7"
-                            >
-                              <X />
-                              <span className="sr-only">Delete</span>
-                            </Button>
-                          }>
-                          </FileUploadItemDelete>
+                          <FileUploadItemDelete
+                            render={
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-7"
+                              >
+                                <X />
+                                <span className="sr-only">Delete</span>
+                              </Button>
+                            }
+                          ></FileUploadItemDelete>
                         </FileUploadItem>
                       ))}
                     </FileUploadList>

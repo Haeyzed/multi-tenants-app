@@ -62,12 +62,16 @@ export function ModuleViewDialog({
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
       <ResponsiveDialogContent
-        className={contentClassName ?? "max-h-[90vh] overflow-y-auto sm:max-w-lg"}
+        className={
+          contentClassName ?? "max-h-[90vh] overflow-y-auto sm:max-w-lg"
+        }
       >
         <ResponsiveDialogHeader>
           <ResponsiveDialogTitle>{title}</ResponsiveDialogTitle>
           {description ? (
-            <ResponsiveDialogDescription>{description}</ResponsiveDialogDescription>
+            <ResponsiveDialogDescription>
+              {description}
+            </ResponsiveDialogDescription>
           ) : null}
         </ResponsiveDialogHeader>
 
@@ -90,11 +94,7 @@ export function ModuleViewDialog({
   )
 }
 
-export function ModuleViewVisibility({
-  isVisible,
-}: {
-  isVisible: boolean
-}) {
+export function ModuleViewVisibility({ isVisible }: { isVisible: boolean }) {
   return (
     <Status variant={isVisible ? "success" : "default"}>
       <StatusIndicator />

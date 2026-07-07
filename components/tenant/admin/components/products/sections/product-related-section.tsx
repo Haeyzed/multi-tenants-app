@@ -18,11 +18,14 @@ import {
 } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 import { useDebounce } from "@/hooks/useDebounce"
-import { useGetProductOptions, useGetProducts } from "@/hooks/tenant/use-product-query"
+import {
+  useGetProductOptions,
+  useGetProducts,
+} from "@/hooks/tenant/use-product-query"
 import { useSyncProductRelations } from "@/hooks/tenant/use-product-variant-query"
 import {
-  syncProductRelationsSchema,
   type SyncProductRelationsFormValues,
+  syncProductRelationsSchema,
 } from "@/schemas/tenant/product-schema"
 import { type Product, type ProductRelationRef } from "@/types/tenant/product"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
@@ -171,8 +174,7 @@ function RelationPicker({
   const searchResults = React.useMemo(() => {
     return (searchResponse?.data ?? [])
       .filter(
-        (item) =>
-          item.id !== excludeProductId && !selectedIds.includes(item.id)
+        (item) => item.id !== excludeProductId && !selectedIds.includes(item.id)
       )
       .map((item) => ({
         value: item.id,
@@ -240,7 +242,9 @@ function RelationPicker({
                       </div>
                     )}
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">{option.label}</p>
+                      <p className="truncate text-sm font-medium">
+                        {option.label}
+                      </p>
                       <p className="truncate text-xs text-muted-foreground">
                         {option.sku ?? "No SKU"}
                       </p>
@@ -303,7 +307,10 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
     return map
   }, [product, productOptions])
 
-  const addId = (key: keyof SyncProductRelationsFormValues, productId: number) => {
+  const addId = (
+    key: keyof SyncProductRelationsFormValues,
+    productId: number
+  ) => {
     setRelations((current) => {
       if (current[key].includes(productId)) {
         return current
@@ -337,7 +344,8 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
     syncRelations.mutate(parsed.data, {
       onSuccess: (response) =>
         toastApiSuccess(response.message, "Product relations saved"),
-      onError: (error) => toastApiError(error, "Failed to save product relations"),
+      onError: (error) =>
+        toastApiError(error, "Failed to save product relations"),
     })
   }
 
@@ -366,7 +374,9 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
           relatedProducts={product.cross_sell_products}
           optionMap={optionMap}
           onAdd={(productId) => addId("cross_sell_product_ids", productId)}
-          onRemove={(productId) => removeId("cross_sell_product_ids", productId)}
+          onRemove={(productId) =>
+            removeId("cross_sell_product_ids", productId)
+          }
         />
 
         <RelationPicker

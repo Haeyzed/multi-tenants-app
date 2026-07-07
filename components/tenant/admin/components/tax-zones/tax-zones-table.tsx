@@ -31,9 +31,7 @@ export function TaxZonesTable() {
   const { data, isLoading, error } = useGetTaxZones({
     search: name || undefined,
     is_active:
-      status.length > 0
-        ? (status as ("active" | "inactive")[])
-        : undefined,
+      status.length > 0 ? (status as ("active" | "inactive")[]) : undefined,
     per_page: perPage,
     page,
   })
@@ -59,7 +57,16 @@ export function TaxZonesTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "6rem", "8rem", "8rem", "6rem", "6rem", "4rem", "3rem"]}
+        cellWidths={[
+          "auto",
+          "6rem",
+          "8rem",
+          "8rem",
+          "6rem",
+          "6rem",
+          "4rem",
+          "3rem",
+        ]}
       />
     )
   }

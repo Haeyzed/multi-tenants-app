@@ -25,7 +25,11 @@ export function InventoryStatistics() {
   }
 
   const items = [
-    { title: "Inventory records", value: stats?.total_records ?? 0, icon: Package },
+    {
+      title: "Inventory records",
+      value: stats?.total_records ?? 0,
+      icon: Package,
+    },
     { title: "Low stock", value: stats?.low_stock ?? 0, icon: AlertTriangle },
     { title: "Out of stock", value: stats?.out_of_stock ?? 0, icon: PackageX },
     {

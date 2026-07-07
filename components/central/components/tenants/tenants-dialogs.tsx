@@ -6,12 +6,12 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import {
   useActivateTenant,
@@ -72,9 +72,7 @@ export function TenantsDialogs() {
 
       mutation.mutate(currentRow.id, {
         onSuccess: () => {
-          toast.success(
-            `Tenant "${currentRow.name}" ${pastTense} successfully`
-          )
+          toast.success(`Tenant "${currentRow.name}" ${pastTense} successfully`)
           setIsMutating(false)
           handleClose()
         },
@@ -211,8 +209,8 @@ export function TenantsDialogs() {
                 <ResponsiveDialogTitle>Activate tenant?</ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to activate tenant{" "}
-                  <strong>{currentRow.name}</strong>. They will regain access
-                  to their workspace.
+                  <strong>{currentRow.name}</strong>. They will regain access to
+                  their workspace.
                 </ResponsiveDialogDescription>
               </ResponsiveDialogHeader>
               <ResponsiveDialogFooter>
@@ -241,8 +239,8 @@ export function TenantsDialogs() {
                 <ResponsiveDialogTitle>Suspend tenant?</ResponsiveDialogTitle>
                 <ResponsiveDialogDescription>
                   You are about to suspend tenant{" "}
-                  <strong>{currentRow.name}</strong>. They will immediately
-                  lose access to their workspace.
+                  <strong>{currentRow.name}</strong>. They will immediately lose
+                  access to their workspace.
                 </ResponsiveDialogDescription>
               </ResponsiveDialogHeader>
               <ResponsiveDialogFooter>

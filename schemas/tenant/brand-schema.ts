@@ -6,7 +6,8 @@ const optionalUrl = z
   .nullable()
   .optional()
   .refine(
-    (value) => !value || value === "" || z.string().url().safeParse(value).success,
+    (value) =>
+      !value || value === "" || z.string().url().safeParse(value).success,
     { message: "Must be a valid URL" }
   )
 

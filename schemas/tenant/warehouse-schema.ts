@@ -47,10 +47,12 @@ export const storeWarehouseZoneSchema = z.object({
   sort_order: z.number().int().min(0).nullable().optional(),
 })
 
-export const updateWarehouseZoneSchema = storeWarehouseZoneSchema.partial().extend({
-  name: z.string().min(1, "Name is required").max(255).optional(),
-  code: z.string().min(1, "Code is required").max(50).optional(),
-})
+export const updateWarehouseZoneSchema = storeWarehouseZoneSchema
+  .partial()
+  .extend({
+    name: z.string().min(1, "Name is required").max(255).optional(),
+    code: z.string().min(1, "Code is required").max(50).optional(),
+  })
 
 export const storeWarehouseLocationSchema = z.object({
   zone_id: z.number().int().nullable().optional(),
@@ -63,14 +65,17 @@ export const storeWarehouseLocationSchema = z.object({
   is_picking_location: z.boolean().optional(),
 })
 
-export const updateWarehouseLocationSchema =
-  storeWarehouseLocationSchema.partial().extend({
+export const updateWarehouseLocationSchema = storeWarehouseLocationSchema
+  .partial()
+  .extend({
     code: z.string().min(1, "Code is required").max(50).optional(),
   })
 
 export type StoreWarehouseFormValues = z.infer<typeof storeWarehouseSchema>
 export type UpdateWarehouseFormValues = z.infer<typeof updateWarehouseSchema>
-export type StoreWarehouseZoneFormValues = z.infer<typeof storeWarehouseZoneSchema>
+export type StoreWarehouseZoneFormValues = z.infer<
+  typeof storeWarehouseZoneSchema
+>
 export type UpdateWarehouseZoneFormValues = z.infer<
   typeof updateWarehouseZoneSchema
 >

@@ -2,7 +2,7 @@
 
 import { useGetPlanStatistics } from "@/hooks/central/use-plan-query"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CreditCard, CheckCircle2, XCircle, Star } from "lucide-react"
+import { CheckCircle2, CreditCard, Star, XCircle } from "lucide-react"
 
 export function PlanStatistics() {
   const { data: stats, isLoading } = useGetPlanStatistics()

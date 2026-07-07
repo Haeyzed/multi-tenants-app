@@ -8,12 +8,12 @@ import { Edit, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
   ResponsiveDialogHeader,
   ResponsiveDialogTitle,
-  ResponsiveDialogClose,
 } from "@/components/ui/responsive-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -51,10 +51,10 @@ import {
   type WarehouseZone,
 } from "@/types/tenant/warehouse"
 import {
-  storeWarehouseLocationSchema,
-  updateWarehouseLocationSchema,
   type StoreWarehouseLocationFormValues,
+  storeWarehouseLocationSchema,
   type UpdateWarehouseLocationFormValues,
+  updateWarehouseLocationSchema,
 } from "@/schemas/tenant/warehouse-schema"
 
 type WarehousesManageLocationsDialogProps = {
@@ -182,7 +182,11 @@ export function WarehousesManageLocationsDialog({
             form.reset()
           },
           onError: (error) => {
-            handleFormApiError(error, form.setError, "Failed to update location")
+            handleFormApiError(
+              error,
+              form.setError,
+              "Failed to update location"
+            )
           },
         }
       )
@@ -246,67 +250,65 @@ export function WarehousesManageLocationsDialog({
               <div className="max-h-[min(50dvh,360px)] overflow-auto rounded-md border">
                 <div className="min-w-full overflow-x-auto">
                   <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Code</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Zone</TableHead>
-                    <TableHead>Max Weight</TableHead>
-                    <TableHead>Max Volume</TableHead>
-                    <TableHead>Active</TableHead>
-                    <TableHead>Picking</TableHead>
-                    <TableHead className="w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {locations.map((location) => (
-                    <TableRow key={location.id}>
-                      <TableCell className="font-mono text-sm">
-                        {location.code}
-                      </TableCell>
-                      <TableCell>{location.name || "—"}</TableCell>
-                      <TableCell>
-                        {location.zone?.name || "—"}
-                      </TableCell>
-                      <TableCell>{location.max_weight ?? "—"}</TableCell>
-                      <TableCell>{location.max_volume ?? "—"}</TableCell>
-                      <TableCell>
-                        {location.is_active ? (
-                          <Badge variant="secondary">Active</Badge>
-                        ) : (
-                          "Inactive"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {location.is_picking_location ? (
-                          <Badge variant="secondary">Yes</Badge>
-                        ) : (
-                          "—"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => openEditForm(location)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => setDeletingLocation(location)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Code</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Zone</TableHead>
+                        <TableHead>Max Weight</TableHead>
+                        <TableHead>Max Volume</TableHead>
+                        <TableHead>Active</TableHead>
+                        <TableHead>Picking</TableHead>
+                        <TableHead className="w-24">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {locations.map((location) => (
+                        <TableRow key={location.id}>
+                          <TableCell className="font-mono text-sm">
+                            {location.code}
+                          </TableCell>
+                          <TableCell>{location.name || "—"}</TableCell>
+                          <TableCell>{location.zone?.name || "—"}</TableCell>
+                          <TableCell>{location.max_weight ?? "—"}</TableCell>
+                          <TableCell>{location.max_volume ?? "—"}</TableCell>
+                          <TableCell>
+                            {location.is_active ? (
+                              <Badge variant="secondary">Active</Badge>
+                            ) : (
+                              "Inactive"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {location.is_picking_location ? (
+                              <Badge variant="secondary">Yes</Badge>
+                            ) : (
+                              "—"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={() => openEditForm(location)}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive"
+                                onClick={() => setDeletingLocation(location)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
                   </Table>
                 </div>
               </div>
@@ -343,11 +345,11 @@ export function WarehousesManageLocationsDialog({
             </ResponsiveDialogDescription>
           </ResponsiveDialogHeader>
 
-            <form
-              id="warehouse-location-form"
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-4"
-            >
+          <form
+            id="warehouse-location-form"
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <Field>
               <FieldLabel>Zone</FieldLabel>
               <FieldContent>
@@ -449,7 +451,7 @@ export function WarehousesManageLocationsDialog({
                 </label>
               </div>
             </div>
-            </form>
+          </form>
 
           <ResponsiveDialogFooter>
             <ResponsiveDialogClose

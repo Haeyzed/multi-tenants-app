@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import { type Table } from "@tanstack/react-table"
-import { Trash2, Download } from "lucide-react"
+import { Download, Trash2 } from "lucide-react"
 import {
   ActionBar,
+  ActionBarClose,
   ActionBarGroup,
   ActionBarItem,
   ActionBarSelection,
-  ActionBarClose,
 } from "@/components/ui/action-bar"
 import { type Tag } from "@/types/tenant/tag"
 import { useTags } from "./tags-provider"
@@ -17,9 +17,7 @@ type TagsBulkActionsProps<TData> = {
   table: Table<TData>
 }
 
-export function TagsBulkActions<TData>({
-  table,
-}: TagsBulkActionsProps<TData>) {
+export function TagsBulkActions<TData>({ table }: TagsBulkActionsProps<TData>) {
   const { setOpen, setExportSelection, setDeleteManySelection } = useTags()
   const selectedRows = table.getFilteredSelectedRowModel().rows
 

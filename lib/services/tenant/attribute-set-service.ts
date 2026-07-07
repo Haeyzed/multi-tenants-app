@@ -1,6 +1,6 @@
 import { Attribute } from "@/types/tenant/attribute"
 import { AttributeSet, AttributeSetOption } from "@/types/tenant/attribute-set"
-import { ExportParams, AttributeSetStatistics } from "@/types/tenant/export"
+import { AttributeSetStatistics, ExportParams } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -73,7 +73,9 @@ export const deleteAttributeSet = async (id: number): Promise<void> => {
   await tenantApiClient.delete<ApiResponse<void>>(`/attribute-sets/${id}`)
 }
 
-export const getAttributeSetOptions = async (): Promise<AttributeSetOption[]> => {
+export const getAttributeSetOptions = async (): Promise<
+  AttributeSetOption[]
+> => {
   const response = await tenantApiClient.get<ApiResponse<AttributeSetOption[]>>(
     "/attribute-sets/options"
   )

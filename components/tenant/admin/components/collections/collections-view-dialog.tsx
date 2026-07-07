@@ -5,8 +5,8 @@ import { format } from "date-fns"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import {
   ModuleViewDialog,
-  ModuleViewVisibility,
   type ModuleViewField,
+  ModuleViewVisibility,
 } from "@/components/tenant/admin/components/shared/module-view-dialog"
 import { Badge } from "@/components/ui/badge"
 import { type Collection } from "@/types/tenant/collection"
@@ -61,7 +61,11 @@ function getCollectionViewFields(collection: Collection): ModuleViewField[] {
     {
       label: "Image",
       value: collection.image?.url ? (
-        <MediaThumbnail media={collection.image} alt={collection.name} size="md" />
+        <MediaThumbnail
+          media={collection.image}
+          alt={collection.name}
+          size="md"
+        />
       ) : (
         "—"
       ),

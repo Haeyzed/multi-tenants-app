@@ -18,11 +18,7 @@ export function AuthBrandHeader({ fallback = "Store" }: AuthBrandHeaderProps) {
         <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
           <GalleryVerticalEndIcon className="size-4" />
         </div>
-        {isLoading ? (
-          <Skeleton className="h-5 w-28" />
-        ) : (
-          brandName || fallback
-        )}
+        {isLoading ? <Skeleton className="h-5 w-28" /> : brandName || fallback}
       </a>
     </div>
   )

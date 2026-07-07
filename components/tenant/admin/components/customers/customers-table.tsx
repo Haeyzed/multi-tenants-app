@@ -31,9 +31,7 @@ export function CustomersTable() {
   const { data, isLoading, error } = useGetCustomers({
     search: fullName || undefined,
     is_active:
-      isActive.length > 0
-        ? (isActive as ("active" | "inactive")[])
-        : undefined,
+      isActive.length > 0 ? (isActive as ("active" | "inactive")[]) : undefined,
     per_page: perPage,
     page,
   })
@@ -65,7 +63,10 @@ export function CustomersTable() {
 
   return (
     <div className="data-table-container space-y-4">
-      <DataTable table={table} actionBar={<CustomersBulkActions table={table} />}>
+      <DataTable
+        table={table}
+        actionBar={<CustomersBulkActions table={table} />}
+      >
         <DataTableToolbar table={table} />
       </DataTable>
     </div>

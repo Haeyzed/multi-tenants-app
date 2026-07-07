@@ -25,7 +25,11 @@ export function ThemeSwitch() {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon" className="scale-95 rounded-full" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="scale-95 rounded-full"
+          />
         }
       >
         <SunIcon className="size-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />

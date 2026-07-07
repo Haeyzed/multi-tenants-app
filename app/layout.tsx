@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
 import "./globals.css"
@@ -16,28 +16,31 @@ const fontMono = Geist_Mono({
 })
 
 export default function RootLayout({
-                                     children,
-                                   }: Readonly<{
+  children,
+}: Readonly<{
   children: React.ReactNode
 }>) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        inter.variable
+      )}
     >
-    <body>
-    <ThemeProvider>
-      <TanstackProvider>
-        <TooltipProvider>
-          <NuqsAdapter>
-            {children}
-          </NuqsAdapter>
-          <Toaster richColors closeButton />
-        </TooltipProvider>
-      </TanstackProvider>
-    </ThemeProvider>
-    </body>
+      <body>
+        <ThemeProvider>
+          <TanstackProvider>
+            <TooltipProvider>
+              <NuqsAdapter>{children}</NuqsAdapter>
+              <Toaster richColors closeButton />
+            </TooltipProvider>
+          </TanstackProvider>
+        </ThemeProvider>
+      </body>
     </html>
   )
 }

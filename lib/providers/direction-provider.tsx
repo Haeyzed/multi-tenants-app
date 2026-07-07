@@ -1,10 +1,10 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
+import { createContext, useContext, useEffect, useState } from "react"
+import { getCookie, removeCookie, setCookie } from "@/lib/cookies"
 
-export type Direction = 'ltr' | 'rtl'
+export type Direction = "ltr" | "rtl"
 
-const DEFAULT_DIRECTION = 'ltr'
-const DIRECTION_COOKIE_NAME = 'dir'
+const DEFAULT_DIRECTION = "ltr"
+const DIRECTION_COOKIE_NAME = "dir"
 const DIRECTION_COOKIE_MAX_AGE = 60 * 60 * 24 * 365 // 1 year
 
 type DirectionContextType = {
@@ -23,7 +23,7 @@ export function DirectionProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const htmlElement = document.documentElement
-    htmlElement.setAttribute('dir', dir)
+    htmlElement.setAttribute("dir", dir)
   }, [dir])
 
   const setDir = (dir: Direction) => {
@@ -54,7 +54,7 @@ export function DirectionProvider({ children }: { children: React.ReactNode }) {
 export function useDirection() {
   const context = useContext(DirectionContext)
   if (!context) {
-    throw new Error('useDirection must be used within a DirectionProvider')
+    throw new Error("useDirection must be used within a DirectionProvider")
   }
   return context
 }

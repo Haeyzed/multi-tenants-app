@@ -43,8 +43,7 @@ export function CollectionsTable() {
       visibility.length > 0
         ? (visibility as ("visible" | "hidden")[])
         : undefined,
-    is_featured:
-      featured.length > 0 ? featured[0] === "true" : undefined,
+    is_featured: featured.length > 0 ? featured[0] === "true" : undefined,
     type: type.length > 0 ? (type[0] as CollectionType) : undefined,
     per_page: perPage,
     page,
@@ -71,7 +70,16 @@ export function CollectionsTable() {
         columnCount={COLUMN_COUNT}
         rowCount={perPage}
         filterCount={FILTER_COUNT}
-        cellWidths={["auto", "10rem", "8rem", "8rem", "8rem", "6rem", "6rem", "3rem"]}
+        cellWidths={[
+          "auto",
+          "10rem",
+          "8rem",
+          "8rem",
+          "8rem",
+          "6rem",
+          "6rem",
+          "3rem",
+        ]}
       />
     )
   }

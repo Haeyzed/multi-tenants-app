@@ -23,16 +23,17 @@ type ProductLabelsContextType = {
   currentRow: ProductLabel | null
   setCurrentRow: React.Dispatch<React.SetStateAction<ProductLabel | null>>
   exportSelection: ExportSelection | null
-  setExportSelection: React.Dispatch<React.SetStateAction<ExportSelection | null>>
+  setExportSelection: React.Dispatch<
+    React.SetStateAction<ExportSelection | null>
+  >
   deleteManySelection: BulkDeleteSelection | null
   setDeleteManySelection: React.Dispatch<
     React.SetStateAction<BulkDeleteSelection | null>
   >
 }
 
-const ProductLabelsContext = React.createContext<ProductLabelsContextType | null>(
-  null
-)
+const ProductLabelsContext =
+  React.createContext<ProductLabelsContextType | null>(null)
 
 export function ProductLabelsProvider({
   children,
@@ -41,9 +42,8 @@ export function ProductLabelsProvider({
 }) {
   const [open, setOpen] = useDialogState<ProductLabelsDialogType>(null)
   const [currentRow, setCurrentRow] = useState<ProductLabel | null>(null)
-  const [exportSelection, setExportSelection] = useState<ExportSelection | null>(
-    null
-  )
+  const [exportSelection, setExportSelection] =
+    useState<ExportSelection | null>(null)
   const [deleteManySelection, setDeleteManySelection] =
     useState<BulkDeleteSelection | null>(null)
 
@@ -69,7 +69,9 @@ export const useProductLabels = () => {
   const productLabelsContext = React.useContext(ProductLabelsContext)
 
   if (!productLabelsContext) {
-    throw new Error("useProductLabels has to be used within <ProductLabelsProvider>")
+    throw new Error(
+      "useProductLabels has to be used within <ProductLabelsProvider>"
+    )
   }
 
   return productLabelsContext

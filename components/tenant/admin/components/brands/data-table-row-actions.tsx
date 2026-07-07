@@ -71,7 +71,9 @@ export function DataTableRowActions<TData>({
               toggleVisibility.mutate(brand.id, {
                 onSuccess: (updated) => {
                   toast.success(
-                    updated.is_visible ? "Brand is now visible" : "Brand is now hidden"
+                    updated.is_visible
+                      ? "Brand is now visible"
+                      : "Brand is now hidden"
                   )
                 },
                 onError: (error) => {
@@ -98,7 +100,9 @@ export function DataTableRowActions<TData>({
                   )
                 },
                 onError: (error) => {
-                  toast.error(error.message || "Failed to update featured status")
+                  toast.error(
+                    error.message || "Failed to update featured status"
+                  )
                 },
               })
             }}
