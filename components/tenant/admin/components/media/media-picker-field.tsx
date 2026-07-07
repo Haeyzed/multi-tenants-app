@@ -3,9 +3,11 @@
 import * as React from "react"
 
 import { MediaPickerDialog } from "@/components/tenant/admin/components/media/media-picker-dialog"
+import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Button } from "@/components/ui/button"
 import { Field, FieldContent, FieldLabel } from "@/components/ui/field"
+import { isMediaImage } from "@/lib/tenant/media-file-kind"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import type { MediaItem } from "@/types/tenant/media"
 
@@ -27,10 +29,19 @@ export function MediaPickerField({
   accept = "image/*",
 }: MediaPickerFieldProps) {
   const [open, setOpen] = React.useState(false)
+  const [selectedMedia, setSelectedMedia] = React.useState<MediaItem | null>(null)
 
   const displayUrl = previewUrl
     ? resolveTenantMediaUrl({ url: previewUrl, path: null })
-    : null
+    : selectedMedia?.url
+      ? resolveTenantMediaUrl(selectedMedia)
+      : null
+  const previewItem = selectedMedia ?? (displayUrl ? { url: displayUrl, name: previewTitle ?? undefined } : null)
+  const previewLabel =
+    previewTitle ??
+    (selectedMedia ? (selectedMedia.title ?? selectedMedia.name) : previewTitle) ??
+    previewItem?.name
+  const showImagePreview = Boolean(previewItem && isMediaImage(previewItem))
 
   return (
     <>
@@ -39,18 +50,24 @@ export function MediaPickerField({
         <FieldContent>
           <div className="flex items-start gap-3 rounded-lg border p-3">
             <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-muted">
-              {displayUrl ? (
+              {showImagePreview && displayUrl ? (
                 <MediaThumbnail
-                  media={{ url: displayUrl, name: previewTitle }}
-                  alt={previewTitle ?? "Selected media"}
+                  media={{ url: displayUrl, name: previewTitle ?? previewItem?.name }}
+                  alt={previewTitle ?? previewItem?.name ?? "Selected media"}
                   size="sm"
                   className="size-16"
                 />
+              ) : previewItem ? (
+                <MediaFileIcon item={previewItem} size="md" />
               ) : (
                 <span className="text-xs text-muted-foreground">No file</span>
               )}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              {previewItem && !showImagePreview ? (
+                <p className="truncate text-sm font-medium">{previewLabel}</p>
+              ) : null}
+              <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -65,11 +82,15 @@ export function MediaPickerField({
                   variant="outline"
                   size="sm"
                   className="text-destructive hover:bg-destructive/10"
-                  onClick={() => onChange(null, null)}
+                  onClick={() => {
+                    setSelectedMedia(null)
+                    onChange(null, null)
+                  }}
                 >
                   Remove
                 </Button>
               ) : null}
+              </div>
             </div>
           </div>
         </FieldContent>
@@ -79,7 +100,10 @@ export function MediaPickerField({
         open={open}
         onOpenChange={setOpen}
         value={value}
-        onSelect={(item) => onChange(item?.id ?? null, item)}
+        onSelect={(item) => {
+          setSelectedMedia(item)
+          onChange(item?.id ?? null, item)
+        }}
         accept={accept}
       />
     </>

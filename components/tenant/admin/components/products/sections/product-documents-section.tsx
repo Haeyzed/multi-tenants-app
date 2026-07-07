@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Plus, Trash2 } from "lucide-react"
+import { Download, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,7 +31,12 @@ import {
   useDeleteProductDocument,
   useGetProductDocuments,
 } from "@/hooks/tenant/use-product-nested-query"
+import { DOCUMENT_MEDIA_ACCEPT } from "@/lib/tenant/media-file-kind"
+import { downloadMediaItem } from "@/lib/tenant/media-download"
+import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
 import { type Product } from "@/types/tenant/product"
+import { type ProductDocument } from "@/types/tenant/product-nested"
+import { type MediaItem } from "@/types/tenant/media"
 import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 
 const documentTypeOptions = [
@@ -45,8 +50,38 @@ type ProductDocumentsSectionProps = {
   product: Product
 }
 
+function resolveDocumentMedia(productDocument: ProductDocument): MediaItem | null {
+  const source = productDocument.media
+  const url = source?.url
+    ? resolveTenantMediaUrl(source)
+    : productDocument.media_url
+      ? resolveTenantMediaUrl({ url: productDocument.media_url, path: null })
+      : null
+
+  if (!url) {
+    return null
+  }
+
+  return {
+    id: source?.id ?? productDocument.media_id ?? 0,
+    folder_id: null,
+    name: source?.name ?? productDocument.title,
+    title: productDocument.title,
+    alt_text: null,
+    file_name: source?.file_name ?? productDocument.title,
+    mime_type: source?.mime_type ?? null,
+    disk: "",
+    size: 0,
+    url,
+    uploaded_by: null,
+    created_at: null,
+    updated_at: null,
+  }
+}
+
 export function ProductDocumentsSection({ product }: ProductDocumentsSectionProps) {
-  const { data: documents = [], isLoading } = useGetProductDocuments(product.id)
+  const { data: documents = [] as ProductDocument[], isLoading } =
+    useGetProductDocuments(product.id)
   const createDocument = useCreateProductDocument(product.id)
   const deleteDocument = useDeleteProductDocument(product.id)
 
@@ -58,6 +93,29 @@ export function ProductDocumentsSection({ product }: ProductDocumentsSectionProp
   const selectedType =
     documentTypeOptions.find((item) => item.value === documentType) ??
     documentTypeOptions[0]
+
+  const handleMediaChange = (id: number | null, media?: MediaItem | null) => {
+    setMediaId(id)
+
+    if (media && !title.trim()) {
+      setTitle(media.title ?? media.name ?? "")
+    }
+  }
+
+  const handleDownload = async (productDocument: ProductDocument) => {
+    const media = resolveDocumentMedia(productDocument)
+
+    if (!media?.url) {
+      toast.error("Download URL is not available for this document")
+      return
+    }
+
+    try {
+      await downloadMediaItem(media)
+    } catch {
+      toast.error("Failed to download document")
+    }
+  }
 
   const handleAdd = () => {
     if (!mediaId || !title.trim()) {
@@ -91,15 +149,16 @@ export function ProductDocumentsSection({ product }: ProductDocumentsSectionProp
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Attach manuals, datasheets, certificates, or warranty PDFs (separate
-          from digital download files).
+          Attach manuals, datasheets, certificates, or warranty files (PDF, Word,
+          Excel, PowerPoint, and more). Separate from digital download files.
         </p>
 
         <div className="space-y-3 rounded-lg border p-4">
           <MediaPickerField
             label="File"
             value={mediaId}
-            onChange={(id) => setMediaId(id)}
+            onChange={handleMediaChange}
+            accept={DOCUMENT_MEDIA_ACCEPT}
           />
           <Field>
             <FieldLabel>Title</FieldLabel>
@@ -171,34 +230,45 @@ export function ProductDocumentsSection({ product }: ProductDocumentsSectionProp
                 <TableHead>Title</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Public</TableHead>
-                <TableHead className="w-[60px]" />
+                <TableHead className="w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {documents.map((document) => (
-                <TableRow key={document.id}>
-                  <TableCell>{document.title}</TableCell>
+              {documents.map((productDocument) => (
+                <TableRow key={productDocument.id}>
+                  <TableCell>{productDocument.title}</TableCell>
                   <TableCell className="capitalize">
-                    {document.document_type}
+                    {productDocument.document_type}
                   </TableCell>
-                  <TableCell>{document.is_public ? "Yes" : "No"}</TableCell>
+                  <TableCell>{productDocument.is_public ? "Yes" : "No"}</TableCell>
                   <TableCell>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-xs"
-                      className="text-destructive"
-                      onClick={() =>
-                        deleteDocument.mutate(document.id, {
-                          onSuccess: (response) =>
-                            toastApiSuccess(response.message, "Document removed"),
-                          onError: (error) =>
-                            toastApiError(error, "Failed to remove document"),
-                        })
-                      }
-                    >
-                      <Trash2 className="size-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-xs"
+                        onClick={() => handleDownload(productDocument)}
+                        aria-label={`Download ${productDocument.title}`}
+                      >
+                        <Download className="size-3.5" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-xs"
+                        className="text-destructive"
+                        onClick={() =>
+                          deleteDocument.mutate(productDocument.id, {
+                            onSuccess: (response) =>
+                              toastApiSuccess(response.message, "Document removed"),
+                            onError: (error) =>
+                              toastApiError(error, "Failed to remove document"),
+                          })
+                        }
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
