@@ -1,23 +1,13 @@
 import { Tag, TagOption } from "@/types/tenant/tag"
 import { ExportParams, TagStatistics } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreTagFormValues,
   UpdateTagFormValues,
 } from "@/schemas/tenant/tag-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getTags = async (params?: {
   search?: string
@@ -45,36 +35,49 @@ export const getTag = async (id: number): Promise<Tag> => {
   return response.data
 }
 
-export const createTag = async (tag: StoreTagFormValues): Promise<Tag> => {
+export const createTag = async (
+  tag: StoreTagFormValues
+): Promise<ApiMutationResult<Tag>> => {
   const response = await tenantApiClient.post<ApiResponse<Tag>>("/tags", tag)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateTag = async (
   id: number,
   tag: UpdateTagFormValues
-): Promise<Tag> => {
+): Promise<ApiMutationResult<Tag>> => {
   const response = await tenantApiClient.put<ApiResponse<Tag>>(
     `/tags/${id}`,
     tag
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteTag = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/tags/${id}`)
+export const deleteTag = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(`/tags/${id}`)
+  return { data: null, message: response.message }
 }
 
-export const toggleTagVisibility = async (id: number): Promise<Tag> => {
+export const toggleTagVisibility = async (
+  id: number
+): Promise<ApiMutationResult<Tag>> => {
   const response = await tenantApiClient.post<ApiResponse<Tag>>(
     `/tags/${id}/toggle-visibility`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const reorderTags = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.put<ApiResponse<void>>("/tags/reorder", { ids })
+export const reorderTags = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.put<ApiResponse<void>>(
+    "/tags/reorder",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
 export const getTagOptions = async (): Promise<TagOption[]> => {
@@ -89,11 +92,19 @@ export const getTagStatistics = async (): Promise<TagStatistics> => {
   return response.data
 }
 
-export const deleteManyTags = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/tags/bulk", { ids })
+export const deleteManyTags = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/tags/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
-export const exportTags = async (params: ExportParams): Promise<void> => {
+export const exportTags = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -105,8 +116,11 @@ export const exportTags = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/tags/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/tags/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -125,8 +139,14 @@ export const downloadTagsImportSample = async (
   )
 }
 
-export const importTags = async (file: File): Promise<void> => {
+export const importTags = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/tags/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
+    "/tags/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -217,8 +217,8 @@ export function CategoriesFormDialog({
       updateCategory.mutate(
         { id: currentRow.id, category: payload as UpdateCategoryFormValues },
         {
-          onSuccess: () => {
-            toast.success("Category updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Category updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -233,9 +233,9 @@ export function CategoriesFormDialog({
       )
     } else {
       createCategory.mutate(payload as StoreCategoryFormValues, {
-        onSuccess: (created) => {
-          toast.success("Category created successfully")
-          onCreated?.(created)
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Category created successfully")
+          onCreated?.(result.data)
           onOpenChange(false)
           form.reset()
         },

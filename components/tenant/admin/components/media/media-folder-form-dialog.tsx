@@ -1,8 +1,7 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
-import { toast } from "sonner"
-
 import {
   useCreateMediaFolder,
   useUpdateMediaFolder,
@@ -60,14 +59,12 @@ export function MediaFolderFormDialog({
           payload: { name: name.trim() },
         },
         {
-          onSuccess: (updated) => {
-            toast.success("Folder renamed successfully")
-            onUpdated?.(updated)
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Folder renamed successfully")
+            onUpdated?.(result.data)
             onOpenChange(false)
           },
-          onError: (error) => {
-            toast.error(error.message || "Unable to rename folder")
-          },
+          onError: (error) => toastApiError(error, "Unable to rename folder"),
         }
       )
       return
@@ -79,14 +76,12 @@ export function MediaFolderFormDialog({
         parent_id: parentId,
       },
       {
-        onSuccess: (created) => {
-          toast.success("Folder created successfully")
-          onCreated?.(created)
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Folder created successfully")
+          onCreated?.(result.data)
           onOpenChange(false)
         },
-        onError: (error) => {
-          toast.error(error.message || "Unable to create folder")
-        },
+        onError: (error) => toastApiError(error, "Unable to create folder"),
       }
     )
   }

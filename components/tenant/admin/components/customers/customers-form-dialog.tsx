@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { format } from "date-fns"
 import { Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -171,8 +171,8 @@ export function CustomersFormDialog({
       updateCustomer.mutate(
         { id: currentRow.id, customer: payload as UpdateCustomerFormValues },
         {
-          onSuccess: () => {
-            toast.success("Customer updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Customer updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -187,8 +187,8 @@ export function CustomersFormDialog({
       )
     } else {
       createCustomer.mutate(payload as StoreCustomerFormValues, {
-        onSuccess: () => {
-          toast.success("Customer created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Customer created successfully")
           onOpenChange(false)
           form.reset()
         },

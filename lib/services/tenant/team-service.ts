@@ -1,4 +1,5 @@
 import { tenantApiClient } from "./api-client"
+import { type ApiResponse } from "@/lib/api-response"
 import { PaginatedResponse } from "@/types/central/pagination"
 
 export interface TeamMember {
@@ -7,13 +8,6 @@ export interface TeamMember {
   email: string
   phone?: string | null
   is_active?: boolean
-}
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: PaginatedResponse<unknown>["meta"]
 }
 
 export const getTeamMembers = async (params?: {

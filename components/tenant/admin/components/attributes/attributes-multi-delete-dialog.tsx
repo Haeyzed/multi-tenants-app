@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { useState } from "react"
 import { AlertTriangle } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -39,22 +39,24 @@ export function AttributesMultiDeleteDialog({
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
-      toast.error(`Please type "${CONFIRM_WORD}" to confirm.`)
+      toastApiError(
+        new Error(`Please type "${CONFIRM_WORD}" to confirm.`),
+        `Please type "${CONFIRM_WORD}" to confirm.`
+      )
       return
     }
 
     deleteMany.mutate(ids, {
-      onSuccess: () => {
-        toast.success(
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
           `Deleted ${ids.length} ${ids.length > 1 ? "attributes" : "attribute"}`
         )
         setValue("")
         onComplete?.()
         onOpenChange(false)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete attributes")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete attributes"),
     })
   }
 

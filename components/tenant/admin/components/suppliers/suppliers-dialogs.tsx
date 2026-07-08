@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteSupplier } from "@/hooks/tenant/use-supplier-query"
 import { exportSuppliers } from "@/lib/services/tenant/supplier-service"
 import { SUPPLIER_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { SuppliersFormDialog } from "./suppliers-form-dialog"
 import { SuppliersViewDialog } from "./suppliers-view-dialog"
 import { SuppliersImportDialog } from "./suppliers-import-dialog"
@@ -44,8 +44,11 @@ export function SuppliersDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteSupplier.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Supplier "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Supplier "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -53,7 +56,7 @@ export function SuppliersDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete supplier")
+        toastApiError(error, "Failed to delete supplier")
         setIsDeleting(false)
       },
     })
@@ -77,7 +80,7 @@ export function SuppliersDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="suppliers-export"
         open={open === "export"}
         onOpenChange={(val) => {

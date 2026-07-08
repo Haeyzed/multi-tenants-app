@@ -1,7 +1,7 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -76,13 +76,11 @@ export function AttributeSetsManageAttributesDialog({
 
   const handleSave = () => {
     syncAttributes.mutate(selectedIds, {
-      onSuccess: () => {
-        toast.success("Attributes synced successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Attributes synced successfully")
         onOpenChange(false)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to sync attributes")
-      },
+      onError: (error) => toastApiError(error, "Failed to sync attributes"),
     })
   }
 

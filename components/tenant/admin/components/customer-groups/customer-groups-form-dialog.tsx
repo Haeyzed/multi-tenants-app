@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -100,9 +100,12 @@ export function CustomerGroupsFormDialog({
       updateGroup.mutate(
         { id: currentRow.id, group: payload as UpdateCustomerGroupFormValues },
         {
-          onSuccess: (group) => {
-            toast.success("Customer group updated successfully")
-            onSuccess?.(group)
+          onSuccess: (result) => {
+            toastApiSuccess(
+              result.message,
+              "Customer group updated successfully"
+            )
+            onSuccess?.(result.data)
             onOpenChange(false)
             form.reset()
           },
@@ -117,9 +120,9 @@ export function CustomerGroupsFormDialog({
       )
     } else {
       createGroup.mutate(payload as StoreCustomerGroupFormValues, {
-        onSuccess: (group) => {
-          toast.success("Customer group created successfully")
-          onSuccess?.(group)
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Customer group created successfully")
+          onSuccess?.(result.data)
           onOpenChange(false)
           form.reset()
         },

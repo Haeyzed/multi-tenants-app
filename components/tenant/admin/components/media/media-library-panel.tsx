@@ -1,5 +1,6 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   ChevronRightIcon,
   CopyIcon,
@@ -13,8 +14,6 @@ import {
   UploadIcon,
 } from "lucide-react"
 import * as React from "react"
-import { toast } from "sonner"
-
 import { MediaBulkDeleteDialog } from "@/components/tenant/admin/components/media/media-bulk-delete-dialog"
 import { MediaFolderDeleteDialog } from "@/components/tenant/admin/components/media/media-folder-delete-dialog"
 import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
@@ -285,11 +284,12 @@ export function MediaLibraryPanel({
             setPage(1)
             setSelectedIds([])
             await queryClient.refetchQueries({ queryKey: ["media"] })
-            toast.success(`${result.uploaded} file(s) uploaded successfully`)
+            toastApiSuccess(
+              result.message,
+              `${result.data.uploaded} file(s) uploaded successfully`
+            )
           },
-          onError: (error) => {
-            toast.error(error.message || "Failed to upload files")
-          },
+          onError: (error) => toastApiError(error, "Failed to upload files"),
         }
       )
     },
@@ -347,8 +347,9 @@ export function MediaLibraryPanel({
 
   function handleDeleteItem(id: number) {
     deleteMediaMutation.mutate(id, {
-      onSuccess: () => toast.success("File deleted successfully"),
-      onError: (error) => toast.error(error.message || "Failed to delete file"),
+      onSuccess: (result) =>
+        toastApiSuccess(result.message, "File deleted successfully"),
+      onError: (error) => toastApiError(error, "Failed to delete file"),
     })
   }
 
@@ -356,17 +357,15 @@ export function MediaLibraryPanel({
     if (!folderDeleteTarget) return
 
     deleteFolderMutation.mutate(folderDeleteTarget.id, {
-      onSuccess: () => {
-        toast.success("Folder deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Folder deleted successfully")
         if (folderId === folderDeleteTarget.id) {
           setFolderId(null)
           setPage(1)
         }
         setFolderDeleteTarget(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete folder")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete folder"),
     })
   }
 
@@ -375,19 +374,18 @@ export function MediaLibraryPanel({
 
     removeBackgroundMutation.mutate(item.id, {
       onSuccess: (result) => {
-        if (result.status === "queued") {
-          toast.success(
+        if (result.data.status === "queued") {
+          toastApiSuccess(
+            result.message,
             "Background removal started. The new file will appear shortly."
           )
           startMediaPolling()
           return
         }
 
-        toast.success("Background removed successfully")
+        toastApiSuccess(result.message, "Background removed successfully")
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to remove background")
-      },
+      onError: (error) => toastApiError(error, "Failed to remove background"),
       onSettled: () => {
         setProcessingItemId(null)
       },
@@ -441,7 +439,10 @@ export function MediaLibraryPanel({
 
       if (payload.kind === "folder") {
         if (isInvalidFolderDropTarget(payload.id, targetFolderId, tree)) {
-          toast.error("Cannot move a folder into itself or a subfolder")
+          toastApiError(
+            new Error("Cannot move a folder into itself or a subfolder"),
+            "Cannot move a folder into itself or a subfolder"
+          )
           return
         }
 
@@ -457,23 +458,21 @@ export function MediaLibraryPanel({
 
         try {
           if (copy) {
-            await copyMediaFolderMutation.mutateAsync({
+            const copyResult = await copyMediaFolderMutation.mutateAsync({
               id: folder.id,
               name: folder.name,
               parentId: targetFolderId,
             })
-            toast.success("Folder copied successfully")
+            toastApiSuccess(copyResult.message, "Folder copied successfully")
           } else {
-            await moveMediaFolderMutation.mutateAsync({
+            const moveResult = await moveMediaFolderMutation.mutateAsync({
               id: folder.id,
               parentId: targetFolderId,
             })
-            toast.success("Folder moved successfully")
+            toastApiSuccess(moveResult.message, "Folder moved successfully")
           }
         } catch (error) {
-          toast.error(
-            error instanceof Error ? error.message : "Unable to move folder"
-          )
+          toastApiError(error, "Unable to move folder")
         }
 
         return
@@ -491,22 +490,20 @@ export function MediaLibraryPanel({
 
       try {
         if (copy) {
-          await copyMediaItemMutation.mutateAsync({
+          const copyResult = await copyMediaItemMutation.mutateAsync({
             id: item.id,
             folderId: targetFolderId,
           })
-          toast.success("File copied successfully")
+          toastApiSuccess(copyResult.message, "File copied successfully")
         } else {
-          await moveMediaItemMutation.mutateAsync({
+          const moveResult = await moveMediaItemMutation.mutateAsync({
             id: item.id,
             folderId: targetFolderId,
           })
-          toast.success("File moved successfully")
+          toastApiSuccess(moveResult.message, "File moved successfully")
         }
       } catch (error) {
-        toast.error(
-          error instanceof Error ? error.message : "Unable to move file"
-        )
+        toastApiError(error, "Unable to move file")
       }
     },
     [

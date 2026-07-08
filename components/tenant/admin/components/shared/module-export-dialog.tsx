@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { format } from "date-fns"
 import { Spinner } from "@/components/ui/spinner"
-import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -25,14 +25,9 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox"
-import { useAuth } from "@/lib/providers/central/auth-provider"
-import { useGetUserOptions } from "@/hooks/central/use-user-query"
+import { useTenantAuth } from "@/lib/providers/tenant/tenant-auth-provider"
 import { type ExportColumnOption } from "@/lib/export-columns"
-import {
-  type ExportFileType,
-  type ExportParams,
-  type UserOption,
-} from "@/types/central/export"
+import { type ExportFileType, type ExportParams } from "@/types/tenant/export"
 
 type ModuleExportDialogProps = {
   open: boolean
@@ -67,7 +62,10 @@ const formatOptions: FormatOption[] = [
   { label: "CSV (.csv)", value: "csv" },
 ]
 
-type ModuleExportDialogContentProps = Omit<ModuleExportDialogProps, "open">
+type ModuleExportDialogContentProps = Omit<
+  ModuleExportDialogProps,
+  "open"
+>
 
 function ModuleExportDialogContent({
   onOpenChange,
@@ -78,15 +76,13 @@ function ModuleExportDialogContent({
   onComplete,
   isPending = false,
 }: ModuleExportDialogContentProps) {
-  const { user } = useAuth()
-  const { data: userOptions = [] as UserOption[] } = useGetUserOptions()
+  const { user } = useTenantAuth()
   const [delivery, setDelivery] = React.useState<"download" | "email">(
     "download"
   )
   const [fileType, setFileType] = React.useState<ExportFileType>("xlsx")
   const [startDate, setStartDate] = React.useState<Date | undefined>()
   const [endDate, setEndDate] = React.useState<Date | undefined>()
-  const [recipient, setRecipient] = React.useState<UserOption | null>(null)
   const [selectedColumns, setSelectedColumns] = React.useState<string[]>(() =>
     columnOptions.map((column) => column.key)
   )
@@ -96,19 +92,6 @@ function ModuleExportDialogContent({
     () => columnOptions.map((column) => column.key),
     [columnOptions]
   )
-
-  const defaultRecipient = React.useMemo(() => {
-    if (!user || userOptions.length === 0) {
-      return null
-    }
-
-    return (
-      userOptions.find((option: UserOption) => option.value === user.id) ??
-      null
-    )
-  }, [user, userOptions])
-
-  const activeRecipient = recipient ?? defaultRecipient
 
   const toggleColumn = (key: string, checked: boolean) => {
     setSelectedColumns((current) => {
@@ -126,12 +109,18 @@ function ModuleExportDialogContent({
 
   const handleExport = async () => {
     if (selectedColumns.length === 0) {
-      toastApiError(null, "Please select at least one column to export.")
+      toastApiError(
+        new Error("Please select at least one column to export."),
+        "Please select at least one column to export."
+      )
       return
     }
 
-    if (delivery === "email" && !activeRecipient) {
-      toastApiError(null, "Please select a recipient for the email export.")
+    if (delivery === "email" && !user) {
+      toastApiError(
+        new Error("You must be logged in to send an email export."),
+        "You must be logged in to send an email export."
+      )
       return
     }
 
@@ -144,7 +133,7 @@ function ModuleExportDialogContent({
         type: fileType,
         start_date: startDate ? format(startDate, "yyyy-MM-dd") : undefined,
         end_date: endDate ? format(endDate, "yyyy-MM-dd") : undefined,
-        recipient_id: delivery === "email" ? activeRecipient?.value : undefined,
+        recipient_id: delivery === "email" ? user?.id : undefined,
         columns: selectedColumns,
       }
 
@@ -152,7 +141,7 @@ function ModuleExportDialogContent({
 
       if (delivery === "download") {
         toastApiSuccess(
-          undefined,
+          null,
           `${resourceLabel} export downloaded (${fileType.toUpperCase()})`
         )
       } else {
@@ -160,7 +149,7 @@ function ModuleExportDialogContent({
           exportResult && typeof exportResult === "object"
             ? exportResult.message
             : null,
-          `Export sent to ${activeRecipient?.email ?? "recipient"}`
+          `Export sent to ${user?.email ?? "your email"}`
         )
       }
 
@@ -298,6 +287,12 @@ function ModuleExportDialogContent({
           </FieldContent>
         </Field>
 
+        {delivery === "email" && user && (
+          <p className="text-sm text-muted-foreground">
+            The export will be sent to <strong>{user.email}</strong>.
+          </p>
+        )}
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field>
             <FieldLabel>Start Date</FieldLabel>
@@ -328,32 +323,6 @@ function ModuleExportDialogContent({
             </FieldContent>
           </Field>
         </div>
-
-        {delivery === "email" && (
-          <Field>
-            <FieldLabel>Send To</FieldLabel>
-            <FieldContent>
-              <Combobox
-                items={userOptions}
-                itemToStringValue={(item) => `${item.label} (${item.email})`}
-                value={activeRecipient}
-                onValueChange={setRecipient}
-              >
-                <ComboboxInput placeholder="Select recipient..." />
-                <ComboboxContent>
-                  <ComboboxEmpty>No users found.</ComboboxEmpty>
-                  <ComboboxList>
-                    {(item) => (
-                      <ComboboxItem key={item.value} value={item}>
-                        {item.label} ({item.email})
-                      </ComboboxItem>
-                    )}
-                  </ComboboxList>
-                </ComboboxContent>
-              </Combobox>
-            </FieldContent>
-          </Field>
-        )}
       </div>
 
       <ResponsiveDialogFooter>
@@ -376,9 +345,12 @@ export function ModuleExportDialog({
 }: ModuleExportDialogProps) {
   return (
     <ResponsiveDialog open={open} onOpenChange={onOpenChange}>
-      <ResponsiveDialogContent className="max-w-lg">
+      <ResponsiveDialogContent className="max-h-[90vh] overflow-y-auto">
         {open ? (
-          <ModuleExportDialogContent onOpenChange={onOpenChange} {...props} />
+          <ModuleExportDialogContent
+            onOpenChange={onOpenChange}
+            {...props}
+          />
         ) : null}
       </ResponsiveDialogContent>
     </ResponsiveDialog>

@@ -4,7 +4,8 @@ import * as React from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
+import { handleFormApiError } from "@/lib/form-api-errors"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   AlertCircle,
   CheckCircle2,
@@ -82,12 +83,12 @@ export function TenantsDomainDialog({
     addDomain.mutate(
       { id: tenant.id, domain: data },
       {
-        onSuccess: () => {
-          toast.success("Domain added successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Domain added successfully")
           form.reset()
         },
         onError: (error) => {
-          toast.error(error.message || "Failed to add domain")
+          handleFormApiError(error, form.setError, "Failed to add domain")
         },
       }
     )
@@ -98,12 +99,12 @@ export function TenantsDomainDialog({
     verifyDomain.mutate(
       { tenantId: tenant.id, domainId },
       {
-        onSuccess: () => {
-          toast.success("Domain verified successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Domain verified successfully")
           setVerifyingId(null)
         },
         onError: (error) => {
-          toast.error(error.message || "Failed to verify domain")
+          toastApiError(error, "Failed to verify domain")
           setVerifyingId(null)
         },
       }
@@ -117,12 +118,12 @@ export function TenantsDomainDialog({
     updateDomain.mutate(
       { tenantId: tenant.id, domainId: domain.id, data: { is_primary: true } },
       {
-        onSuccess: () => {
-          toast.success("Primary domain updated")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Primary domain updated")
           setUpdatingId(null)
         },
         onError: (error) => {
-          toast.error(error.message || "Failed to update domain")
+          toastApiError(error, "Failed to update domain")
           setUpdatingId(null)
         },
       }
@@ -134,12 +135,12 @@ export function TenantsDomainDialog({
     deleteDomain.mutate(
       { tenantId: tenant.id, domainId: domain.id },
       {
-        onSuccess: () => {
-          toast.success("Domain deleted successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Domain deleted successfully")
           setDeletingId(null)
         },
         onError: (error) => {
-          toast.error(error.message || "Failed to delete domain")
+          toastApiError(error, "Failed to delete domain")
           setDeletingId(null)
         },
       }

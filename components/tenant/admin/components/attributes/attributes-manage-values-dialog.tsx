@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -132,8 +132,8 @@ export function AttributesManageValuesDialog({
       updateValue.mutate(
         { valueId: editingValue.id, value: payload },
         {
-          onSuccess: () => {
-            toast.success("Value updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Value updated successfully")
             setFormOpen(false)
             setEditingValue(null)
             form.reset()
@@ -145,8 +145,8 @@ export function AttributesManageValuesDialog({
       )
     } else {
       createValue.mutate(payload as StoreAttributeValueFormValues, {
-        onSuccess: () => {
-          toast.success("Value created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Value created successfully")
           setFormOpen(false)
           form.reset()
         },
@@ -160,13 +160,11 @@ export function AttributesManageValuesDialog({
   const handleDelete = () => {
     if (!deletingValue) return
     deleteValue.mutate(deletingValue.id, {
-      onSuccess: () => {
-        toast.success("Value deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Value deleted successfully")
         setDeletingValue(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete value")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete value"),
     })
   }
 

@@ -14,7 +14,7 @@ const baseUnitSchema = z.object({
     ),
   symbol: z.string().min(1, "Symbol is required").max(20),
   type: unitTypeSchema,
-  conversion_factor: z.coerce
+  conversion_factor: z
     .number()
     .gt(0, "Conversion factor must be greater than 0"),
   is_base: z.boolean().optional(),

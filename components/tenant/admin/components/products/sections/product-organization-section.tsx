@@ -357,7 +357,7 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         open={categoryDialogOpen}
         onOpenChange={setCategoryDialogOpen}
         onCreated={(category) => {
-          void queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+          void queryClient.invalidateQueries({ queryKey: ["category-options"] })
           toggleCategory(category.id, true)
         }}
       />
@@ -365,7 +365,7 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         open={brandDialogOpen}
         onOpenChange={setBrandDialogOpen}
         onCreated={(brand) => {
-          void queryClient.invalidateQueries({ queryKey: ["brandOptions"] })
+          void queryClient.invalidateQueries({ queryKey: ["brand-options"] })
           form.setValue("brand_id", brand.id, { shouldDirty: true })
         }}
       />
@@ -373,7 +373,7 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         open={tagDialogOpen}
         onOpenChange={setTagDialogOpen}
         onCreated={(tag) => {
-          void queryClient.invalidateQueries({ queryKey: ["tagOptions"] })
+          void queryClient.invalidateQueries({ queryKey: ["tag-options"] })
           toggleTag(tag.id, true)
         }}
       />

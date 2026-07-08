@@ -1,5 +1,8 @@
 import { toast } from "sonner"
 
+export type { ApiMutationResult } from "@/lib/api-response"
+export { toMutationResult as unwrapApiMutation } from "@/lib/api-response"
+
 export function toastApiError(error: unknown, fallback: string) {
   const message =
     error instanceof Error && error.message ? error.message : fallback
@@ -9,19 +12,4 @@ export function toastApiError(error: unknown, fallback: string) {
 
 export function toastApiSuccess(message?: string | null, fallback?: string) {
   toast.success(message || fallback || "Operation completed successfully")
-}
-
-export type ApiMutationResult<T> = {
-  data: T
-  message: string
-}
-
-export function unwrapApiMutation<T>(response: {
-  data: T
-  message: string
-}): ApiMutationResult<T> {
-  return {
-    data: response.data,
-    message: response.message,
-  }
 }

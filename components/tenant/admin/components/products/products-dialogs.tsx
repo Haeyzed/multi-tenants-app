@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteProduct } from "@/hooks/tenant/use-product-query"
 import { exportProducts } from "@/lib/services/tenant/product-service"
 import { PRODUCT_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { ProductsImportDialog } from "./products-import-dialog"
 import { ProductsMultiDeleteDialog } from "./products-multi-delete-dialog"
 import { ProductsBulkUpdateDialog } from "./products-bulk-update-dialog"
@@ -46,8 +46,11 @@ export function ProductsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteProduct.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Product "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Product "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -55,7 +58,7 @@ export function ProductsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete product")
+        toastApiError(error, "Failed to delete product")
         setIsDeleting(false)
       },
     })
@@ -63,7 +66,7 @@ export function ProductsDialogs() {
 
   return (
     <>
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="products-export"
         open={open === "export"}
         onOpenChange={(val) => {

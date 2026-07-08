@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteTag } from "@/hooks/tenant/use-tag-query"
 import { exportTags } from "@/lib/services/tenant/tag-service"
 import { TAG_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { TagsFormDialog } from "./tags-form-dialog"
 import { TagsViewDialog } from "./tags-view-dialog"
 import { TagsImportDialog } from "./tags-import-dialog"
@@ -41,8 +41,11 @@ export function TagsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteTag.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Tag "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Tag "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function TagsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tag")
+        toastApiError(error, "Failed to delete tag")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function TagsDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="tags-export"
         open={open === "export"}
         onOpenChange={(val) => {

@@ -1,7 +1,7 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -77,8 +77,10 @@ export function ProductSubscriptionSection({
 
     setErrors({})
     syncSubscription.mutate(result.data, {
-      onSuccess: () => toast.success("Subscription settings saved"),
-      onError: () => toast.error("Failed to save subscription settings"),
+      onSuccess: (result) =>
+        toastApiSuccess(result.message, "Subscription settings saved"),
+      onError: (error) =>
+        toastApiError(error, "Failed to save subscription settings"),
     })
   }
 

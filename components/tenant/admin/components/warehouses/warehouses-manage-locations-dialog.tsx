@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -175,8 +175,8 @@ export function WarehousesManageLocationsDialog({
       updateLocation.mutate(
         { locationId: editingLocation.id, location: payload },
         {
-          onSuccess: () => {
-            toast.success("Location updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Location updated successfully")
             setFormOpen(false)
             setEditingLocation(null)
             form.reset()
@@ -192,8 +192,8 @@ export function WarehousesManageLocationsDialog({
       )
     } else {
       createLocation.mutate(payload as StoreWarehouseLocationFormValues, {
-        onSuccess: () => {
-          toast.success("Location created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Location created successfully")
           setFormOpen(false)
           form.reset()
         },
@@ -207,13 +207,11 @@ export function WarehousesManageLocationsDialog({
   const handleDelete = () => {
     if (!deletingLocation) return
     deleteLocation.mutate(deletingLocation.id, {
-      onSuccess: () => {
-        toast.success("Location deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Location deleted successfully")
         setDeletingLocation(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete location")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete location"),
     })
   }
 

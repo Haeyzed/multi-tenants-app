@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -71,13 +71,16 @@ export function TenantsDialogs() {
             : "suspended"
 
       mutation.mutate(currentRow.id, {
-        onSuccess: () => {
-          toast.success(`Tenant "${currentRow.name}" ${pastTense} successfully`)
+        onSuccess: (result) => {
+          toastApiSuccess(
+            result.message,
+            `Tenant "${currentRow.name}" ${pastTense} successfully`
+          )
           setIsMutating(false)
           handleClose()
         },
         onError: (error) => {
-          toast.error(error.message || `Failed to ${action} tenant`)
+          toastApiError(error, `Failed to ${action} tenant`)
           setIsMutating(false)
         },
       })

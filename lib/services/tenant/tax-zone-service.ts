@@ -1,23 +1,13 @@
 import { TaxZone, TaxZoneOption } from "@/types/tenant/tax-zone"
 import { ExportParams, TaxZoneStatistics } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreTaxZoneFormValues,
   UpdateTaxZoneFormValues,
 } from "@/schemas/tenant/tax-zone-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getTaxZones = async (params?: {
   search?: string
@@ -51,66 +41,100 @@ export const getTaxZone = async (id: number): Promise<TaxZone> => {
 
 export const createTaxZone = async (
   taxZone: StoreTaxZoneFormValues
-): Promise<TaxZone> => {
+): Promise<ApiMutationResult<TaxZone>> => {
   const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
     "/tax-zones",
     taxZone
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateTaxZone = async (
   id: number,
   taxZone: UpdateTaxZoneFormValues
-): Promise<TaxZone> => {
+): Promise<ApiMutationResult<TaxZone>> => {
   const response = await tenantApiClient.put<ApiResponse<TaxZone>>(
     `/tax-zones/${id}`,
     taxZone
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteTaxZone = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/tax-zones/${id}`)
-}
-
-export const deleteManyTaxZones = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/tax-zones/bulk", { ids })
-}
-
-export const reorderTaxZones = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.put<ApiResponse<void>>("/tax-zones/reorder", { ids })
-}
-
-export const restoreTaxZone = async (id: number): Promise<TaxZone> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
-    `/tax-zones/${id}/restore`
+export const deleteTaxZone = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/tax-zones/${id}`
   )
-  return response.data
+  return { data: null, message: response.message }
 }
 
-export const restoreManyTaxZones = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.post<ApiResponse<void>>("/tax-zones/bulk-restore", {
-    ids,
-  })
-}
-
-export const forceDeleteTaxZone = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/tax-zones/${id}/force`)
-}
-
-export const toggleTaxZoneActive = async (id: number): Promise<TaxZone> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
-    `/tax-zones/${id}/toggle-active`
+export const deleteManyTaxZones = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/tax-zones/bulk",
+    { ids }
   )
-  return response.data
+  return { data: null, message: response.message }
 }
 
-export const setDefaultTaxZone = async (id: number): Promise<TaxZone> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
-    `/tax-zones/${id}/set-default`
+export const reorderTaxZones = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.put<ApiResponse<void>>(
+    "/tax-zones/reorder",
+    { ids }
   )
-  return response.data
+  return { data: null, message: response.message }
+}
+
+export const restoreTaxZone = async (
+  id: number
+): Promise<ApiMutationResult<TaxZone>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
+    `/tax-zones/${id}/restore`, {}
+  )
+  return { data: response.data, message: response.message }
+}
+
+export const restoreManyTaxZones = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.post<ApiResponse<void>>(
+    "/tax-zones/bulk-restore",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
+}
+
+export const forceDeleteTaxZone = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/tax-zones/${id}/force`
+  )
+  return { data: null, message: response.message }
+}
+
+export const toggleTaxZoneActive = async (
+  id: number
+): Promise<ApiMutationResult<TaxZone>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
+    `/tax-zones/${id}/toggle-active`, {}
+  )
+  return { data: response.data, message: response.message }
+}
+
+export const setDefaultTaxZone = async (
+  id: number
+): Promise<ApiMutationResult<TaxZone>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxZone>>(
+    `/tax-zones/${id}/set-default`, {}
+  )
+  return { data: response.data, message: response.message }
 }
 
 export const getTaxZoneOptions = async (): Promise<TaxZoneOption[]> => {
@@ -128,7 +152,9 @@ export const getTaxZoneStatistics = async (): Promise<TaxZoneStatistics> => {
   return response.data
 }
 
-export const exportTaxZones = async (params: ExportParams): Promise<void> => {
+export const exportTaxZones = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -140,8 +166,11 @@ export const exportTaxZones = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/tax-zones/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/tax-zones/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -160,8 +189,14 @@ export const downloadTaxZonesImportSample = async (
   )
 }
 
-export const importTaxZones = async (file: File): Promise<void> => {
+export const importTaxZones = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/tax-zones/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
+    "/tax-zones/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

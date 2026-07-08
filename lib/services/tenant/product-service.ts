@@ -15,6 +15,7 @@ import {
   ProductVisibilityValue,
   resolveProductEnumValue,
 } from "@/types/tenant/product"
+import { type ApiResponse } from "@/lib/api-response"
 import { type ApiMutationResult } from "@/lib/toast-api"
 import { ExportParams, ImportSummary } from "@/types/tenant/export"
 import { tenantApiClient } from "./api-client"
@@ -51,13 +52,6 @@ import {
   type ProductReview,
 } from "@/types/tenant/product-nested"
 import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: PaginatedResponse<unknown>["meta"]
-}
 
 function normalizeVariantMedia(
   variant: ProductVariant | null | undefined
@@ -243,30 +237,35 @@ export const updateProduct = async (
   }
 }
 
-export const deleteProduct = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/products/${id}`)
+export const deleteProduct = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/products/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const deleteManyProducts = async (
   ids: number[]
-): Promise<{ message: string }> => {
+): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
     "/products/bulk",
     { ids }
   )
-  return { message: response.message }
+  return { data: null, message: response.message }
 }
 
 export const bulkUpdateProducts = async (payload: {
   ids: number[]
   status?: ProductStatus
   visibility?: ProductVisibilityValue
-}): Promise<{ message: string }> => {
+}): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.patch<ApiResponse<void>>(
     "/products/bulk",
     payload
   )
-  return { message: response.message }
+  return { data: null, message: response.message }
 }
 
 export const getProductStatistics = async (): Promise<ProductStatistics> => {
@@ -286,7 +285,9 @@ export const getProductOptions = async (): Promise<
   return response.data
 }
 
-export const exportProducts = async (params: ExportParams): Promise<void> => {
+export const exportProducts = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -298,8 +299,11 @@ export const exportProducts = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/products/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/products/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -320,7 +324,7 @@ export const downloadProductsImportSample = async (
 
 export const importProducts = async (
   file: File
-): Promise<{ summary: ImportSummary; message: string }> => {
+): Promise<ApiMutationResult<ImportSummary>> => {
   const formData = new FormData()
   formData.append("file", file)
   const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
@@ -329,7 +333,7 @@ export const importProducts = async (
   )
 
   return {
-    summary: response.data,
+    data: response.data,
     message: response.message,
   }
 }
@@ -417,46 +421,56 @@ export const syncProductSubscription = async (
 export const generateProductVariants = async (
   productId: number,
   payload: GenerateProductVariantsFormValues
-): Promise<ProductVariant[]> => {
+): Promise<ApiMutationResult<ProductVariant[]>> => {
   const response = await tenantApiClient.post<ApiResponse<ProductVariant[]>>(
     `/products/${productId}/variants/generate`,
     payload
   )
-  return response.data.map(
-    (variant) => normalizeVariantMedia(variant) as ProductVariant
-  )
+  return {
+    data: response.data.map(
+      (variant) => normalizeVariantMedia(variant) as ProductVariant
+    ),
+    message: response.message,
+  }
 }
 
 export const createProductVariant = async (
   productId: number,
   payload: StoreProductVariantFormValues
-): Promise<ProductVariant> => {
+): Promise<ApiMutationResult<ProductVariant>> => {
   const response = await tenantApiClient.post<ApiResponse<ProductVariant>>(
     `/products/${productId}/variants`,
     payload
   )
-  return normalizeVariantMedia(response.data) as ProductVariant
+  return {
+    data: normalizeVariantMedia(response.data) as ProductVariant,
+    message: response.message,
+  }
 }
 
 export const updateProductVariant = async (
   productId: number,
   variantId: number,
   payload: UpdateProductVariantFormValues
-): Promise<ProductVariant> => {
+): Promise<ApiMutationResult<ProductVariant>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductVariant>>(
     `/products/${productId}/variants/${variantId}`,
     payload
   )
-  return normalizeVariantMedia(response.data) as ProductVariant
+  return {
+    data: normalizeVariantMedia(response.data) as ProductVariant,
+    message: response.message,
+  }
 }
 
 export const deleteProductVariant = async (
   productId: number,
   variantId: number
-): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
     `/products/${productId}/variants/${variantId}`
   )
+  return { data: null, message: response.message }
 }
 
 export const duplicateProduct = async (

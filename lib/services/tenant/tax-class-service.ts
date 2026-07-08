@@ -1,23 +1,13 @@
 import { TaxClass, TaxClassOption } from "@/types/tenant/tax-class"
 import { ExportParams, TaxClassStatistics } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreTaxClassFormValues,
   UpdateTaxClassFormValues,
 } from "@/schemas/tenant/tax-class-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getTaxClasses = async (params?: {
   search?: string
@@ -57,66 +47,100 @@ export const getTaxClassByCode = async (code: string): Promise<TaxClass> => {
 
 export const createTaxClass = async (
   taxClass: StoreTaxClassFormValues
-): Promise<TaxClass> => {
+): Promise<ApiMutationResult<TaxClass>> => {
   const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
     "/tax-classes",
     taxClass
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateTaxClass = async (
   id: number,
   taxClass: UpdateTaxClassFormValues
-): Promise<TaxClass> => {
+): Promise<ApiMutationResult<TaxClass>> => {
   const response = await tenantApiClient.put<ApiResponse<TaxClass>>(
     `/tax-classes/${id}`,
     taxClass
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteTaxClass = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/tax-classes/${id}`)
-}
-
-export const deleteManyTaxClasses = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/tax-classes/bulk", { ids })
-}
-
-export const reorderTaxClasses = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.put<ApiResponse<void>>("/tax-classes/reorder", { ids })
-}
-
-export const restoreTaxClass = async (id: number): Promise<TaxClass> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
-    `/tax-classes/${id}/restore`
+export const deleteTaxClass = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/tax-classes/${id}`
   )
-  return response.data
+  return { data: null, message: response.message }
 }
 
-export const restoreManyTaxClasses = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.post<ApiResponse<void>>("/tax-classes/bulk-restore", {
-    ids,
-  })
-}
-
-export const forceDeleteTaxClass = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/tax-classes/${id}/force`)
-}
-
-export const toggleTaxClassActive = async (id: number): Promise<TaxClass> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
-    `/tax-classes/${id}/toggle-active`
+export const deleteManyTaxClasses = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/tax-classes/bulk",
+    { ids }
   )
-  return response.data
+  return { data: null, message: response.message }
 }
 
-export const setDefaultTaxClass = async (id: number): Promise<TaxClass> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
-    `/tax-classes/${id}/set-default`
+export const reorderTaxClasses = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.put<ApiResponse<void>>(
+    "/tax-classes/reorder",
+    { ids }
   )
-  return response.data
+  return { data: null, message: response.message }
+}
+
+export const restoreTaxClass = async (
+  id: number
+): Promise<ApiMutationResult<TaxClass>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
+    `/tax-classes/${id}/restore`, {}
+  )
+  return { data: response.data, message: response.message }
+}
+
+export const restoreManyTaxClasses = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.post<ApiResponse<void>>(
+    "/tax-classes/bulk-restore",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
+}
+
+export const forceDeleteTaxClass = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/tax-classes/${id}/force`
+  )
+  return { data: null, message: response.message }
+}
+
+export const toggleTaxClassActive = async (
+  id: number
+): Promise<ApiMutationResult<TaxClass>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
+    `/tax-classes/${id}/toggle-active`, {}
+  )
+  return { data: response.data, message: response.message }
+}
+
+export const setDefaultTaxClass = async (
+  id: number
+): Promise<ApiMutationResult<TaxClass>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxClass>>(
+    `/tax-classes/${id}/set-default`, {}
+  )
+  return { data: response.data, message: response.message }
 }
 
 export const getTaxClassOptions = async (): Promise<TaxClassOption[]> => {
@@ -133,7 +157,9 @@ export const getTaxClassStatistics = async (): Promise<TaxClassStatistics> => {
   return response.data
 }
 
-export const exportTaxClasses = async (params: ExportParams): Promise<void> => {
+export const exportTaxClasses = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -145,8 +171,11 @@ export const exportTaxClasses = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/tax-classes/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/tax-classes/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -165,11 +194,14 @@ export const downloadTaxClassesImportSample = async (
   )
 }
 
-export const importTaxClasses = async (file: File): Promise<void> => {
+export const importTaxClasses = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>(
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
     "/tax-classes/import",
     formData
   )
+  return { data: null, message: response.message }
 }

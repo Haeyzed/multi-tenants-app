@@ -45,7 +45,7 @@ export const useCreateAttributeSet = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attribute-sets"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-set-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeSetOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-set-options"] })
     },
   })
 }
@@ -63,7 +63,7 @@ export const useUpdateAttributeSet = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attribute-sets"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-set-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeSetOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-set-options"] })
     },
   })
 }
@@ -75,7 +75,7 @@ export const useDeleteAttributeSet = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attribute-sets"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-set-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeSetOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-set-options"] })
     },
   })
 }
@@ -94,7 +94,7 @@ export const useDeleteManyAttributeSets = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attribute-sets"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-set-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeSetOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-set-options"] })
     },
   })
 }
@@ -112,7 +112,7 @@ export const useImportAttributeSets = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attribute-sets"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-set-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeSetOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-set-options"] })
     },
   })
 }

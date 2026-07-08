@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -170,8 +170,8 @@ export function SuppliersManageAddressesDialog({
       updateAddress.mutate(
         { addressId: editingAddress.id, address: payload },
         {
-          onSuccess: () => {
-            toast.success("Address updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Address updated successfully")
             setFormOpen(false)
             setEditingAddress(null)
             form.reset()
@@ -183,8 +183,8 @@ export function SuppliersManageAddressesDialog({
       )
     } else {
       createAddress.mutate(payload as StoreSupplierAddressFormValues, {
-        onSuccess: () => {
-          toast.success("Address created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Address created successfully")
           setFormOpen(false)
           form.reset()
         },
@@ -198,13 +198,11 @@ export function SuppliersManageAddressesDialog({
   const handleDelete = () => {
     if (!deletingAddress) return
     deleteAddress.mutate(deletingAddress.id, {
-      onSuccess: () => {
-        toast.success("Address deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Address deleted successfully")
         setDeletingAddress(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete address")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete address"),
     })
   }
 

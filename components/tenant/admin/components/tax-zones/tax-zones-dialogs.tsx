@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteTaxZone } from "@/hooks/tenant/use-tax-zone-query"
 import { exportTaxZones } from "@/lib/services/tenant/tax-zone-service"
 import { TAX_ZONE_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { TaxZonesFormDialog } from "./tax-zones-form-dialog"
 import { TaxZonesViewDialog } from "./tax-zones-view-dialog"
 import { TaxZoneMapDialog } from "./tax-zone-map-dialog"
@@ -42,8 +42,11 @@ export function TaxZonesDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteTaxZone.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Tax zone "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Tax zone "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -51,7 +54,7 @@ export function TaxZonesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tax zone")
+        toastApiError(error, "Failed to delete tax zone")
         setIsDeleting(false)
       },
     })
@@ -75,7 +78,7 @@ export function TaxZonesDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="tax-zones-export"
         open={open === "export"}
         onOpenChange={(val) => {

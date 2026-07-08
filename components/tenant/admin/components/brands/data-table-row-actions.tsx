@@ -1,6 +1,6 @@
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Edit, Eye, EyeOff, MoreHorizontal, Star, Trash2 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -69,16 +69,16 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={() => {
               toggleVisibility.mutate(brand.id, {
-                onSuccess: (updated) => {
-                  toast.success(
-                    updated.is_visible
+                onSuccess: (result) => {
+                  toastApiSuccess(
+                    result.message,
+                    result.data.is_visible
                       ? "Brand is now visible"
                       : "Brand is now hidden"
                   )
                 },
-                onError: (error) => {
-                  toast.error(error.message || "Failed to update visibility")
-                },
+                onError: (error) =>
+                  toastApiError(error, "Failed to update visibility"),
               })
             }}
           >
@@ -92,18 +92,16 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={() => {
               toggleFeatured.mutate(brand.id, {
-                onSuccess: (updated) => {
-                  toast.success(
-                    updated.is_featured
+                onSuccess: (result) => {
+                  toastApiSuccess(
+                    result.message,
+                    result.data.is_featured
                       ? "Brand marked as featured"
                       : "Brand removed from featured"
                   )
                 },
-                onError: (error) => {
-                  toast.error(
-                    error.message || "Failed to update featured status"
-                  )
-                },
+                onError: (error) =>
+                  toastApiError(error, "Failed to update featured status"),
               })
             }}
           >

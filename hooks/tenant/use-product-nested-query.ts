@@ -34,7 +34,7 @@ export const useDuplicateProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-options"] })
     },
   })
 }

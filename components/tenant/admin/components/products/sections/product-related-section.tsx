@@ -3,7 +3,6 @@
 import * as React from "react"
 import Image from "next/image"
 import { Search, X } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -337,13 +336,16 @@ export function ProductRelatedSection({ product }: ProductRelatedSectionProps) {
     const parsed = syncProductRelationsSchema.safeParse(relations)
 
     if (!parsed.success) {
-      toast.error("Fix relation selections before saving")
+      toastApiError(
+        new Error("Fix relation selections before saving"),
+        "Fix relation selections before saving"
+      )
       return
     }
 
     syncRelations.mutate(parsed.data, {
-      onSuccess: (response) =>
-        toastApiSuccess(response.message, "Product relations saved"),
+      onSuccess: (result) =>
+        toastApiSuccess(result.message, "Product relations saved"),
       onError: (error) =>
         toastApiError(error, "Failed to save product relations"),
     })

@@ -7,18 +7,8 @@ import {
   StoreTenantFormValues,
   UpdateTenantFormValues,
 } from "@/schemas/central/tenant-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 
 export const getTenants = async (params?: {
   search?: string
@@ -48,24 +38,27 @@ export const getTenant = async (id: string): Promise<Tenant> => {
 
 export const createTenant = async (
   tenant: StoreTenantFormValues
-): Promise<Tenant> => {
+): Promise<ApiMutationResult<Tenant>> => {
   const response = await apiClient.post<ApiResponse<Tenant>>("/tenants", tenant)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateTenant = async (
   id: string,
   tenant: UpdateTenantFormValues
-): Promise<Tenant> => {
+): Promise<ApiMutationResult<Tenant>> => {
   const response = await apiClient.put<ApiResponse<Tenant>>(
     `/tenants/${id}`,
     tenant
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteTenant = async (id: string): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>(`/tenants/${id}`)
+export const deleteTenant = async (
+  id: string
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>(`/tenants/${id}`)
+  return { data: null, message: response.message }
 }
 
 export const getTenantStatistics = async (): Promise<{
@@ -85,20 +78,24 @@ export const getTenantStatistics = async (): Promise<{
   return response.data
 }
 
-export const activateTenant = async (id: string): Promise<Tenant> => {
+export const activateTenant = async (
+  id: string
+): Promise<ApiMutationResult<Tenant>> => {
   const response = await apiClient.post<ApiResponse<Tenant>>(
     `/tenants/${id}/activate`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const suspendTenant = async (id: string): Promise<Tenant> => {
+export const suspendTenant = async (
+  id: string
+): Promise<ApiMutationResult<Tenant>> => {
   const response = await apiClient.post<ApiResponse<Tenant>>(
     `/tenants/${id}/suspend`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const getTenantDomains = async (tenantId: string): Promise<Domain[]> => {
@@ -111,51 +108,59 @@ export const getTenantDomains = async (tenantId: string): Promise<Domain[]> => {
 export const addTenantDomain = async (
   id: string,
   domain: { domain: string; is_primary?: boolean }
-): Promise<Domain> => {
+): Promise<ApiMutationResult<Domain>> => {
   const response = await apiClient.post<ApiResponse<Domain>>(
     `/tenants/${id}/domains`,
     domain
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const verifyTenantDomain = async (
   tenantId: string,
   domainId: number
-): Promise<Domain> => {
+): Promise<ApiMutationResult<Domain>> => {
   const response = await apiClient.post<ApiResponse<Domain>>(
     `/tenants/${tenantId}/domains/${domainId}/verify`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateTenantDomain = async (
   tenantId: string,
   domainId: number,
   data: { is_primary?: boolean }
-): Promise<Domain> => {
+): Promise<ApiMutationResult<Domain>> => {
   const response = await apiClient.put<ApiResponse<Domain>>(
     `/tenants/${tenantId}/domains/${domainId}`,
     data
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const deleteTenantDomain = async (
   tenantId: string,
   domainId: number
-): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>(
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>(
     `/tenants/${tenantId}/domains/${domainId}`
   )
+  return { data: null, message: response.message }
 }
 
-export const deleteManyTenants = async (ids: string[]): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>("/tenants/bulk", { ids })
+export const deleteManyTenants = async (
+  ids: string[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>("/tenants/bulk", {
+    ids,
+  })
+  return { data: null, message: response.message }
 }
 
-export const exportTenants = async (params: ExportParams): Promise<void> => {
+export const exportTenants = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -167,8 +172,11 @@ export const exportTenants = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await apiClient.post<ApiResponse<void>>("/tenants/export", body)
-    return
+    const response = await apiClient.post<ApiResponse<void>>(
+      "/tenants/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -187,8 +195,14 @@ export const downloadTenantsImportSample = async (
   )
 }
 
-export const importTenants = async (file: File): Promise<void> => {
+export const importTenants = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await apiClient.upload<ApiResponse<void>>("/tenants/import", formData)
+  const response = await apiClient.upload<ApiResponse<null>>(
+    "/tenants/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

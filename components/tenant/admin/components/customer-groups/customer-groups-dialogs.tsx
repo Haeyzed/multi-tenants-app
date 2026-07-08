@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteCustomerGroup } from "@/hooks/tenant/use-customer-group-query"
 import { exportCustomerGroups } from "@/lib/services/tenant/customer-group-service"
 import { CUSTOMER_GROUP_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { CustomerGroupsFormDialog } from "./customer-groups-form-dialog"
 import { CustomerGroupsViewDialog } from "./customer-groups-view-dialog"
 import { CustomerGroupsImportDialog } from "./customer-groups-import-dialog"
@@ -41,8 +41,9 @@ export function CustomerGroupsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteCustomerGroup.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
           `Customer group "${currentRow.name}" deleted successfully`
         )
         setIsDeleting(false)
@@ -52,7 +53,7 @@ export function CustomerGroupsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete customer group")
+        toastApiError(error, "Failed to delete customer group")
         setIsDeleting(false)
       },
     })
@@ -76,7 +77,7 @@ export function CustomerGroupsDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="customer-groups-export"
         open={open === "export"}
         onOpenChange={(val) => {

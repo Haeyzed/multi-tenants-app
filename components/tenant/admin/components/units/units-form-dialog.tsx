@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -132,8 +132,8 @@ export function UnitsFormDialog({
       updateUnit.mutate(
         { id: currentRow.id, unit: payload as UpdateUnitFormValues },
         {
-          onSuccess: () => {
-            toast.success("Unit updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Unit updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -144,8 +144,8 @@ export function UnitsFormDialog({
       )
     } else {
       createUnit.mutate(payload as StoreUnitFormValues, {
-        onSuccess: () => {
-          toast.success("Unit created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Unit created successfully")
           onOpenChange(false)
           form.reset()
         },

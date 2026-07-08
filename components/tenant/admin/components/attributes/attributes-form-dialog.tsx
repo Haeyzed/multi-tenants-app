@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -177,8 +177,8 @@ export function AttributesFormDialog({
       updateAttribute.mutate(
         { id: currentRow.id, attribute: payload as UpdateAttributeFormValues },
         {
-          onSuccess: () => {
-            toast.success("Attribute updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Attribute updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -193,8 +193,8 @@ export function AttributesFormDialog({
       )
     } else {
       createAttribute.mutate(payload as StoreAttributeFormValues, {
-        onSuccess: () => {
-          toast.success("Attribute created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Attribute created successfully")
           onOpenChange(false)
           form.reset()
         },

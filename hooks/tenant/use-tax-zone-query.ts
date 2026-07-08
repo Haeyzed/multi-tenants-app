@@ -49,7 +49,7 @@ export const useCreateTaxZone = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }
@@ -67,7 +67,7 @@ export const useUpdateTaxZone = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }
@@ -79,7 +79,7 @@ export const useDeleteTaxZone = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }
@@ -91,7 +91,7 @@ export const useDeleteManyTaxZones = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }
@@ -138,7 +138,7 @@ export const useImportTaxZones = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }
@@ -160,7 +160,7 @@ export const useRestoreTaxZone = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }
@@ -172,7 +172,7 @@ export const useRestoreManyTaxZones = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-zones"] })
       queryClient.invalidateQueries({ queryKey: ["tax-zone-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxZoneOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-zone-options"] })
     },
   })
 }

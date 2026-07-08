@@ -4,15 +4,10 @@ import {
   InventoryStatistics,
   ProductStockAlert,
 } from "@/types/tenant/inventory"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: PaginatedResponse<unknown>["meta"]
-}
 
 export const getInventories = async (params?: {
   search?: string
@@ -67,12 +62,12 @@ export const updateInventory = async (
     batch_number?: string | null
     expiry_date?: string | null
   }
-): Promise<InventoryRecord> => {
+): Promise<ApiMutationResult<InventoryRecord>> => {
   const response = await tenantApiClient.put<ApiResponse<InventoryRecord>>(
     `/inventories/${id}`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const adjustInventory = async (
@@ -82,12 +77,12 @@ export const adjustInventory = async (
     type?: string
     reason?: string | null
   }
-): Promise<InventoryRecord> => {
+): Promise<ApiMutationResult<InventoryRecord>> => {
   const response = await tenantApiClient.post<ApiResponse<InventoryRecord>>(
     `/inventories/${id}/adjust`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const transferInventory = async (
@@ -97,11 +92,13 @@ export const transferInventory = async (
     quantity: number
     reason?: string | null
   }
-): Promise<{ source: InventoryRecord; destination: InventoryRecord }> => {
+): Promise<
+  ApiMutationResult<{ source: InventoryRecord; destination: InventoryRecord }>
+> => {
   const response = await tenantApiClient.post<
     ApiResponse<{ source: InventoryRecord; destination: InventoryRecord }>
   >(`/inventories/${id}/transfer`, payload)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const getInventoryMovements = async (params?: {

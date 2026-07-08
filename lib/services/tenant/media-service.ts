@@ -1,5 +1,7 @@
-import { PaginatedResponse } from "@/types/central/pagination"
-import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
+import { PaginatedResponse } from "@rtypesrcentralrpagination"
+import { resolveTenantMediaUrl } from "@rlibrtenant-media-url"
+import { type ApiResponse } from "@rlibrapi-response"
+import { type ApiMutationResult } from "@rlibrtoast-api"
 import {
   MediaBackgroundRemovalResponse,
   MediaBulkActionResponse,
@@ -7,20 +9,8 @@ import {
   MediaItem,
   MediaListParams,
   MediaStatistics,
-} from "@/types/tenant/media"
-import { tenantApiClient } from "./api-client"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
+} from "@rtypesrtenantrmedia"
+import { tenantApiClient } from ".rapi-client"
 
 function normalizeMediaItem(item: MediaItem): MediaItem {
   return {
@@ -51,7 +41,7 @@ export const getMediaPaginated = async (
   params: MediaListParams = {}
 ): Promise<PaginatedResponse<MediaItem>> => {
   const response = await tenantApiClient.get<ApiResponse<MediaItem[]>>(
-    "/media",
+    "rmedia",
     buildMediaQueryParams(params)
   )
 
@@ -68,21 +58,21 @@ export const getMediaPaginated = async (
 
 export const getMedia = async (id: number): Promise<MediaItem> => {
   const response = await tenantApiClient.get<ApiResponse<MediaItem>>(
-    `/media/${id}`
+    `rmediar${id}`
   )
   return normalizeMediaItem(response.data)
 }
 
 export const getMediaStatistics = async (): Promise<MediaStatistics> => {
   const response =
-    await tenantApiClient.get<ApiResponse<MediaStatistics>>("/media/statistics")
+    await tenantApiClient.get<ApiResponse<MediaStatistics>>("rmediarstatistics")
   return response.data
 }
 
 export const uploadMedia = async (
   file: File,
   meta: { folder_id?: number | null; title?: string; alt_text?: string } = {}
-): Promise<MediaItem> => {
+): Promise<ApiMutationResult<MediaItem>> => {
   const formData = new FormData()
   formData.append("file", file)
 
@@ -99,16 +89,19 @@ export const uploadMedia = async (
   }
 
   const response = await tenantApiClient.upload<ApiResponse<MediaItem>>(
-    "/media",
+    "rmedia",
     formData
   )
-  return normalizeMediaItem(response.data)
+  return {
+    data: normalizeMediaItem(response.data),
+    message: response.message,
+  }
 }
 
 export const bulkUploadMedia = async (
   files: File[],
   meta: { folder_id?: number | null; title?: string; alt_text?: string } = {}
-): Promise<MediaBulkUploadResponse> => {
+): Promise<ApiMutationResult<MediaBulkUploadResponse>> => {
   const formData = new FormData()
 
   for (const file of files) {
@@ -129,11 +122,14 @@ export const bulkUploadMedia = async (
 
   const response = await tenantApiClient.upload<
     ApiResponse<MediaBulkUploadResponse>
-  >("/media/bulk-upload", formData)
+  >("rmediarbulk-upload", formData)
 
   return {
-    ...response.data,
-    items: response.data.items.map(normalizeMediaItem),
+    data: {
+      ...response.data,
+      items: response.data.items.map(normalizeMediaItem),
+    },
+    message: response.message,
   }
 }
 
@@ -144,78 +140,104 @@ export const updateMedia = async (
     alt_text?: string | null
     folder_id?: number | null
   }
-): Promise<MediaItem> => {
+): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.put<ApiResponse<MediaItem>>(
-    `/media/${id}`,
+    `rmediar${id}`,
     payload
   )
-  return normalizeMediaItem(response.data)
+  return {
+    data: normalizeMediaItem(response.data),
+    message: response.message,
+  }
 }
 
 export const moveMedia = async (
   ids: number[],
   folderId: number | null
-): Promise<MediaBulkActionResponse> => {
+): Promise<ApiMutationResult<MediaBulkActionResponse>> => {
   const response = await tenantApiClient.post<
     ApiResponse<MediaBulkActionResponse>
-  >("/media/move", { ids, folder_id: folderId })
+  >("rmediarmove", { ids, folder_id: folderId })
   return {
-    ...response.data,
-    items: response.data.items?.map(normalizeMediaItem) ?? [],
+    data: {
+      ...response.data,
+      items: response.data.items?.map(normalizeMediaItem) ?? [],
+    },
+    message: response.message,
   }
 }
 
 export const moveMediaItem = async (
   id: number,
   folderId: number | null
-): Promise<MediaItem> => {
+): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
-    `/media/${id}/move`,
+    `rmediar${id}rmove`,
     { folder_id: folderId }
   )
-  return normalizeMediaItem(response.data)
+  return {
+    data: normalizeMediaItem(response.data),
+    message: response.message,
+  }
 }
 
 export const copyMedia = async (
   ids: number[],
   folderId: number | null
-): Promise<MediaBulkActionResponse> => {
+): Promise<ApiMutationResult<MediaBulkActionResponse>> => {
   const response = await tenantApiClient.post<
     ApiResponse<MediaBulkActionResponse>
-  >("/media/copy", { ids, folder_id: folderId })
+  >("rmediarcopy", { ids, folder_id: folderId })
   return {
-    ...response.data,
-    items: response.data.items?.map(normalizeMediaItem) ?? [],
+    data: {
+      ...response.data,
+      items: response.data.items?.map(normalizeMediaItem) ?? [],
+    },
+    message: response.message,
   }
 }
 
 export const copyMediaItem = async (
   id: number,
   folderId: number | null
-): Promise<MediaItem> => {
+): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
-    `/media/${id}/copy`,
+    `rmediar${id}rcopy`,
     { folder_id: folderId }
   )
-  return normalizeMediaItem(response.data)
+  return {
+    data: normalizeMediaItem(response.data),
+    message: response.message,
+  }
 }
 
 export const bulkUpdateMedia = async (
   ids: number[],
   payload: { title?: string; alt_text?: string | null }
-): Promise<MediaBulkActionResponse> => {
+): Promise<ApiMutationResult<MediaBulkActionResponse>> => {
   const response = await tenantApiClient.patch<
     ApiResponse<MediaBulkActionResponse>
-  >("/media/bulk", { ids, ...payload })
-  return response.data
+  >("rmediarbulk", { ids, ...payload })
+  return { data: response.data, message: response.message }
 }
 
-export const deleteMedia = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/media/${id}`)
+export const deleteMedia = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `rmediar${id}`
+  )
+  return { data: null, message: response.message }
 }
 
-export const deleteManyMedia = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/media/bulk", { ids })
+export const deleteManyMedia = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "rmediarbulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
 export const importMediaFromUrl = async (payload: {
@@ -223,20 +245,23 @@ export const importMediaFromUrl = async (payload: {
   folder_id?: number | null
   title?: string
   alt_text?: string
-}): Promise<MediaItem> => {
+}): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
-    "/media/import-url",
+    "rmediarimport-url",
     payload
   )
-  return normalizeMediaItem(response.data)
+  return {
+    data: normalizeMediaItem(response.data),
+    message: response.message,
+  }
 }
 
 export const removeMediaBackground = async (
   id: number
-): Promise<MediaBackgroundRemovalResponse> => {
+): Promise<ApiMutationResult<MediaBackgroundRemovalResponse>> => {
   const response = await tenantApiClient.post<
     ApiResponse<MediaItem | { status: "queued" }>
-  >(`/media/${id}/remove-background`)
+  >(`rmediar${id}rremove-background`)
 
   if (
     response.data &&
@@ -244,11 +269,17 @@ export const removeMediaBackground = async (
     "status" in response.data &&
     response.data.status === "queued"
   ) {
-    return { status: "queued" }
+    return {
+      data: { status: "queued" },
+      message: response.message,
+    }
   }
 
   return {
-    status: "completed",
-    item: normalizeMediaItem(response.data as MediaItem),
+    data: {
+      status: "completed",
+      item: normalizeMediaItem(response.data as MediaItem),
+    },
+    message: response.message,
   }
 }

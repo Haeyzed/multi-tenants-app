@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteTaxRate } from "@/hooks/tenant/use-tax-rate-query"
 import { exportTaxRates } from "@/lib/services/tenant/tax-rate-service"
 import { TAX_RATE_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { TaxRatesFormDialog } from "./tax-rates-form-dialog"
 import { TaxRatesViewDialog } from "./tax-rates-view-dialog"
 import { TaxRatesImportDialog } from "./tax-rates-import-dialog"
@@ -41,8 +41,11 @@ export function TaxRatesDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteTaxRate.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Tax rate "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Tax rate "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function TaxRatesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tax rate")
+        toastApiError(error, "Failed to delete tax rate")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function TaxRatesDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="tax-rates-export"
         open={open === "export"}
         onOpenChange={(val) => {

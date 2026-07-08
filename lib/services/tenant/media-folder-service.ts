@@ -4,14 +4,10 @@ import {
   MediaFolderListParams,
   MediaFolderTreeNode,
 } from "@/types/tenant/media"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { copyMedia, getMediaPaginated } from "./media-service"
 import { tenantApiClient } from "./api-client"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-}
 
 export const getMediaFolderTree = async (): Promise<{
   tree: MediaFolderTreeNode[]
@@ -44,46 +40,58 @@ export const getMediaFolders = async (
 
 export const createMediaFolder = async (
   payload: MediaFolderFormPayload
-): Promise<MediaFolder> => {
+): Promise<ApiMutationResult<MediaFolder>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaFolder>>(
     "/media-folders",
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateMediaFolder = async (
   id: number,
   payload: Partial<MediaFolderFormPayload>
-): Promise<MediaFolder> => {
+): Promise<ApiMutationResult<MediaFolder>> => {
   const response = await tenantApiClient.put<ApiResponse<MediaFolder>>(
     `/media-folders/${id}`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteMediaFolder = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/media-folders/${id}`)
+export const deleteMediaFolder = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/media-folders/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
-export const deleteManyMediaFolders = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/media-folders/bulk", {
-    ids,
-  })
+export const deleteManyMediaFolders = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/media-folders/bulk",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
 }
 
 export const moveMediaFolder = async (
   id: number,
   parentId: number | null
-): Promise<MediaFolder> => updateMediaFolder(id, { parent_id: parentId })
+): Promise<ApiMutationResult<MediaFolder>> =>
+  updateMediaFolder(id, { parent_id: parentId })
 
 export const copyMediaFolderShallow = async (
   folderId: number,
   folderName: string,
   targetParentId: number | null
-): Promise<MediaFolder> => {
-  const newFolder = await createMediaFolder({
+): Promise<ApiMutationResult<MediaFolder>> => {
+  const newFolderResult = await createMediaFolder({
     name: `${folderName} (copy)`,
     parent_id: targetParentId,
   })
@@ -96,9 +104,9 @@ export const copyMediaFolderShallow = async (
   if (media.data.length > 0) {
     await copyMedia(
       media.data.map((item) => item.id),
-      newFolder.id
+      newFolderResult.data.id
     )
   }
 
-  return newFolder
+  return newFolderResult
 }

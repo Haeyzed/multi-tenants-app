@@ -1,6 +1,6 @@
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Edit, Eye, MoreHorizontal, Star, Trash2 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -66,12 +66,11 @@ export function DataTableRowActions<TData>({
             <DropdownMenuItem
               onClick={() => {
                 setBase.mutate(unit.id, {
-                  onSuccess: () => {
-                    toast.success("Base unit updated")
+                  onSuccess: (result) => {
+                    toastApiSuccess(result.message, "Base unit updated")
                   },
-                  onError: (error) => {
-                    toast.error(error.message || "Failed to set base unit")
-                  },
+                  onError: (error) =>
+                    toastApiError(error, "Failed to set base unit"),
                 })
               }}
             >

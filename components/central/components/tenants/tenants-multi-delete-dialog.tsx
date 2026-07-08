@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { AlertTriangle } from "lucide-react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -39,13 +39,14 @@ export function TenantsMultiDeleteDialog({
 
   const handleDelete = () => {
     if (value.trim() !== CONFIRM_WORD) {
-      toast.error(`Please type "${CONFIRM_WORD}" to confirm.`)
+      toastApiError(null, `Please type "${CONFIRM_WORD}" to confirm.`)
       return
     }
 
     deleteMany.mutate(ids, {
-      onSuccess: () => {
-        toast.success(
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
           `Deleted ${ids.length} ${ids.length > 1 ? "tenants" : "tenant"}`
         )
         setValue("")
@@ -53,7 +54,7 @@ export function TenantsMultiDeleteDialog({
         onOpenChange(false)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tenants")
+        toastApiError(error, "Failed to delete tenants")
       },
     })
   }

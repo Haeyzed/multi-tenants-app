@@ -49,7 +49,7 @@ export const useCreateUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       queryClient.invalidateQueries({ queryKey: ["user-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["userOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["user-options"] })
     },
   })
 }
@@ -62,7 +62,7 @@ export const useUpdateUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       queryClient.invalidateQueries({ queryKey: ["user-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["userOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["user-options"] })
     },
   })
 }
@@ -74,7 +74,7 @@ export const useDeleteUser = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       queryClient.invalidateQueries({ queryKey: ["user-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["userOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["user-options"] })
     },
   })
 }
@@ -86,7 +86,7 @@ export const useDeleteManyUsers = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       queryClient.invalidateQueries({ queryKey: ["user-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["userOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["user-options"] })
     },
   })
 }
@@ -104,7 +104,7 @@ export const useImportUsers = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })
       queryClient.invalidateQueries({ queryKey: ["user-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["userOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["user-options"] })
     },
   })
 }

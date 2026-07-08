@@ -9,6 +9,8 @@ import {
   ImportSummary,
   WarehouseStatistics,
 } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -19,18 +21,6 @@ import {
   UpdateWarehouseLocationFormValues,
   UpdateWarehouseZoneFormValues,
 } from "@/schemas/tenant/warehouse-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getWarehouses = async (params?: {
   search?: string
@@ -63,34 +53,47 @@ export const getWarehouse = async (id: number): Promise<Warehouse> => {
 
 export const createWarehouse = async (
   warehouse: StoreWarehouseFormValues
-): Promise<Warehouse> => {
+): Promise<ApiMutationResult<Warehouse>> => {
   const response = await tenantApiClient.post<ApiResponse<Warehouse>>(
     "/warehouses",
     warehouse
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateWarehouse = async (
   id: number,
   warehouse: UpdateWarehouseFormValues
-): Promise<Warehouse> => {
+): Promise<ApiMutationResult<Warehouse>> => {
   const response = await tenantApiClient.put<ApiResponse<Warehouse>>(
     `/warehouses/${id}`,
     warehouse
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteWarehouse = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/warehouses/${id}`)
+export const deleteWarehouse = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/warehouses/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
-export const deleteManyWarehouses = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/warehouses/bulk", { ids })
+export const deleteManyWarehouses = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/warehouses/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
-export const exportWarehouses = async (params: ExportParams): Promise<void> => {
+export const exportWarehouses = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -102,8 +105,11 @@ export const exportWarehouses = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/warehouses/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/warehouses/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -124,7 +130,7 @@ export const downloadWarehousesImportSample = async (
 
 export const importWarehouses = async (
   file: File
-): Promise<{ summary: ImportSummary; message: string }> => {
+): Promise<ApiMutationResult<ImportSummary>> => {
   const formData = new FormData()
   formData.append("file", file)
   const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
@@ -133,25 +139,29 @@ export const importWarehouses = async (
   )
 
   return {
-    summary: response.data,
+    data: response.data,
     message: response.message,
   }
 }
 
-export const toggleWarehouseActive = async (id: number): Promise<Warehouse> => {
+export const toggleWarehouseActive = async (
+  id: number
+): Promise<ApiMutationResult<Warehouse>> => {
   const response = await tenantApiClient.post<ApiResponse<Warehouse>>(
     `/warehouses/${id}/toggle-active`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const setWarehousePrimary = async (id: number): Promise<Warehouse> => {
+export const setWarehousePrimary = async (
+  id: number
+): Promise<ApiMutationResult<Warehouse>> => {
   const response = await tenantApiClient.post<ApiResponse<Warehouse>>(
     `/warehouses/${id}/set-primary`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const getWarehouseOptions = async (): Promise<WarehouseOption[]> => {
@@ -190,33 +200,34 @@ export const getWarehouseZones = async (
 export const createWarehouseZone = async (
   warehouseId: number,
   zone: StoreWarehouseZoneFormValues
-): Promise<WarehouseZone> => {
+): Promise<ApiMutationResult<WarehouseZone>> => {
   const response = await tenantApiClient.post<ApiResponse<WarehouseZone>>(
     `/warehouses/${warehouseId}/zones`,
     zone
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateWarehouseZone = async (
   warehouseId: number,
   zoneId: number,
   zone: UpdateWarehouseZoneFormValues
-): Promise<WarehouseZone> => {
+): Promise<ApiMutationResult<WarehouseZone>> => {
   const response = await tenantApiClient.put<ApiResponse<WarehouseZone>>(
     `/warehouses/${warehouseId}/zones/${zoneId}`,
     zone
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const deleteWarehouseZone = async (
   warehouseId: number,
   zoneId: number
-): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
     `/warehouses/${warehouseId}/zones/${zoneId}`
   )
+  return { data: null, message: response.message }
 }
 
 // Locations
@@ -233,31 +244,32 @@ export const getWarehouseLocations = async (
 export const createWarehouseLocation = async (
   warehouseId: number,
   location: StoreWarehouseLocationFormValues
-): Promise<WarehouseLocation> => {
+): Promise<ApiMutationResult<WarehouseLocation>> => {
   const response = await tenantApiClient.post<ApiResponse<WarehouseLocation>>(
     `/warehouses/${warehouseId}/locations`,
     location
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateWarehouseLocation = async (
   warehouseId: number,
   locationId: number,
   location: UpdateWarehouseLocationFormValues
-): Promise<WarehouseLocation> => {
+): Promise<ApiMutationResult<WarehouseLocation>> => {
   const response = await tenantApiClient.put<ApiResponse<WarehouseLocation>>(
     `/warehouses/${warehouseId}/locations/${locationId}`,
     location
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const deleteWarehouseLocation = async (
   warehouseId: number,
   locationId: number
-): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
     `/warehouses/${warehouseId}/locations/${locationId}`
   )
+  return { data: null, message: response.message }
 }

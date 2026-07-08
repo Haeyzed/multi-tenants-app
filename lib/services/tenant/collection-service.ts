@@ -1,5 +1,7 @@
 import { Collection, CollectionOption } from "@/types/tenant/collection"
 import { CollectionStatistics, ExportParams } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -7,18 +9,6 @@ import {
   StoreCollectionFormValues,
   UpdateCollectionFormValues,
 } from "@/schemas/tenant/collection-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 function normalizeCollection(collection: Collection): Collection {
   return {
@@ -60,47 +50,64 @@ export const getCollection = async (id: number): Promise<Collection> => {
 
 export const createCollection = async (
   collection: StoreCollectionFormValues
-): Promise<Collection> => {
+): Promise<ApiMutationResult<Collection>> => {
   const response = await tenantApiClient.post<ApiResponse<Collection>>(
     "/collections",
     collection
   )
-  return normalizeCollection(response.data)
+  return {
+    data: normalizeCollection(response.data),
+    message: response.message,
+  }
 }
 
 export const updateCollection = async (
   id: number,
   collection: UpdateCollectionFormValues
-): Promise<Collection> => {
+): Promise<ApiMutationResult<Collection>> => {
   const response = await tenantApiClient.put<ApiResponse<Collection>>(
     `/collections/${id}`,
     collection
   )
-  return normalizeCollection(response.data)
+  return {
+    data: normalizeCollection(response.data),
+    message: response.message,
+  }
 }
 
-export const deleteCollection = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/collections/${id}`)
+export const deleteCollection = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/collections/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const toggleCollectionVisibility = async (
   id: number
-): Promise<Collection> => {
+): Promise<ApiMutationResult<Collection>> => {
   const response = await tenantApiClient.post<ApiResponse<Collection>>(
     `/collections/${id}/toggle-visibility`,
     {}
   )
-  return normalizeCollection(response.data)
+  return {
+    data: normalizeCollection(response.data),
+    message: response.message,
+  }
 }
 
 export const toggleCollectionFeatured = async (
   id: number
-): Promise<Collection> => {
+): Promise<ApiMutationResult<Collection>> => {
   const response = await tenantApiClient.post<ApiResponse<Collection>>(
     `/collections/${id}/toggle-featured`,
     {}
   )
-  return normalizeCollection(response.data)
+  return {
+    data: normalizeCollection(response.data),
+    message: response.message,
+  }
 }
 
 export const getCollectionOptions = async (): Promise<CollectionOption[]> => {
@@ -118,13 +125,19 @@ export const getCollectionStatistics =
     return response.data
   }
 
-export const deleteManyCollections = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/collections/bulk", { ids })
+export const deleteManyCollections = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/collections/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
 export const exportCollections = async (
   params: ExportParams
-): Promise<void> => {
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -136,8 +149,11 @@ export const exportCollections = async (
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/collections/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/collections/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -156,11 +172,14 @@ export const downloadCollectionsImportSample = async (
   )
 }
 
-export const importCollections = async (file: File): Promise<void> => {
+export const importCollections = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>(
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
     "/collections/import",
     formData
   )
+  return { data: null, message: response.message }
 }

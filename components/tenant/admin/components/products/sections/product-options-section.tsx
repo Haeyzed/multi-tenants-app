@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -142,14 +142,19 @@ export function ProductOptionsSection({ product }: ProductOptionsSectionProps) {
         nextErrors[issue.path.join(".")] = issue.message
       })
       setErrors(nextErrors)
-      toast.error("Fix the option fields before saving")
+      toastApiError(
+        new Error("Fix the option fields before saving"),
+        "Fix the option fields before saving"
+      )
       return
     }
 
     setErrors({})
     syncOptions.mutate(parsed.data, {
-      onSuccess: () => toast.success("Product options saved"),
-      onError: () => toast.error("Failed to save product options"),
+      onSuccess: (result) =>
+        toastApiSuccess(result.message, "Product options saved"),
+      onError: (error) =>
+        toastApiError(error, "Failed to save product options"),
     })
   }
 

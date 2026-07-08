@@ -5,7 +5,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MessageSquare, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -29,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { handleFormApiError } from "@/lib/form-api-errors"
-import { toastApiSuccess } from "@/lib/toast-api"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   useDeleteProductReview,
   useGetProductReviews,
@@ -81,8 +80,8 @@ export function ProductsManageReviewsDialog({
     updateReview.mutate(
       { reviewId: selectedReview.id, payload: data },
       {
-        onSuccess: (response) => {
-          toastApiSuccess(response.message, "Review updated")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Review updated")
           setSelectedReview(null)
         },
         onError: (error) =>
@@ -157,8 +156,8 @@ export function ProductsManageReviewsDialog({
                                   response.message,
                                   "Review deleted"
                                 ),
-                              onError: () =>
-                                toast.error("Failed to delete review"),
+                              onError: (error) =>
+                                toastApiError(error, "Failed to delete review"),
                             })
                           }
                         >

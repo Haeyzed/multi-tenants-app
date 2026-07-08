@@ -4,6 +4,8 @@ import {
   AttributeValue,
 } from "@/types/tenant/attribute"
 import { AttributeStatistics, ExportParams } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
@@ -12,18 +14,6 @@ import {
   UpdateAttributeFormValues,
   UpdateAttributeValueFormValues,
 } from "@/schemas/tenant/attribute-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getAttributes = async (params?: {
   search?: string
@@ -57,47 +47,52 @@ export const getAttribute = async (id: number): Promise<Attribute> => {
 
 export const createAttribute = async (
   attribute: StoreAttributeFormValues
-): Promise<Attribute> => {
+): Promise<ApiMutationResult<Attribute>> => {
   const response = await tenantApiClient.post<ApiResponse<Attribute>>(
     "/attributes",
     attribute
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateAttribute = async (
   id: number,
   attribute: UpdateAttributeFormValues
-): Promise<Attribute> => {
+): Promise<ApiMutationResult<Attribute>> => {
   const response = await tenantApiClient.put<ApiResponse<Attribute>>(
     `/attributes/${id}`,
     attribute
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteAttribute = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/attributes/${id}`)
+export const deleteAttribute = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/attributes/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const toggleAttributeFilterable = async (
   id: number
-): Promise<Attribute> => {
+): Promise<ApiMutationResult<Attribute>> => {
   const response = await tenantApiClient.post<ApiResponse<Attribute>>(
     `/attributes/${id}/toggle-filterable`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const toggleAttributeVariant = async (
   id: number
-): Promise<Attribute> => {
+): Promise<ApiMutationResult<Attribute>> => {
   const response = await tenantApiClient.post<ApiResponse<Attribute>>(
     `/attributes/${id}/toggle-variant`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const getAttributeOptions = async (): Promise<AttributeOption[]> => {
@@ -115,11 +110,19 @@ export const getAttributeStatistics =
     return response.data
   }
 
-export const deleteManyAttributes = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/attributes/bulk", { ids })
+export const deleteManyAttributes = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/attributes/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
-export const exportAttributes = async (params: ExportParams): Promise<void> => {
+export const exportAttributes = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -131,8 +134,11 @@ export const exportAttributes = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/attributes/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/attributes/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -151,13 +157,16 @@ export const downloadAttributesImportSample = async (
   )
 }
 
-export const importAttributes = async (file: File): Promise<void> => {
+export const importAttributes = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>(
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
     "/attributes/import",
     formData
   )
+  return { data: null, message: response.message }
 }
 
 export const getAttributeValues = async (
@@ -172,31 +181,32 @@ export const getAttributeValues = async (
 export const createAttributeValue = async (
   attributeId: number,
   value: StoreAttributeValueFormValues
-): Promise<AttributeValue> => {
+): Promise<ApiMutationResult<AttributeValue>> => {
   const response = await tenantApiClient.post<ApiResponse<AttributeValue>>(
     `/attributes/${attributeId}/values`,
     value
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateAttributeValue = async (
   attributeId: number,
   valueId: number,
   value: UpdateAttributeValueFormValues
-): Promise<AttributeValue> => {
+): Promise<ApiMutationResult<AttributeValue>> => {
   const response = await tenantApiClient.put<ApiResponse<AttributeValue>>(
     `/attributes/${attributeId}/values/${valueId}`,
     value
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const deleteAttributeValue = async (
   attributeId: number,
   valueId: number
-): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
     `/attributes/${attributeId}/values/${valueId}`
   )
+  return { data: null, message: response.message }
 }

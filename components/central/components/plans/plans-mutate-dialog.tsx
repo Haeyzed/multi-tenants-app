@@ -4,7 +4,7 @@ import * as React from "react"
 import { Plus, X } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
+import { toastApiSuccess } from "@/lib/toast-api"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -176,8 +176,8 @@ export function PlansMutateDialog({
       updatePlan.mutate(
         { id: currentRow.id, plan: payload as UpdatePlanFormValues },
         {
-          onSuccess: () => {
-            toast.success("Plan updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Plan updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -188,8 +188,8 @@ export function PlansMutateDialog({
       )
     } else {
       createPlan.mutate(payload as StorePlanFormValues, {
-        onSuccess: () => {
-          toast.success("Plan created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Plan created successfully")
           onOpenChange(false)
           form.reset()
         },

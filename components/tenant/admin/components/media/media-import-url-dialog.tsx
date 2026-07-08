@@ -1,8 +1,7 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
-import { toast } from "sonner"
-
 import { useImportMediaFromUrl } from "@/hooks/tenant/use-media-query"
 import { Button } from "@/components/ui/button"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
@@ -49,13 +48,12 @@ export function MediaImportUrlDialog({
         title: title.trim() || undefined,
       },
       {
-        onSuccess: () => {
-          toast.success("File imported successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "File imported successfully")
           onOpenChange(false)
         },
-        onError: (error) => {
-          toast.error(error.message || "Failed to import file from URL")
-        },
+        onError: (error) =>
+          toastApiError(error, "Failed to import file from URL"),
       }
     )
   }

@@ -1,3 +1,4 @@
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   Edit,
   Eye,
@@ -10,7 +11,6 @@ import {
   Trash2,
 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -112,16 +112,16 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={() => {
               toggleActive.mutate(warehouse.id, {
-                onSuccess: (updated) => {
-                  toast.success(
-                    updated.is_active
+                onSuccess: (result) => {
+                  toastApiSuccess(
+                    result.message,
+                    result.data.is_active
                       ? "Warehouse is now active"
                       : "Warehouse is now inactive"
                   )
                 },
-                onError: (error) => {
-                  toast.error(error.message || "Failed to update status")
-                },
+                onError: (error) =>
+                  toastApiError(error, "Failed to update status"),
               })
             }}
           >
@@ -136,16 +136,14 @@ export function DataTableRowActions<TData>({
             <DropdownMenuItem
               onClick={() => {
                 setPrimary.mutate(warehouse.id, {
-                  onSuccess: () => {
-                    toast.success(
+                  onSuccess: (result) => {
+                    toastApiSuccess(
+                      result.message,
                       `"${warehouse.name}" set as primary warehouse`
                     )
                   },
-                  onError: (error) => {
-                    toast.error(
-                      error.message || "Failed to set primary warehouse"
-                    )
-                  },
+                  onError: (error) =>
+                    toastApiError(error, "Failed to set primary warehouse"),
                 })
               }}
             >

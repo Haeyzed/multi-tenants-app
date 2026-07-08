@@ -4,24 +4,14 @@ import {
   ExportParams,
   ImportSummary,
 } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreCustomerFormValues,
   UpdateCustomerFormValues,
 } from "@/schemas/tenant/customer-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getCustomers = async (params?: {
   search?: string
@@ -54,7 +44,7 @@ export const getCustomer = async (id: number): Promise<Customer> => {
 
 export const createCustomer = async (
   customer: StoreCustomerFormValues
-): Promise<Customer> => {
+): Promise<ApiMutationResult<Customer>> => {
   const response = await tenantApiClient.post<ApiResponse<Customer>>(
     "/customers",
     {
@@ -63,13 +53,13 @@ export const createCustomer = async (
       phone: customer.phone || null,
     }
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateCustomer = async (
   id: number,
   customer: UpdateCustomerFormValues
-): Promise<Customer> => {
+): Promise<ApiMutationResult<Customer>> => {
   const response = await tenantApiClient.put<ApiResponse<Customer>>(
     `/customers/${id}`,
     {
@@ -78,11 +68,16 @@ export const updateCustomer = async (
       phone: customer.phone || null,
     }
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteCustomer = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/customers/${id}`)
+export const deleteCustomer = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/customers/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const getCustomerOptions = async (): Promise<CustomerOption[]> => {
@@ -100,11 +95,19 @@ export const getCustomerStatistics = async (): Promise<CustomerStatistics> => {
   return response.data
 }
 
-export const deleteManyCustomers = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/customers/bulk", { ids })
+export const deleteManyCustomers = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/customers/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
-export const exportCustomers = async (params: ExportParams): Promise<void> => {
+export const exportCustomers = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -116,8 +119,11 @@ export const exportCustomers = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/customers/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/customers/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -138,7 +144,7 @@ export const downloadCustomersImportSample = async (
 
 export const importCustomers = async (
   file: File
-): Promise<{ summary: ImportSummary; message: string }> => {
+): Promise<ApiMutationResult<ImportSummary>> => {
   const formData = new FormData()
   formData.append("file", file)
   const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
@@ -147,7 +153,7 @@ export const importCustomers = async (
   )
 
   return {
-    summary: response.data,
+    data: response.data,
     message: response.message,
   }
 }

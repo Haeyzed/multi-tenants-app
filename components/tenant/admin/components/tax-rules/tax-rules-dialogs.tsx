@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteTaxRule } from "@/hooks/tenant/use-tax-rule-query"
 import { exportTaxRules } from "@/lib/services/tenant/tax-rule-service"
 import { TAX_RULE_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { TaxRulesFormDialog } from "./tax-rules-form-dialog"
 import { TaxRulesViewDialog } from "./tax-rules-view-dialog"
 import { TaxRulesMultiDeleteDialog } from "./tax-rules-multi-delete-dialog"
@@ -40,8 +40,11 @@ export function TaxRulesDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteTaxRule.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Tax rule #${currentRow.id} deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Tax rule #${currentRow.id} deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -49,7 +52,7 @@ export function TaxRulesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tax rule")
+        toastApiError(error, "Failed to delete tax rule")
         setIsDeleting(false)
       },
     })
@@ -65,7 +68,7 @@ export function TaxRulesDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="tax-rules-export"
         open={open === "export"}
         onOpenChange={(val) => {

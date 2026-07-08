@@ -1,10 +1,10 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { z } from "zod"
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -73,14 +73,12 @@ export function TaxClassesImportDialog({
     if (!file) return
 
     importTaxClasses.mutate(file, {
-      onSuccess: () => {
-        toast.success("Tax classes imported successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Tax classes imported successfully")
         onOpenChange(false)
         form.reset()
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to import tax classes")
-      },
+      onError: (error) => toastApiError(error, "Failed to import tax classes"),
     })
   }
 
@@ -113,13 +111,9 @@ export function TaxClassesImportDialog({
               setIsDownloadingSample(true)
               try {
                 await downloadTaxClassesImportSample("xlsx")
-                toast.success("Sample template downloaded")
+                toastApiSuccess(null, "Sample template downloaded")
               } catch (error) {
-                toast.error(
-                  error instanceof Error
-                    ? error.message
-                    : "Failed to download sample template"
-                )
+                toastApiError(error, "Failed to download sample template")
               } finally {
                 setIsDownloadingSample(false)
               }

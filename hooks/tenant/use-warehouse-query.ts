@@ -59,7 +59,7 @@ export const useCreateWarehouse = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
       queryClient.invalidateQueries({ queryKey: ["warehouse-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["warehouseOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["warehouse-options"] })
     },
   })
 }
@@ -77,7 +77,7 @@ export const useUpdateWarehouse = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
       queryClient.invalidateQueries({ queryKey: ["warehouse-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["warehouseOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["warehouse-options"] })
     },
   })
 }
@@ -117,7 +117,7 @@ export const useImportWarehouses = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
       queryClient.invalidateQueries({ queryKey: ["warehouse-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["warehouseOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["warehouse-options"] })
     },
   })
 }
@@ -140,7 +140,7 @@ export const useSetWarehousePrimary = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["warehouses"] })
       queryClient.invalidateQueries({ queryKey: ["warehouse-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["warehouseOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["warehouse-options"] })
     },
   })
 }

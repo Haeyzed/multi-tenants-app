@@ -73,7 +73,7 @@ export const useCreateProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-options"] })
     },
   })
 }
@@ -92,7 +92,7 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["products", variables.id] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-options"] })
     },
   })
 }
@@ -104,7 +104,7 @@ export const useDeleteProduct = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-options"] })
     },
   })
 }
@@ -116,7 +116,7 @@ export const useDeleteManyProducts = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-options"] })
     },
   })
 }
@@ -134,7 +134,7 @@ export const useImportProducts = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
       queryClient.invalidateQueries({ queryKey: ["product-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-options"] })
     },
   })
 }

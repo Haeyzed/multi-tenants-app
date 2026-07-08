@@ -53,7 +53,7 @@ export const useCreateAttribute = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-options"] })
     },
   })
 }
@@ -71,7 +71,7 @@ export const useUpdateAttribute = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-options"] })
     },
   })
 }
@@ -83,7 +83,7 @@ export const useDeleteAttribute = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-options"] })
     },
   })
 }
@@ -102,7 +102,7 @@ export const useDeleteManyAttributes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-options"] })
     },
   })
 }
@@ -120,7 +120,7 @@ export const useImportAttributes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attributes"] })
       queryClient.invalidateQueries({ queryKey: ["attribute-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["attributeOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["attribute-options"] })
     },
   })
 }

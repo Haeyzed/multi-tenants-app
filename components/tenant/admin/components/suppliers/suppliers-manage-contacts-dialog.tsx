@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -132,8 +132,8 @@ export function SuppliersManageContactsDialog({
       updateContact.mutate(
         { contactId: editingContact.id, contact: payload },
         {
-          onSuccess: () => {
-            toast.success("Contact updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Contact updated successfully")
             setFormOpen(false)
             setEditingContact(null)
             form.reset()
@@ -145,8 +145,8 @@ export function SuppliersManageContactsDialog({
       )
     } else {
       createContact.mutate(payload as StoreSupplierContactFormValues, {
-        onSuccess: () => {
-          toast.success("Contact created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Contact created successfully")
           setFormOpen(false)
           form.reset()
         },
@@ -160,13 +160,11 @@ export function SuppliersManageContactsDialog({
   const handleDelete = () => {
     if (!deletingContact) return
     deleteContact.mutate(deletingContact.id, {
-      onSuccess: () => {
-        toast.success("Contact deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Contact deleted successfully")
         setDeletingContact(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete contact")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete contact"),
     })
   }
 

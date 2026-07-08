@@ -4,7 +4,7 @@ export const storeProductFaqSchema = z.object({
   question: z.string().min(1, "Question is required").max(500),
   answer: z.string().min(1, "Answer is required"),
   is_visible: z.boolean().optional(),
-  sort_order: z.coerce.number().int().min(0).optional(),
+  sort_order: z.number().int().min(0).optional(),
 })
 
 export const updateProductFaqSchema = storeProductFaqSchema.partial().extend({
@@ -20,7 +20,7 @@ export const storeProductDocumentSchema = z.object({
     .enum(["manual", "datasheet", "certificate", "warranty"])
     .default("manual"),
   language: z.string().max(10).default("en"),
-  sort_order: z.coerce.number().int().min(0).optional(),
+  sort_order: z.number().int().min(0).optional(),
   is_public: z.boolean().optional(),
 })
 
@@ -51,7 +51,7 @@ export const productVideoSchema = z.object({
     ),
   title: z.string().max(255).nullable().optional(),
   description: z.string().max(1000).nullable().optional(),
-  sort_order: z.coerce.number().int().min(0).optional(),
+  sort_order: z.number().int().min(0).optional(),
   is_primary: z.boolean().optional(),
 })
 

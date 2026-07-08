@@ -1,10 +1,10 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { z } from "zod"
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -74,17 +74,18 @@ export function CustomersImportDialog({
 
     importCustomers.mutate(file, {
       onSuccess: (result) => {
-        if ((result.summary.failed ?? 0) > 0) {
-          toast.warning(result.message)
+        if ((result.data.failed ?? 0) > 0) {
+          toastApiError(
+            new Error(result.message),
+            result.message || "Import completed with errors"
+          )
         } else {
-          toast.success(result.message || "Customers imported successfully")
+          toastApiSuccess(result.message, "Customers imported successfully")
         }
         onOpenChange(false)
         form.reset()
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to import customers")
-      },
+      onError: (error) => toastApiError(error, "Failed to import customers"),
     })
   }
 
@@ -117,13 +118,9 @@ export function CustomersImportDialog({
               setIsDownloadingSample(true)
               try {
                 await downloadCustomersImportSample("xlsx")
-                toast.success("Sample template downloaded")
+                toastApiSuccess(null, "Sample template downloaded")
               } catch (error) {
-                toast.error(
-                  error instanceof Error
-                    ? error.message
-                    : "Failed to download sample template"
-                )
+                toastApiError(error, "Failed to download sample template")
               } finally {
                 setIsDownloadingSample(false)
               }

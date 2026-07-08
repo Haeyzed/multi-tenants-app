@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -138,8 +138,8 @@ export function WarehousesManageZonesDialog({
       updateZone.mutate(
         { zoneId: editingZone.id, zone: payload },
         {
-          onSuccess: () => {
-            toast.success("Zone updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Zone updated successfully")
             setFormOpen(false)
             setEditingZone(null)
             form.reset()
@@ -151,8 +151,8 @@ export function WarehousesManageZonesDialog({
       )
     } else {
       createZone.mutate(payload as StoreWarehouseZoneFormValues, {
-        onSuccess: () => {
-          toast.success("Zone created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Zone created successfully")
           setFormOpen(false)
           form.reset()
         },
@@ -166,13 +166,11 @@ export function WarehousesManageZonesDialog({
   const handleDelete = () => {
     if (!deletingZone) return
     deleteZone.mutate(deletingZone.id, {
-      onSuccess: () => {
-        toast.success("Zone deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Zone deleted successfully")
         setDeletingZone(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete zone")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete zone"),
     })
   }
 

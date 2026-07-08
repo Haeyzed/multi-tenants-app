@@ -1,3 +1,4 @@
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   Edit,
   Eye,
@@ -8,7 +9,6 @@ import {
   Trash2,
 } from "lucide-react"
 import { type Row } from "@tanstack/react-table"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -90,18 +90,16 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={() => {
               toggleFilterable.mutate(attribute.id, {
-                onSuccess: (updated) => {
-                  toast.success(
-                    updated.is_filterable
+                onSuccess: (result) => {
+                  toastApiSuccess(
+                    result.message,
+                    result.data.is_filterable
                       ? "Attribute is now filterable"
                       : "Attribute is no longer filterable"
                   )
                 },
-                onError: (error) => {
-                  toast.error(
-                    error.message || "Failed to update filterable status"
-                  )
-                },
+                onError: (error) =>
+                  toastApiError(error, "Failed to update filterable status"),
               })
             }}
           >
@@ -113,18 +111,16 @@ export function DataTableRowActions<TData>({
           <DropdownMenuItem
             onClick={() => {
               toggleVariant.mutate(attribute.id, {
-                onSuccess: (updated) => {
-                  toast.success(
-                    updated.is_variant
+                onSuccess: (result) => {
+                  toastApiSuccess(
+                    result.message,
+                    result.data.is_variant
                       ? "Attribute marked as variant"
                       : "Attribute removed from variants"
                   )
                 },
-                onError: (error) => {
-                  toast.error(
-                    error.message || "Failed to update variant status"
-                  )
-                },
+                onError: (error) =>
+                  toastApiError(error, "Failed to update variant status"),
               })
             }}
           >

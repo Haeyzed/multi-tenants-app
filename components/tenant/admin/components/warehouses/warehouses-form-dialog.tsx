@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import { MapPin } from "lucide-react"
 import {
   ResponsiveDialog,
@@ -178,8 +178,8 @@ export function WarehousesFormDialog({
       updateWarehouse.mutate(
         { id: currentRow.id, warehouse: payload as UpdateWarehouseFormValues },
         {
-          onSuccess: () => {
-            toast.success("Warehouse updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Warehouse updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -194,8 +194,8 @@ export function WarehousesFormDialog({
       )
     } else {
       createWarehouse.mutate(payload as StoreWarehouseFormValues, {
-        onSuccess: () => {
-          toast.success("Warehouse created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Warehouse created successfully")
           onOpenChange(false)
           form.reset()
         },

@@ -1,9 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { FolderPlusIcon } from "lucide-react"
 import * as React from "react"
-import { toast } from "sonner"
-
 import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import {
@@ -100,17 +99,14 @@ export function MediaMoveDialog({
         }
       }
 
-      toast.success(
+      toastApiSuccess(
+        null,
         mode === "move" ? "Moved successfully" : "Copied successfully"
       )
       onSuccess?.()
       onOpenChange(false)
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Unable to complete this action"
-      )
+      toastApiError(error, "Unable to complete this action")
     }
   }
 

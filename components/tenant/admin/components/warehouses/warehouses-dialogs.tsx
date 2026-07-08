@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteWarehouse } from "@/hooks/tenant/use-warehouse-query"
 import { exportWarehouses } from "@/lib/services/tenant/warehouse-service"
 import { WAREHOUSE_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { WarehousesFormDialog } from "./warehouses-form-dialog"
 import { WarehousesViewDialog } from "./warehouses-view-dialog"
 import { WarehouseMapDialog } from "./warehouse-map-dialog"
@@ -44,8 +44,11 @@ export function WarehousesDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteWarehouse.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Warehouse "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Warehouse "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -53,7 +56,7 @@ export function WarehousesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete warehouse")
+        toastApiError(error, "Failed to delete warehouse")
         setIsDeleting(false)
       },
     })
@@ -77,7 +80,7 @@ export function WarehousesDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="warehouses-export"
         open={open === "export"}
         onOpenChange={(val) => {

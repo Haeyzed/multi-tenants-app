@@ -47,7 +47,7 @@ export const useCreateUnit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] })
       queryClient.invalidateQueries({ queryKey: ["unit-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["unitOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["unit-options"] })
     },
   })
 }
@@ -60,7 +60,7 @@ export const useUpdateUnit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] })
       queryClient.invalidateQueries({ queryKey: ["unit-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["unitOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["unit-options"] })
     },
   })
 }
@@ -72,7 +72,7 @@ export const useDeleteUnit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] })
       queryClient.invalidateQueries({ queryKey: ["unit-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["unitOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["unit-options"] })
     },
   })
 }
@@ -84,7 +84,7 @@ export const useDeleteManyUnits = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] })
       queryClient.invalidateQueries({ queryKey: ["unit-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["unitOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["unit-options"] })
     },
   })
 }
@@ -110,7 +110,7 @@ export const useSetBaseUnit = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] })
       queryClient.invalidateQueries({ queryKey: ["unit-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["unitOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["unit-options"] })
     },
   })
 }
@@ -128,7 +128,7 @@ export const useImportUnits = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["units"] })
       queryClient.invalidateQueries({ queryKey: ["unit-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["unitOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["unit-options"] })
     },
   })
 }

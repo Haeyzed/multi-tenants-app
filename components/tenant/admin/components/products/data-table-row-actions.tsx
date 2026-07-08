@@ -39,9 +39,9 @@ export function DataTableRowActions<TData>({
 
   const handleDuplicate = () => {
     duplicateProduct.mutate(product.id, {
-      onSuccess: (response) => {
-        toastApiSuccess(response.message, "Product duplicated")
-        router.push(`/admin/products/${response.data.id}/edit`)
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Product duplicated")
+        router.push(`/admin/products/${result.data.id}/edit`)
       },
       onError: (error) => toastApiError(error, "Failed to duplicate product"),
     })

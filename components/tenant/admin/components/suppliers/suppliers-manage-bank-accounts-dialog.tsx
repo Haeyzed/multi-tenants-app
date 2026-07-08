@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -146,8 +146,8 @@ export function SuppliersManageBankAccountsDialog({
       updateBankAccount.mutate(
         { accountId: editingAccount.id, account: payload },
         {
-          onSuccess: () => {
-            toast.success("Bank account updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Bank account updated successfully")
             setFormOpen(false)
             setEditingAccount(null)
             form.reset()
@@ -163,8 +163,8 @@ export function SuppliersManageBankAccountsDialog({
       )
     } else {
       createBankAccount.mutate(payload as StoreSupplierBankAccountFormValues, {
-        onSuccess: () => {
-          toast.success("Bank account created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Bank account created successfully")
           setFormOpen(false)
           form.reset()
         },
@@ -182,13 +182,11 @@ export function SuppliersManageBankAccountsDialog({
   const handleDelete = () => {
     if (!deletingAccount) return
     deleteBankAccount.mutate(deletingAccount.id, {
-      onSuccess: () => {
-        toast.success("Bank account deleted successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Bank account deleted successfully")
         setDeletingAccount(null)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete bank account")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete bank account"),
     })
   }
 

@@ -5,7 +5,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -31,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { handleFormApiError } from "@/lib/form-api-errors"
-import { toastApiSuccess } from "@/lib/toast-api"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   useCreateProductFaq,
   useDeleteProductFaq,
@@ -114,8 +113,8 @@ export function ProductsManageFaqsDialog({
       updateFaq.mutate(
         { faqId: editingFaq.id, payload: data },
         {
-          onSuccess: (response) => {
-            toastApiSuccess(response.message, "FAQ updated")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "FAQ updated")
             setFormOpen(false)
             setEditingFaq(null)
           },
@@ -127,8 +126,8 @@ export function ProductsManageFaqsDialog({
     }
 
     createFaq.mutate(data as StoreProductFaqFormValues, {
-      onSuccess: (response) => {
-        toastApiSuccess(response.message, "FAQ created")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "FAQ created")
         setFormOpen(false)
         form.reset()
       },
@@ -140,11 +139,11 @@ export function ProductsManageFaqsDialog({
   const handleDelete = () => {
     if (!deletingFaq) return
     deleteFaq.mutate(deletingFaq.id, {
-      onSuccess: (response) => {
-        toastApiSuccess(response.message, "FAQ deleted")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "FAQ deleted")
         setDeletingFaq(null)
       },
-      onError: () => toast.error("Failed to delete FAQ"),
+      onError: (error) => toastApiError(error, "Failed to delete FAQ"),
     })
   }
 

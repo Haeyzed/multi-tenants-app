@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteProductLabel } from "@/hooks/tenant/use-product-label-query"
 import { exportProductLabels } from "@/lib/services/tenant/product-label-service"
 import { PRODUCT_LABEL_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { ProductLabelsFormDialog } from "./product-labels-form-dialog"
 import { ProductLabelsViewDialog } from "./product-labels-view-dialog"
 import { ProductLabelsImportDialog } from "./product-labels-import-dialog"
@@ -41,8 +41,11 @@ export function ProductLabelsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteProductLabel.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Product label "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Product label "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function ProductLabelsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete product label")
+        toastApiError(error, "Failed to delete product label")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function ProductLabelsDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="product-labels-export"
         open={open === "export"}
         onOpenChange={(val) => {

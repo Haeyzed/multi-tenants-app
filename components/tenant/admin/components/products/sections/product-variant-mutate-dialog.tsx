@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -171,8 +171,8 @@ export function ProductVariantMutateDialog({
       updateVariant.mutate(
         { variantId: variant.id, payload: data },
         {
-          onSuccess: () => {
-            toast.success("Variant updated")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Variant updated")
             onOpenChange(false)
           },
           onError: (error) =>
@@ -187,8 +187,8 @@ export function ProductVariantMutateDialog({
     }
 
     createVariant.mutate(data as StoreProductVariantFormValues, {
-      onSuccess: () => {
-        toast.success("Variant created")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Variant created")
         onOpenChange(false)
       },
       onError: (error) =>

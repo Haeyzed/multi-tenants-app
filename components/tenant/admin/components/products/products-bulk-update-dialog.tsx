@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
 import {
@@ -55,7 +54,7 @@ export function ProductsBulkUpdateDialog({
 
   const handleSave = () => {
     if (ids.length === 0) {
-      toast.error("No products selected.")
+      toastApiError(new Error("No products selected."), "No products selected.")
       return
     }
 

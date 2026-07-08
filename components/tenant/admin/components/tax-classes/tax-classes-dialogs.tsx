@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteTaxClass } from "@/hooks/tenant/use-tax-class-query"
 import { exportTaxClasses } from "@/lib/services/tenant/tax-class-service"
 import { TAX_CLASS_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { TaxClassesFormDialog } from "./tax-classes-form-dialog"
 import { TaxClassesViewDialog } from "./tax-classes-view-dialog"
 import { TaxClassesImportDialog } from "./tax-classes-import-dialog"
@@ -41,8 +41,11 @@ export function TaxClassesDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteTaxClass.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Tax class "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Tax class "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function TaxClassesDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete tax class")
+        toastApiError(error, "Failed to delete tax class")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function TaxClassesDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="tax-classes-export"
         open={open === "export"}
         onOpenChange={(val) => {

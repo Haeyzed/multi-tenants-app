@@ -4,6 +4,8 @@ import {
   CategoryTreeNode,
 } from "@/types/tenant/category"
 import { CategoryStatistics, ExportParams } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -11,18 +13,6 @@ import {
   StoreCategoryFormValues,
   UpdateCategoryFormValues,
 } from "@/schemas/tenant/category-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 function normalizeCategory(category: Category): Category {
   return {
@@ -94,47 +84,72 @@ export const getCategoryTreeSelect = async (): Promise<CategoryOption[]> => {
 
 export const createCategory = async (
   category: StoreCategoryFormValues
-): Promise<Category> => {
+): Promise<ApiMutationResult<Category>> => {
   const response = await tenantApiClient.post<ApiResponse<Category>>(
     "/categories",
     category
   )
-  return normalizeCategory(response.data)
+  return {
+    data: normalizeCategory(response.data),
+    message: response.message,
+  }
 }
 
 export const updateCategory = async (
   id: number,
   category: UpdateCategoryFormValues
-): Promise<Category> => {
+): Promise<ApiMutationResult<Category>> => {
   const response = await tenantApiClient.put<ApiResponse<Category>>(
     `/categories/${id}`,
     category
   )
-  return normalizeCategory(response.data)
+  return {
+    data: normalizeCategory(response.data),
+    message: response.message,
+  }
 }
 
-export const deleteCategory = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/categories/${id}`)
+export const deleteCategory = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/categories/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const toggleCategoryVisibility = async (
   id: number
-): Promise<Category> => {
+): Promise<ApiMutationResult<Category>> => {
   const response = await tenantApiClient.post<ApiResponse<Category>>(
-    `/categories/${id}/toggle-visibility`
+    `/categories/${id}/toggle-visibility`, {}
   )
-  return normalizeCategory(response.data)
+  return {
+    data: normalizeCategory(response.data),
+    message: response.message,
+  }
 }
 
-export const toggleCategoryFeatured = async (id: number): Promise<Category> => {
+export const toggleCategoryFeatured = async (
+  id: number
+): Promise<ApiMutationResult<Category>> => {
   const response = await tenantApiClient.post<ApiResponse<Category>>(
-    `/categories/${id}/toggle-featured`
+    `/categories/${id}/toggle-featured`, {}
   )
-  return normalizeCategory(response.data)
+  return {
+    data: normalizeCategory(response.data),
+    message: response.message,
+  }
 }
 
-export const reorderCategories = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.put<ApiResponse<void>>("/categories/reorder", { ids })
+export const reorderCategories = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.put<ApiResponse<void>>(
+    "/categories/reorder",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
 export const getCategoryOptions = async (): Promise<CategoryOption[]> => {
@@ -151,11 +166,19 @@ export const getCategoryStatistics = async (): Promise<CategoryStatistics> => {
   return response.data
 }
 
-export const deleteManyCategories = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/categories/bulk", { ids })
+export const deleteManyCategories = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/categories/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
-export const exportCategories = async (params: ExportParams): Promise<void> => {
+export const exportCategories = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -167,8 +190,11 @@ export const exportCategories = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/categories/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/categories/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -187,11 +213,14 @@ export const downloadCategoriesImportSample = async (
   )
 }
 
-export const importCategories = async (file: File): Promise<void> => {
+export const importCategories = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>(
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
     "/categories/import",
     formData
   )
+  return { data: null, message: response.message }
 }

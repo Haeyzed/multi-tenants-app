@@ -1,23 +1,13 @@
 import { ProductLabel, ProductLabelOption } from "@/types/tenant/product-label"
 import { ExportParams, ProductLabelStatistics } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreProductLabelFormValues,
   UpdateProductLabelFormValues,
 } from "@/schemas/tenant/product-label-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getProductLabels = async (params?: {
   search?: string
@@ -49,37 +39,42 @@ export const getProductLabel = async (id: number): Promise<ProductLabel> => {
 
 export const createProductLabel = async (
   label: StoreProductLabelFormValues
-): Promise<ProductLabel> => {
+): Promise<ApiMutationResult<ProductLabel>> => {
   const response = await tenantApiClient.post<ApiResponse<ProductLabel>>(
     "/product-labels",
     label
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateProductLabel = async (
   id: number,
   label: UpdateProductLabelFormValues
-): Promise<ProductLabel> => {
+): Promise<ApiMutationResult<ProductLabel>> => {
   const response = await tenantApiClient.put<ApiResponse<ProductLabel>>(
     `/product-labels/${id}`,
     label
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteProductLabel = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/product-labels/${id}`)
+export const deleteProductLabel = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/product-labels/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const toggleProductLabelActive = async (
   id: number
-): Promise<ProductLabel> => {
+): Promise<ApiMutationResult<ProductLabel>> => {
   const response = await tenantApiClient.post<ApiResponse<ProductLabel>>(
     `/product-labels/${id}/toggle-active`,
     {}
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const getProductLabelOptions = async (): Promise<
@@ -99,15 +94,21 @@ export const getProductLabelStatistics =
     return response.data
   }
 
-export const deleteManyProductLabels = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/product-labels/bulk", {
-    ids,
-  })
+export const deleteManyProductLabels = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/product-labels/bulk",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
 }
 
 export const exportProductLabels = async (
   params: ExportParams
-): Promise<void> => {
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -119,11 +120,11 @@ export const exportProductLabels = async (
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>(
+    const response = await tenantApiClient.post<ApiResponse<void>>(
       "/product-labels/export",
       body
     )
-    return
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -142,11 +143,14 @@ export const downloadProductLabelsImportSample = async (
   )
 }
 
-export const importProductLabels = async (file: File): Promise<void> => {
+export const importProductLabels = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>(
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
     "/product-labels/import",
     formData
   )
+  return { data: null, message: response.message }
 }

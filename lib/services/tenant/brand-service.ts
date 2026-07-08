@@ -1,5 +1,7 @@
 import { Brand, BrandOption } from "@/types/tenant/brand"
 import { BrandStatistics, ExportParams } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { normalizeEmbeddedMedia } from "@/lib/tenant/normalize-embedded-media"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
@@ -7,18 +9,6 @@ import {
   StoreBrandFormValues,
   UpdateBrandFormValues,
 } from "@/schemas/tenant/brand-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 function normalizeBrand(brand: Brand): Brand {
   return {
@@ -66,45 +56,74 @@ export const getBrandBySlug = async (slug: string): Promise<Brand> => {
 
 export const createBrand = async (
   brand: StoreBrandFormValues
-): Promise<Brand> => {
+): Promise<ApiMutationResult<Brand>> => {
   const response = await tenantApiClient.post<ApiResponse<Brand>>(
     "/brands",
     brand
   )
-  return normalizeBrand(response.data)
+  return {
+    data: normalizeBrand(response.data),
+    message: response.message,
+  }
 }
 
 export const updateBrand = async (
   id: number,
   brand: UpdateBrandFormValues
-): Promise<Brand> => {
+): Promise<ApiMutationResult<Brand>> => {
   const response = await tenantApiClient.put<ApiResponse<Brand>>(
     `/brands/${id}`,
     brand
   )
-  return normalizeBrand(response.data)
+  return {
+    data: normalizeBrand(response.data),
+    message: response.message,
+  }
 }
 
-export const deleteBrand = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/brands/${id}`)
-}
-
-export const toggleBrandVisibility = async (id: number): Promise<Brand> => {
-  const response = await tenantApiClient.post<ApiResponse<Brand>>(
-    `/brands/${id}/toggle-visibility`
+export const deleteBrand = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/brands/${id}`
   )
-  return normalizeBrand(response.data)
+  return { data: null, message: response.message }
 }
 
-export const toggleBrandFeatured = async (id: number): Promise<Brand> => {
+export const toggleBrandVisibility = async (
+  id: number
+): Promise<ApiMutationResult<Brand>> => {
   const response = await tenantApiClient.post<ApiResponse<Brand>>(
-    `/brands/${id}/toggle-featured`
+    `/brands/${id}/toggle-visibility`,
+    {}
   )
-  return normalizeBrand(response.data)
+  return {
+    data: normalizeBrand(response.data),
+    message: response.message,
+  }
 }
 
-export const reorderBrands = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.put<ApiResponse<void>>("/brands/reorder", { ids })
+export const toggleBrandFeatured = async (
+  id: number
+): Promise<ApiMutationResult<Brand>> => {
+  const response = await tenantApiClient.post<ApiResponse<Brand>>(
+    `/brands/${id}/toggle-featured`,
+    {}
+  )
+  return {
+    data: normalizeBrand(response.data),
+    message: response.message,
+  }
+}
+
+export const reorderBrands = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.put<ApiResponse<void>>(
+    "/brands/reorder",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
 export const getBrandOptions = async (): Promise<BrandOption[]> => {
@@ -121,11 +140,19 @@ export const getBrandStatistics = async (): Promise<BrandStatistics> => {
   return response.data
 }
 
-export const deleteManyBrands = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/brands/bulk", { ids })
+export const deleteManyBrands = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/brands/bulk",
+    { ids }
+  )
+  return { data: null, message: response.message }
 }
 
-export const exportBrands = async (params: ExportParams): Promise<void> => {
+export const exportBrands = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -137,8 +164,11 @@ export const exportBrands = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/brands/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/brands/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -157,8 +187,14 @@ export const downloadBrandsImportSample = async (
   )
 }
 
-export const importBrands = async (file: File): Promise<void> => {
+export const importBrands = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/brands/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
+    "/brands/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

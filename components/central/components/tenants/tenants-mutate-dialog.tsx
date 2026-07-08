@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
+import { toastApiSuccess } from "@/lib/toast-api"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -166,8 +166,8 @@ export function TenantsMutateDialog({
       updateTenant.mutate(
         { id: currentRow.id, tenant: payload as UpdateTenantFormValues },
         {
-          onSuccess: () => {
-            toast.success("Tenant updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Tenant updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -178,8 +178,8 @@ export function TenantsMutateDialog({
       )
     } else {
       createTenant.mutate(payload as StoreTenantFormValues, {
-        onSuccess: () => {
-          toast.success("Tenant created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Tenant created successfully")
           onOpenChange(false)
           form.reset()
         },

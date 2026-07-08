@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteCustomer } from "@/hooks/tenant/use-customer-query"
 import { exportCustomers } from "@/lib/services/tenant/customer-service"
 import { CUSTOMER_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { CustomersFormDialog } from "./customers-form-dialog"
 import { CustomersViewDialog } from "./customers-view-dialog"
 import { CustomersImportDialog } from "./customers-import-dialog"
@@ -41,8 +41,11 @@ export function CustomersDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteCustomer.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Customer "${currentRow.full_name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Customer "${currentRow.full_name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function CustomersDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete customer")
+        toastApiError(error, "Failed to delete customer")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function CustomersDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="customers-export"
         open={open === "export"}
         onOpenChange={(val) => {

@@ -1,11 +1,11 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Edit, Layers, Package, Plus, Sparkles, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Tooltip,
@@ -125,18 +125,21 @@ export function ProductVariantsSection({
 
   const handleDelete = (variantId: number) => {
     deleteVariant.mutate(variantId, {
-      onSuccess: () => toast.success("Variant deleted"),
-      onError: () => toast.error("Failed to delete variant"),
+      onSuccess: (result) => toastApiSuccess(result.message, "Variant deleted"),
+      onError: (error) => toastApiError(error, "Failed to delete variant"),
     })
   }
 
   const handleGenerate = (data: GenerateProductVariantsFormValues) => {
     generateVariants.mutate(data, {
-      onSuccess: (variants) => {
-        toast.success(`${variants.length} variants generated`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `${result.data.length} variants generated`
+        )
         setGenerateOpen(false)
       },
-      onError: () => toast.error("Failed to generate variants"),
+      onError: (error) => toastApiError(error, "Failed to generate variants"),
     })
   }
 

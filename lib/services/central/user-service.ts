@@ -10,18 +10,8 @@ import {
   StoreUserFormValues,
   UpdateUserFormValues,
 } from "@/schemas/central/user-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 
 export const getUsers = async (params?: {
   search?: string
@@ -46,21 +36,26 @@ export const getUser = async (id: number): Promise<User> => {
   return response.data
 }
 
-export const createUser = async (user: StoreUserFormValues): Promise<User> => {
+export const createUser = async (
+  user: StoreUserFormValues
+): Promise<ApiMutationResult<User>> => {
   const response = await apiClient.post<ApiResponse<User>>("/users", user)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateUser = async (
   id: number,
   user: UpdateUserFormValues
-): Promise<User> => {
+): Promise<ApiMutationResult<User>> => {
   const response = await apiClient.put<ApiResponse<User>>(`/users/${id}`, user)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteUser = async (id: number): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>(`/users/${id}`)
+export const deleteUser = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>(`/users/${id}`)
+  return { data: null, message: response.message }
 }
 
 export const getUserStatistics = async (): Promise<UserStatistics> => {
@@ -75,11 +70,18 @@ export const getUserOptions = async (): Promise<UserOption[]> => {
   return response.data
 }
 
-export const deleteManyUsers = async (ids: number[]): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>("/users/bulk", { ids })
+export const deleteManyUsers = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>("/users/bulk", {
+    ids,
+  })
+  return { data: null, message: response.message }
 }
 
-export const exportUsers = async (params: ExportParams): Promise<void> => {
+export const exportUsers = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -91,8 +93,11 @@ export const exportUsers = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await apiClient.post<ApiResponse<void>>("/users/export", body)
-    return
+    const response = await apiClient.post<ApiResponse<void>>(
+      "/users/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -111,8 +116,14 @@ export const downloadUsersImportSample = async (
   )
 }
 
-export const importUsers = async (file: File): Promise<void> => {
+export const importUsers = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await apiClient.upload<ApiResponse<void>>("/users/import", formData)
+  const response = await apiClient.upload<ApiResponse<null>>(
+    "/users/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

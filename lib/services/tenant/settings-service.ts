@@ -1,11 +1,6 @@
 import { tenantApiClient } from "./api-client"
+import { type ApiResponse } from "@/lib/api-response"
 import { PublicSettings } from "@/types/tenant/settings"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-}
 
 export const getPublicSettings = async (): Promise<PublicSettings> => {
   const response =

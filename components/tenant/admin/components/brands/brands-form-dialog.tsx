@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -153,8 +153,8 @@ export function BrandsFormDialog({
       updateBrand.mutate(
         { id: currentRow.id, brand: payload as UpdateBrandFormValues },
         {
-          onSuccess: () => {
-            toast.success("Brand updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Brand updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -165,9 +165,9 @@ export function BrandsFormDialog({
       )
     } else {
       createBrand.mutate(payload as StoreBrandFormValues, {
-        onSuccess: (created) => {
-          toast.success("Brand created successfully")
-          onCreated?.(created)
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Brand created successfully")
+          onCreated?.(result.data)
           onOpenChange(false)
           form.reset()
         },

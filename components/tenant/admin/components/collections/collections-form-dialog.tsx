@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -167,7 +167,7 @@ export function CollectionsFormDialog({
       const message =
         error instanceof Error ? error.message : "Invalid conditions JSON."
       setConditionsError(message)
-      toast.error(message)
+      toastApiError(new Error(message), message)
       return
     }
 
@@ -188,8 +188,8 @@ export function CollectionsFormDialog({
           collection: payload as UpdateCollectionFormValues,
         },
         {
-          onSuccess: () => {
-            toast.success("Collection updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Collection updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -204,9 +204,9 @@ export function CollectionsFormDialog({
       )
     } else {
       createCollection.mutate(payload as StoreCollectionFormValues, {
-        onSuccess: (created) => {
-          toast.success("Collection created successfully")
-          onCreated?.(created)
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Collection created successfully")
+          onCreated?.(result.data)
           onOpenChange(false)
           form.reset()
         },

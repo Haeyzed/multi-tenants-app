@@ -61,7 +61,7 @@ export const useCreateSupplier = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
       queryClient.invalidateQueries({ queryKey: ["supplier-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["supplierOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["supplier-options"] })
     },
   })
 }
@@ -79,7 +79,7 @@ export const useUpdateSupplier = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
       queryClient.invalidateQueries({ queryKey: ["supplier-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["supplierOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["supplier-options"] })
     },
   })
 }
@@ -119,7 +119,7 @@ export const useImportSuppliers = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["suppliers"] })
       queryClient.invalidateQueries({ queryKey: ["supplier-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["supplierOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["supplier-options"] })
     },
   })
 }

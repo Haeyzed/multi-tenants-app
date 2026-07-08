@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteBrand } from "@/hooks/tenant/use-brand-query"
 import { exportBrands } from "@/lib/services/tenant/brand-service"
 import { BRAND_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { BrandsFormDialog } from "./brands-form-dialog"
 import { BrandsViewDialog } from "./brands-view-dialog"
 import { BrandsImportDialog } from "./brands-import-dialog"
@@ -41,8 +41,11 @@ export function BrandsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteBrand.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Brand "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Brand "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function BrandsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete brand")
+        toastApiError(error, "Failed to delete brand")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function BrandsDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="brands-export"
         open={open === "export"}
         onOpenChange={(val) => {

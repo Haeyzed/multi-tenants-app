@@ -44,7 +44,7 @@ export const useCreateProductLabel = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-label-options"] })
     },
   })
 }
@@ -62,7 +62,7 @@ export const useUpdateProductLabel = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-label-options"] })
     },
   })
 }
@@ -74,7 +74,7 @@ export const useDeleteProductLabel = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-label-options"] })
     },
   })
 }
@@ -93,7 +93,7 @@ export const useDeleteManyProductLabels = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-label-options"] })
     },
   })
 }
@@ -111,7 +111,7 @@ export const useImportProductLabels = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-label-options"] })
     },
   })
 }
@@ -123,7 +123,7 @@ export const useToggleProductLabelActive = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["product-labels"] })
       queryClient.invalidateQueries({ queryKey: ["product-label-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["productLabelOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["product-label-options"] })
     },
   })
 }

@@ -48,7 +48,7 @@ export const useCreateTaxClass = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }
@@ -66,7 +66,7 @@ export const useUpdateTaxClass = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }
@@ -78,7 +78,7 @@ export const useDeleteTaxClass = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }
@@ -90,7 +90,7 @@ export const useDeleteManyTaxClasses = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }
@@ -137,7 +137,7 @@ export const useImportTaxClasses = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }
@@ -159,7 +159,7 @@ export const useRestoreTaxClass = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }
@@ -171,7 +171,7 @@ export const useRestoreManyTaxClasses = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tax-classes"] })
       queryClient.invalidateQueries({ queryKey: ["tax-class-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["taxClassOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["tax-class-options"] })
     },
   })
 }

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -41,8 +41,11 @@ export function UsersDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteUser.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`User "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `User "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function UsersDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete user")
+        toastApiError(error, "Failed to delete user")
         setIsDeleting(false)
       },
     })

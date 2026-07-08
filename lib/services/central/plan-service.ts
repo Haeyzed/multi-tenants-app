@@ -6,18 +6,8 @@ import {
   StorePlanFormValues,
   UpdatePlanFormValues,
 } from "@/schemas/central/plan-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 
 export const getPlans = async (params?: {
   search?: string
@@ -42,20 +32,21 @@ export const getPlan = async (id: number): Promise<Plan> => {
   return response.data
 }
 
-export const createPlan = async (plan: StorePlanFormValues): Promise<Plan> => {
-  // Ensure limits is always string[] for API
+export const createPlan = async (
+  plan: StorePlanFormValues
+): Promise<ApiMutationResult<Plan>> => {
   const payload = {
     ...plan,
     limits: Array.isArray(plan.limits) ? plan.limits : [],
   }
   const response = await apiClient.post<ApiResponse<Plan>>("/plans", payload)
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updatePlan = async (
   id: number,
   plan: UpdatePlanFormValues
-): Promise<Plan> => {
+): Promise<ApiMutationResult<Plan>> => {
   const payload = {
     ...plan,
     limits: Array.isArray(plan.limits) ? plan.limits : [],
@@ -64,11 +55,14 @@ export const updatePlan = async (
     `/plans/${id}`,
     payload
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deletePlan = async (id: number): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>(`/plans/${id}`)
+export const deletePlan = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>(`/plans/${id}`)
+  return { data: null, message: response.message }
 }
 
 export const getPlanOptions = async (): Promise<PlanOption[]> => {
@@ -83,11 +77,18 @@ export const getPlanStatistics = async (): Promise<PlanStatistics> => {
   return response.data
 }
 
-export const deleteManyPlans = async (ids: number[]): Promise<void> => {
-  await apiClient.delete<ApiResponse<void>>("/plans/bulk", { ids })
+export const deleteManyPlans = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await apiClient.delete<ApiResponse<null>>("/plans/bulk", {
+    ids,
+  })
+  return { data: null, message: response.message }
 }
 
-export const exportPlans = async (params: ExportParams): Promise<void> => {
+export const exportPlans = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -99,8 +100,11 @@ export const exportPlans = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await apiClient.post<ApiResponse<void>>("/plans/export", body)
-    return
+    const response = await apiClient.post<ApiResponse<void>>(
+      "/plans/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -119,8 +123,14 @@ export const downloadPlansImportSample = async (
   )
 }
 
-export const importPlans = async (file: File): Promise<void> => {
+export const importPlans = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await apiClient.upload<ApiResponse<void>>("/plans/import", formData)
+  const response = await apiClient.upload<ApiResponse<null>>(
+    "/plans/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

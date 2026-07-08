@@ -12,7 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar, } from "@/components/ui/sidebar"
+import {
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar"
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
 import { CustomerSignOutDialog } from "@/components/tenant/customer/components/sign-out-dialog"
 
@@ -35,7 +40,10 @@ export function NavUser() {
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
-                <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+                <SidebarMenuButton
+                  size="lg"
+                  className="aria-expanded:bg-muted"
+                />
               }
             >
               <Avatar>
@@ -60,7 +68,9 @@ export function NavUser() {
                       <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-start text-sm leading-tight">
-                      <span className="truncate font-medium">{displayName}</span>
+                      <span className="truncate font-medium">
+                        {displayName}
+                      </span>
                       <span className="truncate text-xs">
                         {profile.user.email}
                       </span>

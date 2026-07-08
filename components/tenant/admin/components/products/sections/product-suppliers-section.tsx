@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -125,14 +125,19 @@ export function ProductSuppliersSection({
         nextErrors[issue.path.join(".")] = issue.message
       })
       setErrors(nextErrors)
-      toast.error("Fix supplier fields before saving")
+      toastApiError(
+        new Error("Fix supplier fields before saving"),
+        "Fix supplier fields before saving"
+      )
       return
     }
 
     setErrors({})
     syncSuppliers.mutate(parsed.data, {
-      onSuccess: () => toast.success("Product suppliers saved"),
-      onError: () => toast.error("Failed to save product suppliers"),
+      onSuccess: (result) =>
+        toastApiSuccess(result.message, "Product suppliers saved"),
+      onError: (error) =>
+        toastApiError(error, "Failed to save product suppliers"),
     })
   }
 

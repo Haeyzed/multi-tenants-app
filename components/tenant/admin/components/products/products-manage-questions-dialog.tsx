@@ -5,7 +5,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MessageSquareReply, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -29,7 +28,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { handleFormApiError } from "@/lib/form-api-errors"
-import { toastApiSuccess } from "@/lib/toast-api"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import {
   useAnswerProductQuestion,
   useDeleteProductQuestion,
@@ -80,8 +79,8 @@ export function ProductsManageQuestionsDialog({
     answerQuestion.mutate(
       { questionId: selectedQuestion.id, payload: data },
       {
-        onSuccess: (response) => {
-          toastApiSuccess(response.message, "Question answered")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Question answered")
           setSelectedQuestion(null)
         },
         onError: (error) =>
@@ -155,8 +154,11 @@ export function ProductsManageQuestionsDialog({
                                   response.message,
                                   "Question deleted"
                                 ),
-                              onError: () =>
-                                toast.error("Failed to delete question"),
+                              onError: (error) =>
+                                toastApiError(
+                                  error,
+                                  "Failed to delete question"
+                                ),
                             })
                           }
                         >

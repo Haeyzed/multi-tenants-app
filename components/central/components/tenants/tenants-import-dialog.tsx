@@ -2,7 +2,8 @@ import { z } from "zod"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
+import { handleFormApiError } from "@/lib/form-api-errors"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Spinner } from "@/components/ui/spinner"
 import { Button } from "@/components/ui/button"
 import {
@@ -65,13 +66,13 @@ export function TenantsImportDialog({
     if (!file) return
 
     importTenants.mutate(file, {
-      onSuccess: () => {
-        toast.success("Tenants imported successfully")
+      onSuccess: (result) => {
+        toastApiSuccess(result.message, "Tenants imported successfully")
         onOpenChange(false)
         form.reset()
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to import tenants")
+        handleFormApiError(error, form.setError, "Failed to import tenants")
       },
     })
   }
@@ -106,13 +107,9 @@ export function TenantsImportDialog({
               setIsDownloadingSample(true)
               try {
                 await downloadTenantsImportSample("xlsx")
-                toast.success("Sample template downloaded")
+                toastApiSuccess(undefined, "Sample template downloaded")
               } catch (error) {
-                toast.error(
-                  error instanceof Error
-                    ? error.message
-                    : "Failed to download sample template"
-                )
+                toastApiError(error, "Failed to download sample template")
               } finally {
                 setIsDownloadingSample(false)
               }

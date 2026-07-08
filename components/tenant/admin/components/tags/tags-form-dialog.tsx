@@ -1,9 +1,9 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -110,8 +110,8 @@ export function TagsFormDialog({
       updateTag.mutate(
         { id: currentRow.id, tag: payload as UpdateTagFormValues },
         {
-          onSuccess: () => {
-            toast.success("Tag updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Tag updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -122,9 +122,9 @@ export function TagsFormDialog({
       )
     } else {
       createTag.mutate(payload as StoreTagFormValues, {
-        onSuccess: (created) => {
-          toast.success("Tag created successfully")
-          onCreated?.(created)
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Tag created successfully")
+          onCreated?.(result.data)
           onOpenChange(false)
           form.reset()
         },

@@ -1,23 +1,13 @@
 import { TaxRate, TaxRateOption } from "@/types/tenant/tax-rate"
 import { ExportParams, TaxRateStatistics } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreTaxRateFormValues,
   UpdateTaxRateFormValues,
 } from "@/schemas/tenant/tax-rate-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getTaxRates = async (params?: {
   search?: string
@@ -51,51 +41,72 @@ export const getTaxRate = async (id: number): Promise<TaxRate> => {
 
 export const createTaxRate = async (
   taxRate: StoreTaxRateFormValues
-): Promise<TaxRate> => {
+): Promise<ApiMutationResult<TaxRate>> => {
   const response = await tenantApiClient.post<ApiResponse<TaxRate>>(
     "/tax-rates",
     taxRate
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateTaxRate = async (
   id: number,
   taxRate: UpdateTaxRateFormValues
-): Promise<TaxRate> => {
+): Promise<ApiMutationResult<TaxRate>> => {
   const response = await tenantApiClient.put<ApiResponse<TaxRate>>(
     `/tax-rates/${id}`,
     taxRate
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteTaxRate = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/tax-rates/${id}`)
-}
-
-export const deleteManyTaxRates = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/tax-rates/bulk", { ids })
-}
-
-export const restoreTaxRate = async (id: number): Promise<TaxRate> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxRate>>(
-    `/tax-rates/${id}/restore`
+export const deleteTaxRate = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/tax-rates/${id}`
   )
-  return response.data
+  return { data: null, message: response.message }
 }
 
-export const restoreManyTaxRates = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.post<ApiResponse<void>>("/tax-rates/bulk-restore", {
-    ids,
-  })
-}
-
-export const toggleTaxRateActive = async (id: number): Promise<TaxRate> => {
-  const response = await tenantApiClient.post<ApiResponse<TaxRate>>(
-    `/tax-rates/${id}/toggle-active`
+export const deleteManyTaxRates = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/tax-rates/bulk",
+    { ids }
   )
-  return response.data
+  return { data: null, message: response.message }
+}
+
+export const restoreTaxRate = async (
+  id: number
+): Promise<ApiMutationResult<TaxRate>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxRate>>(
+    `/tax-rates/${id}/restore`, {}
+  )
+  return { data: response.data, message: response.message }
+}
+
+export const restoreManyTaxRates = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.post<ApiResponse<void>>(
+    "/tax-rates/bulk-restore",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
+}
+
+export const toggleTaxRateActive = async (
+  id: number
+): Promise<ApiMutationResult<TaxRate>> => {
+  const response = await tenantApiClient.post<ApiResponse<TaxRate>>(
+    `/tax-rates/${id}/toggle-active`, {}
+  )
+  return { data: response.data, message: response.message }
 }
 
 export const getTaxRateStatistics = async (): Promise<TaxRateStatistics> => {
@@ -113,7 +124,9 @@ export const getTaxRateOptions = async (): Promise<TaxRateOption[]> => {
   return response.data
 }
 
-export const exportTaxRates = async (params: ExportParams): Promise<void> => {
+export const exportTaxRates = async (
+  params: ExportParams
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -125,8 +138,11 @@ export const exportTaxRates = async (params: ExportParams): Promise<void> => {
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>("/tax-rates/export", body)
-    return
+    const response = await tenantApiClient.post<ApiResponse<void>>(
+      "/tax-rates/export",
+      body
+    )
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -145,8 +161,14 @@ export const downloadTaxRatesImportSample = async (
   )
 }
 
-export const importTaxRates = async (file: File): Promise<void> => {
+export const importTaxRates = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>("/tax-rates/import", formData)
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
+    "/tax-rates/import",
+    formData
+  )
+  return { data: null, message: response.message }
 }

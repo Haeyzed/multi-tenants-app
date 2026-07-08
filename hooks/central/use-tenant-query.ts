@@ -128,11 +128,11 @@ export const useAddTenantDomain = () => {
       id: string
       domain: { domain: string; is_primary?: boolean }
     }) => addTenantDomain(id, domain),
-    onSuccess: (newDomain, { id }) => {
+    onSuccess: (result, { id }) => {
       queryClient.setQueryData<Domain[]>(
         ["tenant-domains", id],
         (current: Domain[] | undefined) =>
-          current ? [...current, newDomain] : [newDomain]
+          current ? [...current, result.data] : [result.data]
       )
       invalidateTenantDomainQueries(queryClient, id)
     },

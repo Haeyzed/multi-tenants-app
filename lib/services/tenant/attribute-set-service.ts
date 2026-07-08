@@ -1,24 +1,14 @@
 import { Attribute } from "@/types/tenant/attribute"
 import { AttributeSet, AttributeSetOption } from "@/types/tenant/attribute-set"
 import { AttributeSetStatistics, ExportParams } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreAttributeSetFormValues,
   UpdateAttributeSetFormValues,
 } from "@/schemas/tenant/attribute-set-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: {
-    current_page: number
-    last_page: number
-    per_page: number
-    total: number
-  }
-}
 
 export const getAttributeSets = async (params?: {
   search?: string
@@ -50,27 +40,32 @@ export const getAttributeSet = async (id: number): Promise<AttributeSet> => {
 
 export const createAttributeSet = async (
   attributeSet: StoreAttributeSetFormValues
-): Promise<AttributeSet> => {
+): Promise<ApiMutationResult<AttributeSet>> => {
   const response = await tenantApiClient.post<ApiResponse<AttributeSet>>(
     "/attribute-sets",
     attributeSet
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateAttributeSet = async (
   id: number,
   attributeSet: UpdateAttributeSetFormValues
-): Promise<AttributeSet> => {
+): Promise<ApiMutationResult<AttributeSet>> => {
   const response = await tenantApiClient.put<ApiResponse<AttributeSet>>(
     `/attribute-sets/${id}`,
     attributeSet
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteAttributeSet = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/attribute-sets/${id}`)
+export const deleteAttributeSet = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/attribute-sets/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const getAttributeSetOptions = async (): Promise<
@@ -90,15 +85,21 @@ export const getAttributeSetStatistics =
     return response.data
   }
 
-export const deleteManyAttributeSets = async (ids: number[]): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/attribute-sets/bulk", {
-    ids,
-  })
+export const deleteManyAttributeSets = async (
+  ids: number[]
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/attribute-sets/bulk",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
 }
 
 export const exportAttributeSets = async (
   params: ExportParams
-): Promise<void> => {
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -110,11 +111,11 @@ export const exportAttributeSets = async (
   }
 
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>(
+    const response = await tenantApiClient.post<ApiResponse<void>>(
       "/attribute-sets/export",
       body
     )
-    return
+    return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
@@ -133,13 +134,16 @@ export const downloadAttributeSetsImportSample = async (
   )
 }
 
-export const importAttributeSets = async (file: File): Promise<void> => {
+export const importAttributeSets = async (
+  file: File
+): Promise<ApiMutationResult<null>> => {
   const formData = new FormData()
   formData.append("file", file)
-  await tenantApiClient.upload<ApiResponse<void>>(
+  const response = await tenantApiClient.upload<ApiResponse<void>>(
     "/attribute-sets/import",
     formData
   )
+  return { data: null, message: response.message }
 }
 
 export const getAttributeSetAttributes = async (
@@ -154,10 +158,10 @@ export const getAttributeSetAttributes = async (
 export const syncAttributeSetAttributes = async (
   attributeSetId: number,
   attributeIds: number[]
-): Promise<AttributeSet> => {
+): Promise<ApiMutationResult<AttributeSet>> => {
   const response = await tenantApiClient.put<ApiResponse<AttributeSet>>(
     `/attribute-sets/${attributeSetId}/attributes`,
     { attribute_ids: attributeIds }
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }

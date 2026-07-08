@@ -7,19 +7,14 @@ import {
   ExportParams,
   ImportSummary,
 } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import { tenantApiClient } from "./api-client"
 import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreCustomerGroupFormValues,
   UpdateCustomerGroupFormValues,
 } from "@/schemas/tenant/customer-group-schema"
-
-interface ApiResponse<T> {
-  success: boolean
-  message: string
-  data: T
-  meta?: PaginatedResponse<unknown>["meta"]
-}
 
 export const getCustomerGroups = async (params?: {
   search?: string
@@ -51,27 +46,32 @@ export const getCustomerGroup = async (id: number): Promise<CustomerGroup> => {
 
 export const createCustomerGroup = async (
   group: StoreCustomerGroupFormValues
-): Promise<CustomerGroup> => {
+): Promise<ApiMutationResult<CustomerGroup>> => {
   const response = await tenantApiClient.post<ApiResponse<CustomerGroup>>(
     "/customer-groups",
     group
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
 export const updateCustomerGroup = async (
   id: number,
   group: UpdateCustomerGroupFormValues
-): Promise<CustomerGroup> => {
+): Promise<ApiMutationResult<CustomerGroup>> => {
   const response = await tenantApiClient.put<ApiResponse<CustomerGroup>>(
     `/customer-groups/${id}`,
     group
   )
-  return response.data
+  return { data: response.data, message: response.message }
 }
 
-export const deleteCustomerGroup = async (id: number): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>(`/customer-groups/${id}`)
+export const deleteCustomerGroup = async (
+  id: number
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    `/customer-groups/${id}`
+  )
+  return { data: null, message: response.message }
 }
 
 export const getCustomerGroupOptions = async (): Promise<
@@ -93,15 +93,19 @@ export const getCustomerGroupStatistics =
 
 export const deleteManyCustomerGroups = async (
   ids: number[]
-): Promise<void> => {
-  await tenantApiClient.delete<ApiResponse<void>>("/customer-groups/bulk", {
-    ids,
-  })
+): Promise<ApiMutationResult<null>> => {
+  const response = await tenantApiClient.delete<ApiResponse<void>>(
+    "/customer-groups/bulk",
+    {
+      ids,
+    }
+  )
+  return { data: null, message: response.message }
 }
 
 export const exportCustomerGroups = async (
   params: ExportParams
-): Promise<void> => {
+): Promise<void | ApiMutationResult<null>> => {
   const body = {
     ids: params.ids,
     delivery: params.delivery,
@@ -112,11 +116,11 @@ export const exportCustomerGroups = async (
     columns: params.columns,
   }
   if (params.delivery === "email") {
-    await tenantApiClient.post<ApiResponse<void>>(
+    const response = await tenantApiClient.post<ApiResponse<void>>(
       "/customer-groups/export",
       body
     )
-    return
+    return { data: null, message: response.message }
   }
   const extension = body.type === "csv" ? "csv" : "xlsx"
   await tenantApiClient.postFileDownload("/customer-groups/export", body, {
@@ -136,7 +140,7 @@ export const downloadCustomerGroupsImportSample = async (
 
 export const importCustomerGroups = async (
   file: File
-): Promise<{ summary: ImportSummary; message: string }> => {
+): Promise<ApiMutationResult<ImportSummary>> => {
   const formData = new FormData()
   formData.append("file", file)
   const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
@@ -145,7 +149,7 @@ export const importCustomerGroups = async (
   )
 
   return {
-    summary: response.data,
+    data: response.data,
     message: response.message,
   }
 }

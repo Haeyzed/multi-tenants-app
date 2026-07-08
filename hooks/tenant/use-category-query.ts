@@ -45,7 +45,7 @@ export const useCreateCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["category-options"] })
       queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
@@ -64,7 +64,7 @@ export const useUpdateCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["category-options"] })
       queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
@@ -77,7 +77,7 @@ export const useDeleteCategory = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["category-options"] })
       queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
@@ -104,7 +104,7 @@ export const useDeleteManyCategories = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["category-options"] })
       queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })
@@ -123,7 +123,7 @@ export const useImportCategories = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] })
       queryClient.invalidateQueries({ queryKey: ["category-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["categoryOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["category-options"] })
       queryClient.invalidateQueries({ queryKey: ["categoryTreeSelect"] })
     },
   })

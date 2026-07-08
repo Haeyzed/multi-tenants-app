@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteCollection } from "@/hooks/tenant/use-collection-query"
 import { exportCollections } from "@/lib/services/tenant/collection-service"
 import { COLLECTION_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { CollectionsFormDialog } from "./collections-form-dialog"
 import { CollectionsViewDialog } from "./collections-view-dialog"
 import { CollectionsImportDialog } from "./collections-import-dialog"
@@ -41,8 +41,11 @@ export function CollectionsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteCollection.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Collection "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Collection "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function CollectionsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete collection")
+        toastApiError(error, "Failed to delete collection")
         setIsDeleting(false)
       },
     })
@@ -74,7 +77,7 @@ export function CollectionsDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="collections-export"
         open={open === "export"}
         onOpenChange={(val) => {

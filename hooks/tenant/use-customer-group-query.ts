@@ -43,7 +43,7 @@ export const useCreateCustomerGroup = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["customerGroupOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["customer-group-options"] })
     },
   })
 }
@@ -61,7 +61,7 @@ export const useUpdateCustomerGroup = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["customerGroupOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["customer-group-options"] })
     },
   })
 }
@@ -73,7 +73,7 @@ export const useDeleteCustomerGroup = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["customerGroupOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["customer-group-options"] })
     },
   })
 }
@@ -92,7 +92,7 @@ export const useDeleteManyCustomerGroups = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["customerGroupOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["customer-group-options"] })
     },
   })
 }
@@ -110,7 +110,7 @@ export const useImportCustomerGroups = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customer-groups"] })
       queryClient.invalidateQueries({ queryKey: ["customer-group-statistics"] })
-      queryClient.invalidateQueries({ queryKey: ["customerGroupOptions"] })
+      queryClient.invalidateQueries({ queryKey: ["customer-group-options"] })
     },
   })
 }

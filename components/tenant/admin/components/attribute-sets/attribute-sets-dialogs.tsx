@@ -1,8 +1,8 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -16,7 +16,7 @@ import {
 import { useDeleteAttributeSet } from "@/hooks/tenant/use-attribute-set-query"
 import { exportAttributeSets } from "@/lib/services/tenant/attribute-set-service"
 import { ATTRIBUTE_SET_EXPORT_COLUMNS } from "@/lib/export-columns"
-import { TenantModuleExportDialog } from "@/components/tenant/admin/components/shared/tenant-module-export-dialog"
+import { ModuleExportDialog } from "@/components/tenant/admin/components/shared/module-export-dialog"
 import { AttributeSetsFormDialog } from "./attribute-sets-form-dialog"
 import { AttributeSetsViewDialog } from "./attribute-sets-view-dialog"
 import { AttributeSetsImportDialog } from "./attribute-sets-import-dialog"
@@ -42,8 +42,11 @@ export function AttributeSetsDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deleteAttributeSet.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Attribute set "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Attribute set "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -51,7 +54,7 @@ export function AttributeSetsDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete attribute set")
+        toastApiError(error, "Failed to delete attribute set")
         setIsDeleting(false)
       },
     })
@@ -75,7 +78,7 @@ export function AttributeSetsDialogs() {
         }}
       />
 
-      <TenantModuleExportDialog
+      <ModuleExportDialog
         key="attribute-sets-export"
         open={open === "export"}
         onOpenChange={(val) => {

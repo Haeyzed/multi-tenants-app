@@ -1,10 +1,10 @@
 "use client"
 
+import { toastApiSuccess } from "@/lib/toast-api"
 import * as React from "react"
 import { format } from "date-fns"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -197,8 +197,8 @@ export function TaxRulesFormDialog({
       updateTaxRule.mutate(
         { id: currentRow.id, taxRule: payload as UpdateTaxRuleFormValues },
         {
-          onSuccess: () => {
-            toast.success("Tax rule updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "Tax rule updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -213,8 +213,8 @@ export function TaxRulesFormDialog({
       )
     } else {
       createTaxRule.mutate(payload as StoreTaxRuleFormValues, {
-        onSuccess: () => {
-          toast.success("Tax rule created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Tax rule created successfully")
           onOpenChange(false)
           form.reset()
         },

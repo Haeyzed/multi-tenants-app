@@ -1,8 +1,7 @@
 "use client"
 
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { AlertTriangle } from "lucide-react"
-import { toast } from "sonner"
-
 import { useDeleteManyMedia } from "@/hooks/tenant/use-media-query"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,16 +32,15 @@ export function MediaBulkDeleteDialog({
 
   const handleDelete = () => {
     deleteMany.mutate(ids, {
-      onSuccess: () => {
-        toast.success(
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
           `Deleted ${ids.length} file${ids.length === 1 ? "" : "s"}`
         )
         onSuccess?.()
         onOpenChange(false)
       },
-      onError: (error) => {
-        toast.error(error.message || "Failed to delete files")
-      },
+      onError: (error) => toastApiError(error, "Failed to delete files"),
     })
   }
 

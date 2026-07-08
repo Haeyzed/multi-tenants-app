@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Spinner } from "@/components/ui/spinner"
-import { toast } from "sonner"
+import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
@@ -41,8 +41,11 @@ export function PlansDialogs() {
     if (!currentRow) return
     setIsDeleting(true)
     deletePlan.mutate(currentRow.id, {
-      onSuccess: () => {
-        toast.success(`Plan "${currentRow.name}" deleted successfully`)
+      onSuccess: (result) => {
+        toastApiSuccess(
+          result.message,
+          `Plan "${currentRow.name}" deleted successfully`
+        )
         setIsDeleting(false)
         setOpen(null)
         setTimeout(() => {
@@ -50,7 +53,7 @@ export function PlansDialogs() {
         }, 500)
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete plan")
+        toastApiError(error, "Failed to delete plan")
         setIsDeleting(false)
       },
     })

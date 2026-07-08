@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Download, Plus, Trash2 } from "lucide-react"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -110,20 +109,29 @@ export function ProductDocumentsSection({
     const media = resolveDocumentMedia(productDocument)
 
     if (!media?.url) {
-      toast.error("Download URL is not available for this document")
+      toastApiError(
+        new Error("Download URL is not available for this document"),
+        "Download URL is not available for this document"
+      )
       return
     }
 
     try {
       await downloadMediaItem(media)
     } catch {
-      toast.error("Failed to download document")
+      toastApiError(
+        new Error("Failed to download document"),
+        "Failed to download document"
+      )
     }
   }
 
   const handleAdd = () => {
     if (!mediaId || !title.trim()) {
-      toast.error("Select a file and enter a title")
+      toastApiError(
+        new Error("Select a file and enter a title"),
+        "Select a file and enter a title"
+      )
       return
     }
 
@@ -136,8 +144,8 @@ export function ProductDocumentsSection({
         is_public: isPublic,
       },
       {
-        onSuccess: (response) => {
-          toastApiSuccess(response.message, "Document added")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Document added")
           setMediaId(null)
           setTitle("")
         },

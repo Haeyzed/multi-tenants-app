@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
+import { toastApiSuccess } from "@/lib/toast-api"
 import {
   ResponsiveDialog,
   ResponsiveDialogClose,
@@ -100,8 +100,8 @@ export function UsersMutateDialog({
       updateUser.mutate(
         { id: currentRow.id, user: updatePayload },
         {
-          onSuccess: () => {
-            toast.success("User updated successfully")
+          onSuccess: (result) => {
+            toastApiSuccess(result.message, "User updated successfully")
             onOpenChange(false)
             form.reset()
           },
@@ -112,8 +112,8 @@ export function UsersMutateDialog({
       )
     } else {
       createUser.mutate(payload as StoreUserFormValues, {
-        onSuccess: () => {
-          toast.success("User created successfully")
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "User created successfully")
           onOpenChange(false)
           form.reset()
         },
