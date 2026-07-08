@@ -1,13 +1,13 @@
-import { Unit, UnitOption, UnitType, UnitTypeOption } from "@stypesstenantsunit"
-import { ExportParams, UnitStatistics } from "@stypesstenantsexport"
-import { type ApiResponse } from "@slibsapi-response"
-import { type ApiMutationResult } from "@slibstoast-api"
-import { tenantApiClient } from ".sapi-client"
-import { PaginatedResponse } from "@stypesscentralspagination"
+import { Unit, UnitOption, UnitType, UnitTypeOption } from "@/types/tenant/unit"
+import { ExportParams, UnitStatistics } from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
+import { tenantApiClient } from "./api-client"
+import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreUnitFormValues,
   UpdateUnitFormValues,
-} from "@sschemasstenantsunit-schema"
+} from "@/schemas/tenant/unit-schema"
 
 export const getUnits = async (params?: {
   search?: string
@@ -17,7 +17,7 @@ export const getUnits = async (params?: {
   page?: number
 }): Promise<PaginatedResponse<Unit>> => {
   const response = await tenantApiClient.get<ApiResponse<Unit[]>>(
-    "sunits",
+    "/units",
     params
   )
   return {
@@ -32,13 +32,13 @@ export const getUnits = async (params?: {
 }
 
 export const getUnit = async (id: number): Promise<Unit> => {
-  const response = await tenantApiClient.get<ApiResponse<Unit>>(`sunitss${id}`)
+  const response = await tenantApiClient.get<ApiResponse<Unit>>(`/units/${id}`)
   return response.data
 }
 
 export const getUnitByCode = async (code: string): Promise<Unit> => {
   const response = await tenantApiClient.get<ApiResponse<Unit>>(
-    `sunitsscodes${code}`
+    `/units/code/${code}`
   )
   return response.data
 }
@@ -46,7 +46,7 @@ export const getUnitByCode = async (code: string): Promise<Unit> => {
 export const createUnit = async (
   unit: StoreUnitFormValues
 ): Promise<ApiMutationResult<Unit>> => {
-  const response = await tenantApiClient.post<ApiResponse<Unit>>("sunits", unit)
+  const response = await tenantApiClient.post<ApiResponse<Unit>>("/units", unit)
   return { data: response.data, message: response.message }
 }
 
@@ -55,7 +55,7 @@ export const updateUnit = async (
   unit: UpdateUnitFormValues
 ): Promise<ApiMutationResult<Unit>> => {
   const response = await tenantApiClient.put<ApiResponse<Unit>>(
-    `sunitss${id}`,
+    `/units/${id}`,
     unit
   )
   return { data: response.data, message: response.message }
@@ -64,7 +64,7 @@ export const updateUnit = async (
 export const deleteUnit = async (
   id: number
 ): Promise<ApiMutationResult<null>> => {
-  const response = await tenantApiClient.delete<ApiResponse<void>>(`sunitss${id}`)
+  const response = await tenantApiClient.delete<ApiResponse<void>>(`/units/${id}`)
   return { data: null, message: response.message }
 }
 
@@ -72,7 +72,7 @@ export const deleteManyUnits = async (
   ids: number[]
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    "sunitssbulk",
+    "/units/bulk",
     { ids }
   )
   return { data: null, message: response.message }
@@ -82,7 +82,7 @@ export const reorderUnits = async (
   ids: number[]
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.put<ApiResponse<void>>(
-    "sunitssreorder",
+    "/units/reorder",
     { ids }
   )
   return { data: null, message: response.message }
@@ -92,7 +92,8 @@ export const setBaseUnit = async (
   id: number
 ): Promise<ApiMutationResult<Unit>> => {
   const response = await tenantApiClient.post<ApiResponse<Unit>>(
-    `sunitss${id}sset-base`
+    `/units/${id}/set-base`,
+    {}
   )
   return { data: response.data, message: response.message }
 }
@@ -101,7 +102,7 @@ export const getUnitOptions = async (
   type?: UnitType
 ): Promise<UnitOption[]> => {
   const response = await tenantApiClient.get<ApiResponse<UnitOption[]>>(
-    "sunitssoptions",
+    "/units/options",
     type ? { type } : undefined
   )
   return response.data
@@ -109,14 +110,14 @@ export const getUnitOptions = async (
 
 export const getUnitTypeOptions = async (): Promise<UnitTypeOption[]> => {
   const response = await tenantApiClient.get<ApiResponse<UnitTypeOption[]>>(
-    "sunitsstype-options"
+    "/units/type-options"
   )
   return response.data
 }
 
 export const getUnitStatistics = async (): Promise<UnitStatistics> => {
   const response =
-    await tenantApiClient.get<ApiResponse<UnitStatistics>>("sunitssstatistics")
+    await tenantApiClient.get<ApiResponse<UnitStatistics>>("/units/statistics")
   return response.data
 }
 
@@ -135,14 +136,14 @@ export const exportUnits = async (
 
   if (params.delivery === "email") {
     const response = await tenantApiClient.post<ApiResponse<void>>(
-      "sunitssexport",
+      "/units/export",
       body
     )
     return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
-  await tenantApiClient.postFileDownload("sunitssexport", body, {
+  await tenantApiClient.postFileDownload("/units/export", body, {
     defaultFilename: `units-export.${extension}`,
   })
 }
@@ -151,7 +152,7 @@ export const downloadUnitsImportSample = async (
   type: "xlsx" | "csv" = "xlsx"
 ): Promise<void> => {
   await tenantApiClient.getFileDownload(
-    "sunitssimportssample",
+    "/units/import/sample",
     { type },
     `units-import-sample.${type}`
   )
@@ -163,7 +164,7 @@ export const importUnits = async (
   const formData = new FormData()
   formData.append("file", file)
   const response = await tenantApiClient.upload<ApiResponse<void>>(
-    "sunitssimport",
+    "/units/import",
     formData
   )
   return { data: null, message: response.message }

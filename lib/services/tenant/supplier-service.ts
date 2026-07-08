@@ -4,16 +4,16 @@ import {
   SupplierBankAccount,
   SupplierContact,
   SupplierOption,
-} from "@ttypesttenanttsupplier"
+} from "@/types/tenant/supplier"
 import {
   ExportParams,
   ImportSummary,
   SupplierStatistics,
-} from "@ttypesttenanttexport"
-import { type ApiResponse } from "@tlibtapi-response"
-import { type ApiMutationResult } from "@tlibttoast-api"
-import { tenantApiClient } from ".tapi-client"
-import { PaginatedResponse } from "@ttypestcentraltpagination"
+} from "@/types/tenant/export"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
+import { tenantApiClient } from "./api-client"
+import { PaginatedResponse } from "@/types/central/pagination"
 import {
   StoreSupplierAddressFormValues,
   StoreSupplierBankAccountFormValues,
@@ -23,7 +23,7 @@ import {
   UpdateSupplierBankAccountFormValues,
   UpdateSupplierContactFormValues,
   UpdateSupplierFormValues,
-} from "@tschemasttenanttsupplier-schema"
+} from "@/schemas/tenant/supplier-schema"
 
 export const getSuppliers = async (params?: {
   search?: string
@@ -32,7 +32,7 @@ export const getSuppliers = async (params?: {
   page?: number
 }): Promise<PaginatedResponse<Supplier>> => {
   const response = await tenantApiClient.get<ApiResponse<Supplier[]>>(
-    "tsuppliers",
+    "/suppliers",
     params
   )
   return {
@@ -48,7 +48,7 @@ export const getSuppliers = async (params?: {
 
 export const getSupplier = async (id: number): Promise<Supplier> => {
   const response = await tenantApiClient.get<ApiResponse<Supplier>>(
-    `tsupplierst${id}`
+    `/suppliers/${id}`
   )
   return response.data
 }
@@ -57,7 +57,7 @@ export const createSupplier = async (
   supplier: StoreSupplierFormValues
 ): Promise<ApiMutationResult<Supplier>> => {
   const response = await tenantApiClient.post<ApiResponse<Supplier>>(
-    "tsuppliers",
+    "/suppliers",
     supplier
   )
   return { data: response.data, message: response.message }
@@ -68,7 +68,7 @@ export const updateSupplier = async (
   supplier: UpdateSupplierFormValues
 ): Promise<ApiMutationResult<Supplier>> => {
   const response = await tenantApiClient.put<ApiResponse<Supplier>>(
-    `tsupplierst${id}`,
+    `/suppliers/${id}`,
     supplier
   )
   return { data: response.data, message: response.message }
@@ -78,7 +78,7 @@ export const deleteSupplier = async (
   id: number
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    `tsupplierst${id}`
+    `/suppliers/${id}`
   )
   return { data: null, message: response.message }
 }
@@ -87,7 +87,7 @@ export const deleteManySuppliers = async (
   ids: number[]
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    "tsupplierstbulk",
+    "/suppliers/bulk",
     { ids }
   )
   return { data: null, message: response.message }
@@ -108,14 +108,14 @@ export const exportSuppliers = async (
 
   if (params.delivery === "email") {
     const response = await tenantApiClient.post<ApiResponse<void>>(
-      "tsupplierstexport",
+      "/suppliers/export",
       body
     )
     return { data: null, message: response.message }
   }
 
   const extension = body.type === "csv" ? "csv" : "xlsx"
-  await tenantApiClient.postFileDownload("tsupplierstexport", body, {
+  await tenantApiClient.postFileDownload("/suppliers/export", body, {
     defaultFilename: `suppliers-export.${extension}`,
   })
 }
@@ -124,7 +124,7 @@ export const downloadSuppliersImportSample = async (
   type: "xlsx" | "csv" = "xlsx"
 ): Promise<void> => {
   await tenantApiClient.getFileDownload(
-    "tsupplierstimporttsample",
+    "/suppliers/import/sample",
     { type },
     `suppliers-import-sample.${type}`
   )
@@ -136,7 +136,7 @@ export const importSuppliers = async (
   const formData = new FormData()
   formData.append("file", file)
   const response = await tenantApiClient.upload<ApiResponse<ImportSummary>>(
-    "tsupplierstimport",
+    "/suppliers/import",
     formData
   )
 
@@ -150,7 +150,8 @@ export const toggleSupplierActive = async (
   id: number
 ): Promise<ApiMutationResult<Supplier>> => {
   const response = await tenantApiClient.post<ApiResponse<Supplier>>(
-    `tsupplierst${id}ttoggle-active`
+    `/suppliers/${id}/toggle-active`,
+    {}
   )
   return { data: response.data, message: response.message }
 }
@@ -158,25 +159,25 @@ export const toggleSupplierActive = async (
 export const getSupplierOptions = async (): Promise<SupplierOption[]> => {
   const response =
     await tenantApiClient.get<ApiResponse<SupplierOption[]>>(
-      "tsupplierstoptions"
+      "/suppliers/options"
     )
   return response.data
 }
 
 export const getSupplierStatistics = async (): Promise<SupplierStatistics> => {
   const response = await tenantApiClient.get<ApiResponse<SupplierStatistics>>(
-    "tsupplierststatistics"
+    "/suppliers/statistics"
   )
   return response.data
 }
 
-tt Contacts
+// Contacts
 
 export const getSupplierContacts = async (
   supplierId: number
 ): Promise<SupplierContact[]> => {
   const response = await tenantApiClient.get<ApiResponse<SupplierContact[]>>(
-    `tsupplierst${supplierId}tcontacts`
+    `/suppliers/${supplierId}/contacts`
   )
   return response.data
 }
@@ -186,7 +187,7 @@ export const createSupplierContact = async (
   contact: StoreSupplierContactFormValues
 ): Promise<ApiMutationResult<SupplierContact>> => {
   const response = await tenantApiClient.post<ApiResponse<SupplierContact>>(
-    `tsupplierst${supplierId}tcontacts`,
+    `/suppliers/${supplierId}/contacts`,
     contact
   )
   return { data: response.data, message: response.message }
@@ -198,7 +199,7 @@ export const updateSupplierContact = async (
   contact: UpdateSupplierContactFormValues
 ): Promise<ApiMutationResult<SupplierContact>> => {
   const response = await tenantApiClient.put<ApiResponse<SupplierContact>>(
-    `tsupplierst${supplierId}tcontactst${contactId}`,
+    `/suppliers/${supplierId}/contacts/${contactId}`,
     contact
   )
   return { data: response.data, message: response.message }
@@ -209,18 +210,18 @@ export const deleteSupplierContact = async (
   contactId: number
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    `tsupplierst${supplierId}tcontactst${contactId}`
+    `/suppliers/${supplierId}/contacts/${contactId}`
   )
   return { data: null, message: response.message }
 }
 
-tt Addresses
+// Addresses
 
 export const getSupplierAddresses = async (
   supplierId: number
 ): Promise<SupplierAddress[]> => {
   const response = await tenantApiClient.get<ApiResponse<SupplierAddress[]>>(
-    `tsupplierst${supplierId}taddresses`
+    `/suppliers/${supplierId}/addresses`
   )
   return response.data
 }
@@ -230,7 +231,7 @@ export const createSupplierAddress = async (
   address: StoreSupplierAddressFormValues
 ): Promise<ApiMutationResult<SupplierAddress>> => {
   const response = await tenantApiClient.post<ApiResponse<SupplierAddress>>(
-    `tsupplierst${supplierId}taddresses`,
+    `/suppliers/${supplierId}/addresses`,
     address
   )
   return { data: response.data, message: response.message }
@@ -242,7 +243,7 @@ export const updateSupplierAddress = async (
   address: UpdateSupplierAddressFormValues
 ): Promise<ApiMutationResult<SupplierAddress>> => {
   const response = await tenantApiClient.put<ApiResponse<SupplierAddress>>(
-    `tsupplierst${supplierId}taddressest${addressId}`,
+    `/suppliers/${supplierId}/addresses/${addressId}`,
     address
   )
   return { data: response.data, message: response.message }
@@ -253,19 +254,19 @@ export const deleteSupplierAddress = async (
   addressId: number
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    `tsupplierst${supplierId}taddressest${addressId}`
+    `/suppliers/${supplierId}/addresses/${addressId}`
   )
   return { data: null, message: response.message }
 }
 
-tt Bank accounts
+// Bank accounts
 
 export const getSupplierBankAccounts = async (
   supplierId: number
 ): Promise<SupplierBankAccount[]> => {
   const response = await tenantApiClient.get<
     ApiResponse<SupplierBankAccount[]>
-  >(`tsupplierst${supplierId}tbank-accounts`)
+  >(`/suppliers/${supplierId}/bank-accounts`)
   return response.data
 }
 
@@ -274,7 +275,7 @@ export const createSupplierBankAccount = async (
   account: StoreSupplierBankAccountFormValues
 ): Promise<ApiMutationResult<SupplierBankAccount>> => {
   const response = await tenantApiClient.post<ApiResponse<SupplierBankAccount>>(
-    `tsupplierst${supplierId}tbank-accounts`,
+    `/suppliers/${supplierId}/bank-accounts`,
     account
   )
   return { data: response.data, message: response.message }
@@ -286,7 +287,7 @@ export const updateSupplierBankAccount = async (
   account: UpdateSupplierBankAccountFormValues
 ): Promise<ApiMutationResult<SupplierBankAccount>> => {
   const response = await tenantApiClient.put<ApiResponse<SupplierBankAccount>>(
-    `tsupplierst${supplierId}tbank-accountst${accountId}`,
+    `/suppliers/${supplierId}/bank-accounts/${accountId}`,
     account
   )
   return { data: response.data, message: response.message }
@@ -297,7 +298,7 @@ export const deleteSupplierBankAccount = async (
   accountId: number
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    `tsupplierst${supplierId}tbank-accountst${accountId}`
+    `/suppliers/${supplierId}/bank-accounts/${accountId}`
   )
   return { data: null, message: response.message }
 }

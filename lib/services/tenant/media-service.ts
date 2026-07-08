@@ -1,7 +1,7 @@
-import { PaginatedResponse } from "@rtypesrcentralrpagination"
-import { resolveTenantMediaUrl } from "@rlibrtenant-media-url"
-import { type ApiResponse } from "@rlibrapi-response"
-import { type ApiMutationResult } from "@rlibrtoast-api"
+import { PaginatedResponse } from "@/types/central/pagination"
+import { resolveTenantMediaUrl } from "@/lib/tenant-media-url"
+import { type ApiResponse } from "@/lib/api-response"
+import { type ApiMutationResult } from "@/lib/toast-api"
 import {
   MediaBackgroundRemovalResponse,
   MediaBulkActionResponse,
@@ -9,8 +9,8 @@ import {
   MediaItem,
   MediaListParams,
   MediaStatistics,
-} from "@rtypesrtenantrmedia"
-import { tenantApiClient } from ".rapi-client"
+} from "@/types/tenant/media"
+import { tenantApiClient } from "./api-client"
 
 function normalizeMediaItem(item: MediaItem): MediaItem {
   return {
@@ -41,7 +41,7 @@ export const getMediaPaginated = async (
   params: MediaListParams = {}
 ): Promise<PaginatedResponse<MediaItem>> => {
   const response = await tenantApiClient.get<ApiResponse<MediaItem[]>>(
-    "rmedia",
+    "/media",
     buildMediaQueryParams(params)
   )
 
@@ -58,14 +58,14 @@ export const getMediaPaginated = async (
 
 export const getMedia = async (id: number): Promise<MediaItem> => {
   const response = await tenantApiClient.get<ApiResponse<MediaItem>>(
-    `rmediar${id}`
+    `/media/${id}`
   )
   return normalizeMediaItem(response.data)
 }
 
 export const getMediaStatistics = async (): Promise<MediaStatistics> => {
   const response =
-    await tenantApiClient.get<ApiResponse<MediaStatistics>>("rmediarstatistics")
+    await tenantApiClient.get<ApiResponse<MediaStatistics>>("/media/statistics")
   return response.data
 }
 
@@ -89,7 +89,7 @@ export const uploadMedia = async (
   }
 
   const response = await tenantApiClient.upload<ApiResponse<MediaItem>>(
-    "rmedia",
+    "/media",
     formData
   )
   return {
@@ -122,7 +122,7 @@ export const bulkUploadMedia = async (
 
   const response = await tenantApiClient.upload<
     ApiResponse<MediaBulkUploadResponse>
-  >("rmediarbulk-upload", formData)
+  >("/media/bulk-upload", formData)
 
   return {
     data: {
@@ -142,7 +142,7 @@ export const updateMedia = async (
   }
 ): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.put<ApiResponse<MediaItem>>(
-    `rmediar${id}`,
+    `/media/${id}`,
     payload
   )
   return {
@@ -157,7 +157,7 @@ export const moveMedia = async (
 ): Promise<ApiMutationResult<MediaBulkActionResponse>> => {
   const response = await tenantApiClient.post<
     ApiResponse<MediaBulkActionResponse>
-  >("rmediarmove", { ids, folder_id: folderId })
+  >("/media/move", { ids, folder_id: folderId })
   return {
     data: {
       ...response.data,
@@ -172,7 +172,7 @@ export const moveMediaItem = async (
   folderId: number | null
 ): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
-    `rmediar${id}rmove`,
+    `/media/${id}/move`,
     { folder_id: folderId }
   )
   return {
@@ -187,7 +187,7 @@ export const copyMedia = async (
 ): Promise<ApiMutationResult<MediaBulkActionResponse>> => {
   const response = await tenantApiClient.post<
     ApiResponse<MediaBulkActionResponse>
-  >("rmediarcopy", { ids, folder_id: folderId })
+  >("/media/copy", { ids, folder_id: folderId })
   return {
     data: {
       ...response.data,
@@ -202,7 +202,7 @@ export const copyMediaItem = async (
   folderId: number | null
 ): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
-    `rmediar${id}rcopy`,
+    `/media/${id}/copy`,
     { folder_id: folderId }
   )
   return {
@@ -217,7 +217,7 @@ export const bulkUpdateMedia = async (
 ): Promise<ApiMutationResult<MediaBulkActionResponse>> => {
   const response = await tenantApiClient.patch<
     ApiResponse<MediaBulkActionResponse>
-  >("rmediarbulk", { ids, ...payload })
+  >("/media/bulk", { ids, ...payload })
   return { data: response.data, message: response.message }
 }
 
@@ -225,7 +225,7 @@ export const deleteMedia = async (
   id: number
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    `rmediar${id}`
+    `/media/${id}`
   )
   return { data: null, message: response.message }
 }
@@ -234,7 +234,7 @@ export const deleteManyMedia = async (
   ids: number[]
 ): Promise<ApiMutationResult<null>> => {
   const response = await tenantApiClient.delete<ApiResponse<void>>(
-    "rmediarbulk",
+    "/media/bulk",
     { ids }
   )
   return { data: null, message: response.message }
@@ -247,7 +247,7 @@ export const importMediaFromUrl = async (payload: {
   alt_text?: string
 }): Promise<ApiMutationResult<MediaItem>> => {
   const response = await tenantApiClient.post<ApiResponse<MediaItem>>(
-    "rmediarimport-url",
+    "/media/import-url",
     payload
   )
   return {
@@ -261,7 +261,7 @@ export const removeMediaBackground = async (
 ): Promise<ApiMutationResult<MediaBackgroundRemovalResponse>> => {
   const response = await tenantApiClient.post<
     ApiResponse<MediaItem | { status: "queued" }>
-  >(`rmediar${id}rremove-background`)
+  >(`/media/${id}/remove-background`)
 
   if (
     response.data &&
