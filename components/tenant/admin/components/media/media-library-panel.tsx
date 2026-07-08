@@ -152,6 +152,8 @@ function ActionToolbar({
 interface MediaLibraryPanelProps {
   mode?: "manage" | "picker"
   pickerValue?: number | null
+  pickerValues?: number[]
+  pickerMultiple?: boolean
   onPick?: (item: MediaItem) => void
   accept?: string
   className?: string
@@ -160,6 +162,8 @@ interface MediaLibraryPanelProps {
 export function MediaLibraryPanel({
   mode = "manage",
   pickerValue = null,
+  pickerValues = [],
+  pickerMultiple = false,
   onPick,
   accept,
   className,
@@ -524,6 +528,8 @@ export function MediaLibraryPanel({
     accept,
     selectedIds,
     pickerValue,
+    pickerValues,
+    pickerMultiple,
     onOpenFolder: openFolder,
     onToggleSelect: toggleSelect,
     onPick,

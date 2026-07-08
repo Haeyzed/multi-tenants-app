@@ -187,14 +187,19 @@ export function ProductMediaSection({
         </Field>
 
         <MediaPickerDialog
+          multiple
           open={galleryPickerOpen}
           onOpenChange={setGalleryPickerOpen}
-          value={null}
-          onSelect={(item) => {
-            addGalleryItem(item?.id ?? null, item)
-            setGalleryPickerOpen(false)
+          onSelectMultiple={(items) => {
+            for (const item of items) {
+              if (gallery.some((entry) => entry.media_id === item.id)) {
+                continue
+              }
+              addGalleryItem(item.id, item)
+            }
           }}
           accept="image/*"
+          title="Add gallery images"
         />
       </CardContent>
     </Card>

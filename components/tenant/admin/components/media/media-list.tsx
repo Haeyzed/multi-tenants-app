@@ -78,6 +78,8 @@ interface MediaListProps {
   accept?: string
   selectedIds: number[]
   pickerValue?: number | null
+  pickerValues?: number[]
+  pickerMultiple?: boolean
   onOpenFolder?: (folderId: number) => void
   onToggleSelect?: (id: number) => void
   onPick?: (item: MediaItem) => void
@@ -388,6 +390,8 @@ export function MediaList({
   accept,
   selectedIds,
   pickerValue,
+  pickerValues = [],
+  pickerMultiple = false,
   onOpenFolder,
   onToggleSelect,
   onPick,
@@ -504,7 +508,9 @@ export function MediaList({
         const isPickable = mode !== "picker" || mediaMatchesAccept(item, accept)
         const isSelected =
           mode === "picker"
-            ? pickerValue === item.id
+            ? pickerMultiple
+              ? pickerValues.includes(item.id)
+              : pickerValue === item.id
             : selectedIds.includes(item.id)
 
         const fileRow = (

@@ -45,6 +45,7 @@ export function MediaThumbnail({
   const dimensions = sizeMap[size]
 
   if (cover) {
+    const containerClass = cn("absolute inset-0 overflow-hidden", className)
     const image = (
       <div className="relative size-full">
         <Image
@@ -59,13 +60,11 @@ export function MediaThumbnail({
     )
 
     if (!zoomable) {
-      return <div className={cn("relative size-full", className)}>{image}</div>
+      return <div className={containerClass}>{image}</div>
     }
 
     return (
-      <ImageZoom className={cn("relative block size-full", className)}>
-        {image}
-      </ImageZoom>
+      <ImageZoom className={cn(containerClass, "block")}>{image}</ImageZoom>
     )
   }
 
