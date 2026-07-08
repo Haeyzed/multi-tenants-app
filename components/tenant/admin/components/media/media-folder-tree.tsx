@@ -15,6 +15,7 @@ import {
 import * as React from "react"
 
 import { MediaLibraryFolderDropTarget } from "@/components/tenant/admin/components/media/media-library-dnd"
+import { MediaFolderNameEditable } from "@/components/tenant/admin/components/media/media-folder-name-editable"
 import { Button } from "@/components/ui/button"
 import {
   ContextMenu,
@@ -38,6 +39,8 @@ function runMenuAction(action: () => void) {
 interface MediaFolderTreeProps {
   tree: MediaFolderTreeNode[]
   selectedFolderId: number | null
+  editingFolderId?: number | null
+  onEditingFolderIdChange?: (folderId: number | null) => void
   onSelectFolder: (folderId: number | null) => void
   enableDropTargets?: boolean
   onRenameFolder?: (node: MediaFolderTreeNode) => void
@@ -50,6 +53,8 @@ interface MediaFolderTreeProps {
 export function MediaFolderTree({
   tree,
   selectedFolderId,
+  editingFolderId = null,
+  onEditingFolderIdChange,
   onSelectFolder,
   enableDropTargets = false,
   onRenameFolder,
@@ -85,6 +90,8 @@ export function MediaFolderTree({
           node={node}
           depth={0}
           selectedFolderId={selectedFolderId}
+          editingFolderId={editingFolderId}
+          onEditingFolderIdChange={onEditingFolderIdChange}
           onSelectFolder={onSelectFolder}
           enableDropTargets={enableDropTargets}
           onRenameFolder={onRenameFolder}
@@ -101,6 +108,8 @@ function FolderTreeNode({
   node,
   depth,
   selectedFolderId,
+  editingFolderId,
+  onEditingFolderIdChange,
   onSelectFolder,
   enableDropTargets,
   onRenameFolder,
@@ -111,6 +120,8 @@ function FolderTreeNode({
   node: MediaFolderTreeNode
   depth: number
   selectedFolderId: number | null
+  editingFolderId?: number | null
+  onEditingFolderIdChange?: (folderId: number | null) => void
   onSelectFolder: (folderId: number | null) => void
   enableDropTargets: boolean
   onRenameFolder?: (node: MediaFolderTreeNode) => void
@@ -133,7 +144,16 @@ function FolderTreeNode({
       onClick={() => onSelectFolder(node.id)}
     >
       <FolderIcon className="size-4 shrink-0" />
-      <span className="min-w-0 truncate text-start">{node.name}</span>
+      <MediaFolderNameEditable
+        folderId={node.id}
+        name={node.name}
+        editing={editingFolderId === node.id}
+        onEditingChange={(editing) => {
+          onEditingFolderIdChange?.(editing ? node.id : null)
+        }}
+        className="min-w-0 flex-1"
+        previewClassName="text-sm"
+      />
     </Button>
   )
 
@@ -228,6 +248,8 @@ function FolderTreeNode({
               node={child}
               depth={depth + 1}
               selectedFolderId={selectedFolderId}
+              editingFolderId={editingFolderId}
+              onEditingFolderIdChange={onEditingFolderIdChange}
               onSelectFolder={onSelectFolder}
               enableDropTargets={enableDropTargets}
               onRenameFolder={onRenameFolder}

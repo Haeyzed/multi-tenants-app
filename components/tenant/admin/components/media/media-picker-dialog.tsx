@@ -6,6 +6,7 @@ import { MediaLibraryPanel } from "@/components/tenant/admin/components/media/me
 import { Button } from "@/components/ui/button"
 import {
   ResponsiveDialog,
+  ResponsiveDialogClose,
   ResponsiveDialogContent,
   ResponsiveDialogDescription,
   ResponsiveDialogFooter,
@@ -115,14 +116,10 @@ export function MediaPickerDialog({
         />
 
         {multiple ? (
-          <ResponsiveDialogFooter className="gap-2 sm:gap-0">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
+          <ResponsiveDialogFooter>
+            <ResponsiveDialogClose
+              render={<Button variant="outline">Close</Button>}
+            />
             <Button
               type="button"
               disabled={pendingSelections.size === 0}

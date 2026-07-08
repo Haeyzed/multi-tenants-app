@@ -3,11 +3,11 @@
 import { toastApiError, toastApiSuccess } from "@/lib/toast-api"
 import { FolderPlusIcon } from "lucide-react"
 import * as React from "react"
-import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
 import { MediaFolderTree } from "@/components/tenant/admin/components/media/media-folder-tree"
 import {
   useCopyMedia,
   useCopyMediaFolder,
+  useCreateMediaFolder,
   useGetMediaFolderTree,
   useMoveMedia,
   useMoveMediaFolder,
@@ -44,11 +44,14 @@ export function MediaMoveDialog({
   const [targetFolderId, setTargetFolderId] = React.useState<number | null>(
     null
   )
-  const [folderDialogOpen, setFolderDialogOpen] = React.useState(false)
+  const [editingFolderId, setEditingFolderId] = React.useState<number | null>(
+    null
+  )
   const moveMedia = useMoveMedia()
   const copyMedia = useCopyMedia()
   const moveMediaFolder = useMoveMediaFolder()
   const copyMediaFolder = useCopyMediaFolder()
+  const createFolderMutation = useCreateMediaFolder()
   const treeQuery = useGetMediaFolderTree(open)
 
   const totalItems = mediaIds.length + folders.length
@@ -61,8 +64,26 @@ export function MediaMoveDialog({
   React.useEffect(() => {
     if (open) {
       setTargetFolderId(null)
+      setEditingFolderId(null)
     }
   }, [open])
+
+  const handleCreateFolder = React.useCallback(() => {
+    createFolderMutation.mutate(
+      {
+        name: "New folder",
+        parent_id: targetFolderId,
+      },
+      {
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Folder created successfully")
+          setTargetFolderId(result.data.id)
+          setEditingFolderId(result.data.id)
+        },
+        onError: (error) => toastApiError(error, "Unable to create folder"),
+      }
+    )
+  }, [createFolderMutation, targetFolderId])
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -149,7 +170,8 @@ export function MediaMoveDialog({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setFolderDialogOpen(true)}
+                  onClick={handleCreateFolder}
+                  disabled={createFolderMutation.isPending}
                 >
                   <FolderPlusIcon className="size-4" />
                   New folder
@@ -158,19 +180,14 @@ export function MediaMoveDialog({
               <MediaFolderTree
                 tree={treeQuery.data?.tree ?? []}
                 selectedFolderId={targetFolderId}
+                editingFolderId={editingFolderId}
+                onEditingFolderIdChange={setEditingFolderId}
                 onSelectFolder={setTargetFolderId}
                 enableDropTargets
               />
             </div>
           )}
         </form>
-
-        <MediaFolderFormDialog
-          open={folderDialogOpen}
-          onOpenChange={setFolderDialogOpen}
-          parentId={targetFolderId}
-          onCreated={(folder) => setTargetFolderId(folder.id)}
-        />
 
         <ResponsiveDialogFooter>
           <Button

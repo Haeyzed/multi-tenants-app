@@ -33,6 +33,7 @@ import {
   MediaLibraryDragHandle,
   MediaLibraryFolderDropTarget,
 } from "@/components/tenant/admin/components/media/media-library-dnd"
+import { MediaFolderNameEditable } from "@/components/tenant/admin/components/media/media-folder-name-editable"
 import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -80,6 +81,8 @@ interface MediaGridProps {
   pickerValue?: number | null
   pickerValues?: number[]
   pickerMultiple?: boolean
+  editingFolderId?: number | null
+  onEditingFolderIdChange?: (folderId: number | null) => void
   onOpenFolder?: (folderId: number) => void
   onToggleSelect?: (id: number) => void
   onPick?: (item: MediaItem) => void
@@ -332,6 +335,8 @@ export function MediaGrid({
   pickerValue,
   pickerValues = [],
   pickerMultiple = false,
+  editingFolderId = null,
+  onEditingFolderIdChange,
   onOpenFolder,
   onToggleSelect,
   onPick,
@@ -388,7 +393,20 @@ export function MediaGrid({
               </div>
             </div>
             <div className="space-y-0.5 p-2">
-              <p className="truncate text-xs font-medium">{folder.name}</p>
+              {onRenameFolder ? (
+                <MediaFolderNameEditable
+                  folderId={folder.id}
+                  name={folder.name}
+                  editing={editingFolderId === folder.id}
+                  onEditingChange={(editing) => {
+                    onEditingFolderIdChange?.(editing ? folder.id : null)
+                  }}
+                  previewClassName="text-xs font-medium"
+                  inputClassName="text-xs"
+                />
+              ) : (
+                <p className="truncate text-xs font-medium">{folder.name}</p>
+              )}
               <p className="text-[11px] text-muted-foreground">
                 {folder.media_count ?? 0} files
               </p>

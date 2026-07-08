@@ -32,6 +32,7 @@ import {
   MediaLibraryDragHandle,
   MediaLibraryFolderDropTarget,
 } from "@/components/tenant/admin/components/media/media-library-dnd"
+import { MediaFolderNameEditable } from "@/components/tenant/admin/components/media/media-folder-name-editable"
 import { MediaFileIcon } from "@/components/tenant/admin/components/shared/media-file-icon"
 import { MediaThumbnail } from "@/components/tenant/admin/components/shared/media-thumbnail"
 import { Button } from "@/components/ui/button"
@@ -80,6 +81,8 @@ interface MediaListProps {
   pickerValue?: number | null
   pickerValues?: number[]
   pickerMultiple?: boolean
+  editingFolderId?: number | null
+  onEditingFolderIdChange?: (folderId: number | null) => void
   onOpenFolder?: (folderId: number) => void
   onToggleSelect?: (id: number) => void
   onPick?: (item: MediaItem) => void
@@ -392,6 +395,8 @@ export function MediaList({
   pickerValue,
   pickerValues = [],
   pickerMultiple = false,
+  editingFolderId = null,
+  onEditingFolderIdChange,
   onOpenFolder,
   onToggleSelect,
   onPick,
@@ -444,7 +449,19 @@ export function MediaList({
               <FolderIcon className="size-4 text-amber-600 dark:text-amber-400" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-medium">{folder.name}</p>
+              {onRenameFolder ? (
+                <MediaFolderNameEditable
+                  folderId={folder.id}
+                  name={folder.name}
+                  editing={editingFolderId === folder.id}
+                  onEditingChange={(editing) => {
+                    onEditingFolderIdChange?.(editing ? folder.id : null)
+                  }}
+                  previewClassName="font-medium"
+                />
+              ) : (
+                <p className="truncate font-medium">{folder.name}</p>
+              )}
               <p className="truncate text-xs text-muted-foreground">
                 {folder.media_count ?? 0} files
               </p>

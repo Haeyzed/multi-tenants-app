@@ -47,16 +47,13 @@ export function MediaThumbnail({
   if (cover) {
     const containerClass = cn("absolute inset-0 overflow-hidden", className)
     const image = (
-      <div className="relative size-full">
-        <Image
-          src={src}
-          alt={alt ?? media.name ?? "Media"}
-          fill
-          unoptimized
-          className="object-cover"
-          sizes="160px"
-        />
-      </div>
+      // eslint-disable-next-line @next/next/no-img-element -- grid tiles need reliable object-cover sizing
+      <img
+        src={src}
+        alt={alt ?? media.name ?? "Media"}
+        className="size-full object-cover"
+        loading="lazy"
+      />
     )
 
     if (!zoomable) {
@@ -64,7 +61,14 @@ export function MediaThumbnail({
     }
 
     return (
-      <ImageZoom className={cn(containerClass, "block")}>{image}</ImageZoom>
+      <ImageZoom
+        className={cn(
+          containerClass,
+          "block [&_img]:size-full [&_img]:object-cover"
+        )}
+      >
+        {image}
+      </ImageZoom>
     )
   }
 

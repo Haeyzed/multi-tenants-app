@@ -58,26 +58,49 @@ export function ProductMediaSection({
   const gallery = form.watch("gallery") || []
   const [galleryPickerOpen, setGalleryPickerOpen] = React.useState(false)
 
-  const addGalleryItem = (mediaId: number | null, media?: MediaItem | null) => {
-    if (!mediaId || !media) return
-    const next: StoreProductFormValues["gallery"] = [
-      ...gallery,
-      {
-        media_id: mediaId,
-        sort_order: gallery.length,
-        alt_text: media.title ?? media.name ?? null,
-        is_primary: gallery.length === 0,
-      },
-    ]
-    form.setValue("gallery", next, { shouldDirty: true })
-    setGalleryPreviews((current) => ({
-      ...current,
-      [mediaId]: {
-        url: resolveTenantMediaUrl(media),
-        name: media.title ?? media.name,
-      },
-    }))
-  }
+  const addGalleryItems = React.useCallback(
+    (items: MediaItem[]) => {
+      const currentGallery = form.getValues("gallery") || []
+      const existingIds = new Set(currentGallery.map((entry) => entry.media_id))
+      const nextEntries: StoreProductFormValues["gallery"] = []
+      const addedItems: MediaItem[] = []
+
+      for (const media of items) {
+        if (existingIds.has(media.id)) {
+          continue
+        }
+
+        existingIds.add(media.id)
+        addedItems.push(media)
+        nextEntries.push({
+          media_id: media.id,
+          sort_order: currentGallery.length + nextEntries.length,
+          alt_text: media.title ?? media.name ?? null,
+          is_primary: currentGallery.length === 0 && nextEntries.length === 0,
+        })
+      }
+
+      if (nextEntries.length === 0) {
+        return
+      }
+
+      form.setValue("gallery", [...currentGallery, ...nextEntries], {
+        shouldDirty: true,
+      })
+
+      setGalleryPreviews((current) => {
+        const next = { ...current }
+        for (const media of addedItems) {
+          next[media.id] = {
+            url: resolveTenantMediaUrl(media),
+            name: media.title ?? media.name,
+          }
+        }
+        return next
+      })
+    },
+    [form]
+  )
 
   const removeGalleryItem = (index: number) => {
     const removed = gallery[index]
@@ -190,14 +213,7 @@ export function ProductMediaSection({
           multiple
           open={galleryPickerOpen}
           onOpenChange={setGalleryPickerOpen}
-          onSelectMultiple={(items) => {
-            for (const item of items) {
-              if (gallery.some((entry) => entry.media_id === item.id)) {
-                continue
-              }
-              addGalleryItem(item.id, item)
-            }
-          }}
+          onSelectMultiple={addGalleryItems}
           accept="image/*"
           title="Add gallery images"
         />

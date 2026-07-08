@@ -16,7 +16,6 @@ import {
 import * as React from "react"
 import { MediaBulkDeleteDialog } from "@/components/tenant/admin/components/media/media-bulk-delete-dialog"
 import { MediaFolderDeleteDialog } from "@/components/tenant/admin/components/media/media-folder-delete-dialog"
-import { MediaFolderFormDialog } from "@/components/tenant/admin/components/media/media-folder-form-dialog"
 import { MediaImportUrlDialog } from "@/components/tenant/admin/components/media/media-import-url-dialog"
 import { MediaPreviewDialog } from "@/components/tenant/admin/components/media/media-preview-dialog"
 import { MediaPropertiesDialog } from "@/components/tenant/admin/components/media/media-properties-dialog"
@@ -43,6 +42,7 @@ import {
   useBulkUploadMedia,
   useCopyMediaFolder,
   useCopyMediaItem,
+  useCreateMediaFolder,
   useDeleteMedia,
   useDeleteMediaFolder,
   useGetMediaFolders,
@@ -176,9 +176,9 @@ export function MediaLibraryPanel({
   const [page, setPage] = React.useState(1)
   const [viewMode, setViewMode] = React.useState<ViewMode>("grid")
   const [selectedIds, setSelectedIds] = React.useState<number[]>([])
-  const [folderDialogOpen, setFolderDialogOpen] = React.useState(false)
-  const [folderEditTarget, setFolderEditTarget] =
-    React.useState<MediaBrowserFolder | null>(null)
+  const [editingFolderId, setEditingFolderId] = React.useState<number | null>(
+    null
+  )
   const [folderDeleteTarget, setFolderDeleteTarget] =
     React.useState<MediaBrowserFolder | null>(null)
   const [importUrlOpen, setImportUrlOpen] = React.useState(false)
@@ -219,6 +219,23 @@ export function MediaLibraryPanel({
   const copyMediaItemMutation = useCopyMediaItem()
   const moveMediaFolderMutation = useMoveMediaFolder()
   const copyMediaFolderMutation = useCopyMediaFolder()
+  const createFolderMutation = useCreateMediaFolder()
+
+  const handleCreateFolder = React.useCallback(() => {
+    createFolderMutation.mutate(
+      {
+        name: "New folder",
+        parent_id: folderId,
+      },
+      {
+        onSuccess: (result) => {
+          toastApiSuccess(result.message, "Folder created successfully")
+          setEditingFolderId(result.data.id)
+        },
+        onError: (error) => toastApiError(error, "Unable to create folder"),
+      }
+    )
+  }, [createFolderMutation, folderId])
 
   React.useEffect(() => {
     return () => {
@@ -530,6 +547,8 @@ export function MediaLibraryPanel({
     pickerValue,
     pickerValues,
     pickerMultiple,
+    editingFolderId,
+    onEditingFolderIdChange: setEditingFolderId,
     onOpenFolder: openFolder,
     onToggleSelect: toggleSelect,
     onPick,
@@ -544,7 +563,7 @@ export function MediaLibraryPanel({
     enableDrag: canManage && mode === "manage",
     onDeleteItem: canManage ? handleDeleteItem : undefined,
     onRenameFolder: canManage
-      ? (folder: MediaBrowserFolder) => setFolderEditTarget(folder)
+      ? (folder: MediaBrowserFolder) => setEditingFolderId(folder.id)
       : undefined,
     onDeleteFolder: canManage
       ? (folder: MediaBrowserFolder) => setFolderDeleteTarget(folder)
@@ -576,9 +595,14 @@ export function MediaLibraryPanel({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setFolderDialogOpen(true)}
+                  onClick={handleCreateFolder}
+                  disabled={createFolderMutation.isPending}
                 >
-                  <FolderPlusIcon className="size-4" />
+                  {createFolderMutation.isPending ? (
+                    <Spinner />
+                  ) : (
+                    <FolderPlusIcon className="size-4" />
+                  )}
                   New folder
                 </Button>
               </TenantAdminAuthGuard>
@@ -593,12 +617,11 @@ export function MediaLibraryPanel({
               <MediaFolderTree
                 tree={treeQuery.data?.tree ?? []}
                 selectedFolderId={folderId}
+                editingFolderId={editingFolderId}
+                onEditingFolderIdChange={setEditingFolderId}
                 enableDropTargets={canManage && mode === "manage"}
                 onRenameFolder={
-                  canManage
-                    ? (node) =>
-                        setFolderEditTarget(treeNodeToBrowserFolder(node))
-                    : undefined
+                  canManage ? (node) => setEditingFolderId(node.id) : undefined
                 }
                 onDeleteFolder={
                   canManage
@@ -741,20 +764,6 @@ export function MediaLibraryPanel({
             ) : null}
           </div>
         </div>
-
-        <MediaFolderFormDialog
-          open={folderDialogOpen}
-          onOpenChange={setFolderDialogOpen}
-          parentId={folderId}
-        />
-
-        <MediaFolderFormDialog
-          open={!!folderEditTarget}
-          onOpenChange={(open) => {
-            if (!open) setFolderEditTarget(null)
-          }}
-          folder={folderEditTarget}
-        />
 
         <MediaFolderDeleteDialog
           open={!!folderDeleteTarget}
