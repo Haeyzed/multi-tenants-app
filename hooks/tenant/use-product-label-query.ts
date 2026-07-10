@@ -81,7 +81,7 @@ export const useDeleteProductLabel = () => {
 
 export const useGetProductLabelOptions = () => {
   return useQuery({
-    queryKey: ["productLabelOptions"],
+    queryKey: ["product-label-option"],
     queryFn: () => getProductLabelOptions(),
   })
 }

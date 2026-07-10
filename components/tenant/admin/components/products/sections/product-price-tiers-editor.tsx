@@ -317,7 +317,10 @@ export function ProductPriceTiersEditor({
                             })
                           }}
                         >
-                          <ComboboxInput placeholder="All customers" />
+                          <ComboboxInput
+                            placeholder="Select customers"
+                            showClear
+                          />
                           <ComboboxContent>
                             <ComboboxEmpty>No groups found.</ComboboxEmpty>
                             <ComboboxList>

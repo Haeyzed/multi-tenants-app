@@ -226,7 +226,7 @@ export function TaxRatesFormDialog({
                     })
                   }}
                 >
-                  <ComboboxInput placeholder="Select tax class..." />
+                  <ComboboxInput placeholder="Select tax class..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No tax classes found.</ComboboxEmpty>
                     <ComboboxList>
@@ -258,7 +258,7 @@ export function TaxRatesFormDialog({
                     })
                   }}
                 >
-                  <ComboboxInput placeholder="Select tax zone..." />
+                  <ComboboxInput placeholder="Select tax zone..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No tax zones found.</ComboboxEmpty>
                     <ComboboxList>

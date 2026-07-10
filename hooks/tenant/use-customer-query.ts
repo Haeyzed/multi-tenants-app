@@ -77,7 +77,7 @@ export const useDeleteCustomer = () => {
 
 export const useGetCustomerOptions = () => {
   return useQuery({
-    queryKey: ["customerOptions"],
+    queryKey: ["customer-option"],
     queryFn: () => getCustomerOptions(),
   })
 }

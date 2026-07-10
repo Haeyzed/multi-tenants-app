@@ -98,7 +98,7 @@ export const useGetUnitOptions = (type?: UnitType) => {
 
 export const useGetUnitTypeOptions = () => {
   return useQuery({
-    queryKey: ["unitTypeOptions"],
+    queryKey: ["unit-type-option"],
     queryFn: () => getUnitTypeOptions(),
   })
 }

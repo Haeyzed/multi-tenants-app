@@ -37,7 +37,7 @@ export const useGetUserStatistics = () => {
 
 export const useGetUserOptions = () => {
   return useQuery({
-    queryKey: ["userOptions"],
+    queryKey: ["user-option"],
     queryFn: () => getUserOptions(),
   })
 }

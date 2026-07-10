@@ -71,7 +71,7 @@ export const useDeletePlan = () => {
 
 export const useGetPlanOptions = () => {
   return useQuery({
-    queryKey: ["planOptions"],
+    queryKey: ["plan-option"],
     queryFn: () => getPlanOptions(),
   })
 }

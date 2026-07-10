@@ -25,4 +25,5 @@ export interface Brand {
 export interface BrandOption {
   label: string
   value: number
+  image_url?: string | null
 }

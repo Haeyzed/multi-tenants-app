@@ -342,7 +342,7 @@ export function SuppliersManageAddressesDialog({
                     form.setValue("type", item.value)
                   }}
                 >
-                  <ComboboxInput placeholder="Select type..." />
+                  <ComboboxInput placeholder="Select type..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No types found.</ComboboxEmpty>
                     <ComboboxList>

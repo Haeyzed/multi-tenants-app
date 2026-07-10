@@ -283,7 +283,7 @@ export function TenantsMutateDialog({
                     form.setValue("plan_id", item ? item.value : null)
                   }}
                 >
-                  <ComboboxInput placeholder="Select a plan..." />
+                  <ComboboxInput placeholder="Select a plan..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No plans found.</ComboboxEmpty>
                     <ComboboxList>
@@ -435,7 +435,7 @@ export function TenantsMutateDialog({
                     form.setValue("status", item.value)
                   }}
                 >
-                  <ComboboxInput placeholder="Select status..." />
+                  <ComboboxInput placeholder="Select status..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No statuses found.</ComboboxEmpty>
                     <ComboboxList>

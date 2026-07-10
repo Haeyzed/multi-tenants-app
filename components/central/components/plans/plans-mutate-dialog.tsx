@@ -305,7 +305,7 @@ export function PlansMutateDialog({
                     form.setValue("interval", item.value)
                   }}
                 >
-                  <ComboboxInput placeholder="Select interval..." />
+                  <ComboboxInput placeholder="Select interval..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No intervals found.</ComboboxEmpty>
                     <ComboboxList>

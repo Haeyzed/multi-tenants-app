@@ -246,7 +246,7 @@ function ModuleExportDialogContent({
                 if (item) setFileType(item.value)
               }}
             >
-              <ComboboxInput placeholder="Select file type..." />
+              <ComboboxInput placeholder="Select file type..." showClear />
               <ComboboxContent>
                 <ComboboxEmpty>No options found.</ComboboxEmpty>
                 <ComboboxList>
@@ -272,7 +272,10 @@ function ModuleExportDialogContent({
                 if (item) setDelivery(item.value)
               }}
             >
-              <ComboboxInput placeholder="Select delivery method..." />
+              <ComboboxInput
+                placeholder="Select delivery method..."
+                showClear
+              />
               <ComboboxContent>
                 <ComboboxEmpty>No options found.</ComboboxEmpty>
                 <ComboboxList>

@@ -80,7 +80,7 @@ export const useDeleteCustomerGroup = () => {
 
 export const useGetCustomerGroupOptions = () => {
   return useQuery({
-    queryKey: ["customerGroupOptions"],
+    queryKey: ["customer-group-option"],
     queryFn: () => getCustomerGroupOptions(),
   })
 }

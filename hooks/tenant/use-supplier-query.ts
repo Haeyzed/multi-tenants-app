@@ -137,7 +137,7 @@ export const useToggleSupplierActive = () => {
 
 export const useGetSupplierOptions = () => {
   return useQuery({
-    queryKey: ["supplierOptions"],
+    queryKey: ["supplier-option"],
     queryFn: () => getSupplierOptions(),
   })
 }

@@ -73,7 +73,7 @@ export const useDeleteBrand = () => {
 
 export const useGetBrandOptions = () => {
   return useQuery({
-    queryKey: ["brandOptions"],
+    queryKey: ["brand-option"],
     queryFn: () => getBrandOptions(),
   })
 }

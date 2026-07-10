@@ -98,7 +98,7 @@ export function ProductBasicSection({
                   )
                 }}
               >
-                <ComboboxInput placeholder="Select type..." />
+                <ComboboxInput placeholder="Select type..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No types found.</ComboboxEmpty>
                   <ComboboxList>
@@ -129,7 +129,7 @@ export function ProductBasicSection({
                   )
                 }}
               >
-                <ComboboxInput placeholder="Select condition..." />
+                <ComboboxInput placeholder="Select condition..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No conditions found.</ComboboxEmpty>
                   <ComboboxList>

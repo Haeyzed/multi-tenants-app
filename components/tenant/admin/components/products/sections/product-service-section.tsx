@@ -265,7 +265,7 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                   updateService({ location_type: item.value })
                 }}
               >
-                <ComboboxInput placeholder="Select location type..." />
+                <ComboboxInput placeholder="Select location type..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No options found.</ComboboxEmpty>
                   <ComboboxList>
@@ -406,7 +406,10 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                             })
                           }
                         >
-                          <ComboboxInput placeholder="Select team member" />
+                          <ComboboxInput
+                            placeholder="Select team member"
+                            showClear
+                          />
                           <ComboboxContent>
                             <ComboboxEmpty>
                               No team members found.
@@ -541,7 +544,7 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                             updateSchedule(index, { day_of_week: item.value })
                           }}
                         >
-                          <ComboboxInput placeholder="Day" />
+                          <ComboboxInput placeholder="Select day" showClear />
                           <ComboboxContent>
                             <ComboboxList>
                               {(item) => (
@@ -586,7 +589,7 @@ export function ProductServiceSection({ product }: ProductServiceSectionProps) {
                             })
                           }
                         >
-                          <ComboboxInput placeholder="Any provider" />
+                          <ComboboxInput placeholder="Select provider" showClear />
                           <ComboboxContent>
                             <ComboboxEmpty>
                               No team members found.

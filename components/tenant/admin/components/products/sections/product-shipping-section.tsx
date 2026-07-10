@@ -101,7 +101,7 @@ export function ProductShippingSection({
                   )
                 }}
               >
-                <ComboboxInput placeholder="Select weight unit..." />
+                <ComboboxInput placeholder="Select weight unit..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No weight units found.</ComboboxEmpty>
                   <ComboboxList>
@@ -174,7 +174,7 @@ export function ProductShippingSection({
                 )
               }}
             >
-              <ComboboxInput placeholder="Select dimension unit..." />
+              <ComboboxInput placeholder="Select dimension unit..." showClear />
               <ComboboxContent>
                 <ComboboxEmpty>No dimension units found.</ComboboxEmpty>
                 <ComboboxList>

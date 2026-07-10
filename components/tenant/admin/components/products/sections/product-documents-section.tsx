@@ -194,7 +194,7 @@ export function ProductDocumentsSection({
                   if (item) setDocumentType(item.value)
                 }}
               >
-                <ComboboxInput placeholder="Select type..." />
+                <ComboboxInput placeholder="Select type..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No types found.</ComboboxEmpty>
                   <ComboboxList>

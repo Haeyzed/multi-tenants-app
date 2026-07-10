@@ -105,7 +105,7 @@ export const useToggleTaxRateActive = () => {
 
 export const useGetTaxRateOptions = () => {
   return useQuery({
-    queryKey: ["taxRateOptions"],
+    queryKey: ["tax-rate-option"],
     queryFn: () => getTaxRateOptions(),
   })
 }

@@ -311,7 +311,10 @@ export function CollectionsFormDialog({
                   form.setValue("type", item.value)
                 }}
               >
-                <ComboboxInput placeholder="Select collection type..." />
+                <ComboboxInput
+                  placeholder="Select collection type..."
+                  showClear
+                />
                 <ComboboxContent>
                   <ComboboxEmpty>No types found.</ComboboxEmpty>
                   <ComboboxList>

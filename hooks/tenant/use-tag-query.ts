@@ -72,7 +72,7 @@ export const useDeleteTag = () => {
 
 export const useGetTagOptions = () => {
   return useQuery({
-    queryKey: ["tagOptions"],
+    queryKey: ["tag-option"],
     queryFn: () => getTagOptions(),
   })
 }

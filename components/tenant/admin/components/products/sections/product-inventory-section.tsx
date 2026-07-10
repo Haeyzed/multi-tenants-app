@@ -94,7 +94,7 @@ export function ProductInventorySection({
                     )
                   }}
                 >
-                  <ComboboxInput placeholder="Select warehouse..." />
+                  <ComboboxInput placeholder="Select warehouse..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No warehouses found.</ComboboxEmpty>
                     <ComboboxList>

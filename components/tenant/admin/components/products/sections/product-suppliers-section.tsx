@@ -193,7 +193,10 @@ export function ProductSuppliersSection({
                           })
                         }}
                       >
-                        <ComboboxInput placeholder="Select supplier..." />
+                        <ComboboxInput
+                          placeholder="Select supplier..."
+                          showClear
+                        />
                         <ComboboxContent>
                           <ComboboxEmpty>No suppliers found.</ComboboxEmpty>
                           <ComboboxList>

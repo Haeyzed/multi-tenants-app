@@ -97,7 +97,7 @@ export const useDeleteManyTaxClasses = () => {
 
 export const useGetTaxClassOptions = () => {
   return useQuery({
-    queryKey: ["taxClassOptions"],
+    queryKey: ["tax-class-option"],
     queryFn: () => getTaxClassOptions(),
   })
 }

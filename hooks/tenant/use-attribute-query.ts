@@ -90,7 +90,7 @@ export const useDeleteAttribute = () => {
 
 export const useGetAttributeOptions = () => {
   return useQuery({
-    queryKey: ["attributeOptions"],
+    queryKey: ["attribute-option"],
     queryFn: () => getAttributeOptions(),
   })
 }

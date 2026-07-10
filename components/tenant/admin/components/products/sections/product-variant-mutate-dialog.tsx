@@ -334,7 +334,7 @@ export function ProductVariantMutateDialog({
                         )
                       }}
                     >
-                      <ComboboxInput placeholder="Select unit..." />
+                      <ComboboxInput placeholder="Select unit..." showClear />
                       <ComboboxContent>
                         <ComboboxEmpty>No units found.</ComboboxEmpty>
                         <ComboboxList>
@@ -407,7 +407,7 @@ export function ProductVariantMutateDialog({
                       )
                     }}
                   >
-                    <ComboboxInput placeholder="Select unit..." />
+                    <ComboboxInput placeholder="Select unit..." showClear />
                     <ComboboxContent>
                       <ComboboxEmpty>No units found.</ComboboxEmpty>
                       <ComboboxList>

@@ -295,7 +295,7 @@ export function CategoriesFormDialog({
                   )
                 }}
               >
-                <ComboboxInput placeholder="Select parent category..." />
+                <ComboboxInput placeholder="Select parent category..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No categories found.</ComboboxEmpty>
                   <ComboboxList>

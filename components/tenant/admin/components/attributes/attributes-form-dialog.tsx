@@ -264,7 +264,10 @@ export function AttributesFormDialog({
                     form.setValue("type", item.value)
                   }}
                 >
-                  <ComboboxInput placeholder="Select attribute type..." />
+                  <ComboboxInput
+                    placeholder="Select attribute type..."
+                    showClear
+                  />
                   <ComboboxContent>
                     <ComboboxEmpty>No types found.</ComboboxEmpty>
                     <ComboboxList>
@@ -292,7 +295,10 @@ export function AttributesFormDialog({
                     form.setValue("display_type", item.value)
                   }}
                 >
-                  <ComboboxInput placeholder="Select display type..." />
+                  <ComboboxInput
+                    placeholder="Select display type..."
+                    showClear
+                  />
                   <ComboboxContent>
                     <ComboboxEmpty>No display types found.</ComboboxEmpty>
                     <ComboboxList>

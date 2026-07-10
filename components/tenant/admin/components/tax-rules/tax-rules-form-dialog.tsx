@@ -264,7 +264,7 @@ export function TaxRulesFormDialog({
                   })
                 }}
               >
-                <ComboboxInput placeholder="Select tax rate..." />
+                <ComboboxInput placeholder="Select tax rate..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No tax rates found.</ComboboxEmpty>
                   <ComboboxList>
@@ -297,7 +297,10 @@ export function TaxRulesFormDialog({
                     })
                   }}
                 >
-                  <ComboboxInput placeholder="Select applicable type..." />
+                  <ComboboxInput
+                    placeholder="Select applicable type..."
+                    showClear
+                  />
                   <ComboboxContent>
                     <ComboboxEmpty>No options found.</ComboboxEmpty>
                     <ComboboxList>
@@ -376,7 +379,7 @@ export function TaxRulesFormDialog({
                     })
                   }}
                 >
-                  <ComboboxInput placeholder="Select rule type..." />
+                  <ComboboxInput placeholder="Select rule type..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No options found.</ComboboxEmpty>
                     <ComboboxList>

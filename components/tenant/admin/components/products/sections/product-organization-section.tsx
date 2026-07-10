@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Plus } from "lucide-react"
+import { FileBox, Plus } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
@@ -31,6 +31,7 @@ import { CollectionsFormDialog } from "@/components/tenant/admin/components/coll
 import { TagsFormDialog } from "@/components/tenant/admin/components/tags/tags-form-dialog"
 import { ProductLabelsFormDialog } from "@/components/tenant/admin/components/product-labels/product-labels-form-dialog"
 import { type ProductFormSectionProps } from "./product-form-shared"
+import Image from "next/image"
 
 function FieldLabelWithAdd({
   label,
@@ -192,7 +193,10 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
                   )
                 }}
               >
-                <ComboboxInput placeholder="Select primary category..." />
+                <ComboboxInput
+                  placeholder="Select primary category..."
+                  showClear
+                />
                 <ComboboxContent>
                   <ComboboxEmpty>
                     {categoryIds.length === 0
@@ -228,12 +232,24 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
                   })
                 }}
               >
-                <ComboboxInput placeholder="Select brand..." />
+                <ComboboxInput placeholder="Select brand..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No brands found.</ComboboxEmpty>
                   <ComboboxList>
                     {(item) => (
                       <ComboboxItem key={item.value} value={item}>
+                        {item.image_url ? (
+                          <Image
+                            src={item.image_url}
+                            alt={`${item.label} logo`}
+                            width={16}
+                            height={16}
+                            unoptimized
+                            className="mr-2 size-4 rounded-sm object-cover"
+                          />
+                        ) : (
+                          <FileBox className="mr-2 size-4 text-gray-400" />
+                        )}
                         {item.label}
                       </ComboboxItem>
                     )}
@@ -382,7 +398,7 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         onOpenChange={setLabelDialogOpen}
         onCreated={(label) => {
           void queryClient.invalidateQueries({
-            queryKey: ["productLabelOptions"],
+            queryKey: ["product-label-option"],
           })
           toggleLabel(label.id, true)
         }}
@@ -392,7 +408,7 @@ export function ProductOrganizationSection({ form }: ProductFormSectionProps) {
         onOpenChange={setCollectionDialogOpen}
         onCreated={(collection) => {
           void queryClient.invalidateQueries({
-            queryKey: ["collectionOptions"],
+            queryKey: ["collection-option"],
           })
           toggleCollection(collection.id, true)
         }}

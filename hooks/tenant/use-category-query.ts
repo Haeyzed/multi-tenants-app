@@ -85,7 +85,7 @@ export const useDeleteCategory = () => {
 
 export const useGetCategoryOptions = () => {
   return useQuery({
-    queryKey: ["categoryOptions"],
+    queryKey: ["category-option"],
     queryFn: () => getCategoryOptions(),
   })
 }

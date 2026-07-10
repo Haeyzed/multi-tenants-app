@@ -59,7 +59,7 @@ export function ProductPublishingSection({ form }: ProductFormSectionProps) {
                 )
               }}
             >
-              <ComboboxInput placeholder="Select status..." />
+              <ComboboxInput placeholder="Select status..." showClear />
               <ComboboxContent>
                 <ComboboxEmpty>No statuses found.</ComboboxEmpty>
                 <ComboboxList>
@@ -89,7 +89,7 @@ export function ProductPublishingSection({ form }: ProductFormSectionProps) {
                 )
               }}
             >
-              <ComboboxInput placeholder="Select visibility..." />
+              <ComboboxInput placeholder="Select visibility..." showClear />
               <ComboboxContent>
                 <ComboboxEmpty>No visibility options found.</ComboboxEmpty>
                 <ComboboxList>

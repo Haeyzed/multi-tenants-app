@@ -361,7 +361,7 @@ export function WarehousesManageLocationsDialog({
                     })
                   }}
                 >
-                  <ComboboxInput placeholder="Select zone (optional)..." />
+                  <ComboboxInput placeholder="Select zone (optional)..." showClear />
                   <ComboboxContent>
                     <ComboboxEmpty>No zones found.</ComboboxEmpty>
                     <ComboboxList>

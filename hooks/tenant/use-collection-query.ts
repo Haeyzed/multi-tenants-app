@@ -81,7 +81,7 @@ export const useDeleteCollection = () => {
 
 export const useGetCollectionOptions = () => {
   return useQuery({
-    queryKey: ["collectionOptions"],
+    queryKey: ["collection-option"],
     queryFn: () => getCollectionOptions(),
   })
 }

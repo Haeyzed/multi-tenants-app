@@ -233,7 +233,7 @@ export function UnitsFormDialog({
                   form.setValue("type", item.value)
                 }}
               >
-                <ComboboxInput placeholder="Select unit type..." />
+                <ComboboxInput placeholder="Select unit type..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No unit types found.</ComboboxEmpty>
                   <ComboboxList>

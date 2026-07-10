@@ -61,7 +61,7 @@ export const useGetProductStatistics = () => {
 
 export const useGetProductOptions = () => {
   return useQuery({
-    queryKey: ["productOptions"],
+    queryKey: ["product-option"],
     queryFn: () => getProductOptions(),
   })
 }

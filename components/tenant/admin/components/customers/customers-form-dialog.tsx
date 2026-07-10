@@ -297,7 +297,7 @@ export function CustomersFormDialog({
                         )
                       }}
                     >
-                      <ComboboxInput placeholder="Select customer group..." />
+                      <ComboboxInput placeholder="Select customer group..." showClear />
                       <ComboboxContent>
                         <ComboboxEmpty>No groups found.</ComboboxEmpty>
                         <ComboboxList>
@@ -361,7 +361,7 @@ export function CustomersFormDialog({
                       form.setValue("gender", item.value || null)
                     }}
                   >
-                    <ComboboxInput placeholder="Select gender..." />
+                    <ComboboxInput placeholder="Select gender..." showClear />
                     <ComboboxContent>
                       <ComboboxEmpty>No options found.</ComboboxEmpty>
                       <ComboboxList>

@@ -160,7 +160,7 @@ export function ProductSeoSection({ form }: ProductFormSectionProps) {
                   updateSeo({ twitter_card: item.value })
                 }}
               >
-                <ComboboxInput placeholder="Select card type..." />
+                <ComboboxInput placeholder="Select card type..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No card types found.</ComboboxEmpty>
                   <ComboboxList>
@@ -222,7 +222,10 @@ export function ProductSeoSection({ form }: ProductFormSectionProps) {
                 updateSeo({ robots_meta: item.value })
               }}
             >
-              <ComboboxInput placeholder="Select robots directive..." />
+              <ComboboxInput
+                placeholder="Select robots directive..."
+                showClear
+              />
               <ComboboxContent>
                 <ComboboxEmpty>No options found.</ComboboxEmpty>
                 <ComboboxList>

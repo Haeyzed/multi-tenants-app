@@ -82,7 +82,7 @@ export const useDeleteAttributeSet = () => {
 
 export const useGetAttributeSetOptions = () => {
   return useQuery({
-    queryKey: ["attributeSetOptions"],
+    queryKey: ["attribute-set-option"],
     queryFn: () => getAttributeSetOptions(),
   })
 }

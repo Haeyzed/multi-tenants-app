@@ -147,7 +147,7 @@ export const useSetWarehousePrimary = () => {
 
 export const useGetWarehouseOptions = () => {
   return useQuery({
-    queryKey: ["warehouseOptions"],
+    queryKey: ["warehouse-option"],
     queryFn: () => getWarehouseOptions(),
   })
 }

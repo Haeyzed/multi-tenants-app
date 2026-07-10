@@ -167,7 +167,7 @@ export function ProductBundleSection({ product }: ProductBundleSectionProps) {
                           })
                         }
                       >
-                        <ComboboxInput placeholder="Select product" />
+                        <ComboboxInput placeholder="Select product" showClear />
                         <ComboboxContent>
                           <ComboboxEmpty>No products found.</ComboboxEmpty>
                           <ComboboxList>

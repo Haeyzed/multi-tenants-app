@@ -98,7 +98,7 @@ export const useDeleteManyTaxZones = () => {
 
 export const useGetTaxZoneOptions = () => {
   return useQuery({
-    queryKey: ["taxZoneOptions"],
+    queryKey: ["tax-zone-option"],
     queryFn: () => getTaxZoneOptions(),
   })
 }

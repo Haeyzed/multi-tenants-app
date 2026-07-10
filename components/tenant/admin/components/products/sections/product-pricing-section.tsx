@@ -138,7 +138,7 @@ export function ProductPricingSection({ form }: ProductFormSectionProps) {
                   })
                 }}
               >
-                <ComboboxInput placeholder="Select tax class..." />
+                <ComboboxInput placeholder="Select tax class..." showClear />
                 <ComboboxContent>
                   <ComboboxEmpty>No tax classes found.</ComboboxEmpty>
                   <ComboboxList>
